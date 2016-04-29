@@ -43,6 +43,7 @@ map <-  readOGR(dsn="../southkorea-maps/popong/precinct/assembly-precinct-20-geo
 plot(map)
 ```
 
+ÃâÃ³: [Overcoming D3 Cartographic Envy With R + ggplot](https://rud.is/b/2014/09/26/overcoming-d3-cartographic-envy-with-r-ggplot/)
 
 
 
