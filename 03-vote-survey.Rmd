@@ -1,11 +1,23 @@
 ---
 layout: page
 title: 데이터 과학자가 바라본 20대 총선
-subtitle: 선거와 관련된 통계
+subtitle: 선거 여론조사
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
 ---
 
+```{r setOptions, message=FALSE}
+source("tools/chunk-options.R")
+library(googleVis)
+op <- options(gvis.plot.tag='chart')
+```
 
-## 20대 국회의원 선거 [^survey-fail01] [^survey-fail02]
+
+## 제20대 국회의원 선거 쟁점 [^survey-fail01] [^survey-fail02]
 
 갤럽 및 이와 유사한 여론조사 방법론을 동원한 여론조사 전문기관들이 대통령 선거를 비롯한
 다양한 선거에서 점쟁이(?), 쪽집게(?) 노릇을 톡톡히 했다. 하지만, 이번 제20대 총선에서 
@@ -15,6 +27,7 @@ subtitle: 선거와 관련된 통계
 [^survey-fail02]: [4‧13 총선, 여론조사가 빗나간 세 가지 이유](http://www.mediatoday.co.kr/?mod=news&act=articleView&idxno=129414)
 
 <img src="fig/lawmaker-overview.png" alt="제20대 총선 개요" width="70%" />
+
 
 ### 여론조사 데이터 (사례)
 
@@ -27,12 +40,20 @@ subtitle: 선거와 관련된 통계
 |--------|------------|----------|-------------|-------------|
 | 표본크기	 | 1,000	  |   511	 |  500        |  600        |
 | 응답율	 |  4.4%	  |   2.8%	 |  7.7%       |  4.0%       |
-| 조사방법	 | 휴대전화/ ARS |  유무선전화 |  RDD(임의걸기) |  유선전화      |    
+| 조사방법	 | 휴대전화/
+ARS |  유무선전화 |
+ RDD(임의걸기) |  유선전화      |    
 | 조사날짜	 | 2/20일"	  |  3/15일	 | 3/19        |  4/1        |
-| 조사시간	 | 11시~20시   |  09시~22시 |   10시~22시   |    14시~19시" |
+| 조사시간	 | 11시~20시   | 
+09시~22시 |  
+10시~22시   |   
+14시~19시" |
 | 조사기관	 | OO리서치	  |  리얼미터	 | 리서치앤리서치  |  엠브레인     |
 
 ARS: 전화자동응답전화, RDD: Random Digit Dialing
+
+
+## 여론조사
 
 
 [중앙선거관리위원회 - 중앙선거 여론조사 공정심의위원회](https://www.nesdc.go.kr/)

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자가 바라본 20대 총선</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-16', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
+          <h2 class="subtitle">선거 데이터</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">source</span>(<span class="st">&quot;tools/chunk-options.R&quot;</span>)
+<span class="kw">library</span>(googleVis)
+op &lt;-<span class="st"> </span><span class="kw">options</span>(<span class="dt">gvis.plot.tag=</span><span class="st">&#39;chart&#39;</span>)</code></pre></div>
+<h2 id="선거정보"><a href="https://ko.wikipedia.org/wiki/대한민국의_선거">선거정보</a></h2>
+<p>선거 정보에는 <a href="https://ko.wikipedia.org/wiki/대한민국의_대통령_선거">대통령선거</a>, <a href="https://ko.wikipedia.org/wiki/대한민국_제20대_국회의원_선거">국회의원선거</a>, <a href="https://ko.wikipedia.org/wiki/대한민국의_지방_선거">지방선거</a>가 포함된다. 지방선거는 지방의회 의원과 함께 지방자치단체장을 선출한다. <strong>보통·평등·직접·비밀선거</strong> 기준에 의해 국민의 대표자를 선출한다.</p>
+<h3 id="역대-선거정보">역대 선거정보</h3>
+<p>역대 선거정보는 중앙선거관리위원회 <a href="http://info.nec.go.kr/">선거통계시스템</a>에서 그래픽 유저 인터페이스를 통해 확인할 수 있다. 추가로,</p>
+<ul>
+<li><a href="http://www.nec.go.kr">선거관리위원회 대표 홈페이지</a>에서 <code>분야별 정보</code> &gt; <code>선거정보</code> &gt; <code>자료실</code></li>
+<li><a href="http://info.nec.go.kr">선거통계시스템 대표 홈페이지</a>에서 <code>홈페이지 자료실</code> 배너를 클릭</li>
+</ul>
+<p>선거관리위원회 대표 홈페이지나, 선거통계시스템 대표 홈페이지를 클릭하면 동일하게 <a href="http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061">자료실</a>로 연결된다.</p>
+<h3 id="역대-선거일정">역대 선거일정</h3>
+<p>대통령 임기는 5년이고, 국회의원과 지방의회 및 자치장 임기는 4년이다. 대통령의 경우 15대부터, 국회의원의 경우 17대부터, 지방의회의 경우 제3회 전국동시지방선거를 시각화하면 다음과 같다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">election.dat &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">type=</span><span class="kw">c</span>(<span class="st">&quot;대통령&quot;</span>,<span class="st">&quot;대통령&quot;</span>,<span class="st">&quot;대통령&quot;</span>,<span class="st">&quot;대통령&quot;</span>,
+                                  <span class="st">&quot;국회의원&quot;</span>,<span class="st">&quot;국회의원&quot;</span>,<span class="st">&quot;국회의원&quot;</span>,<span class="st">&quot;국회의원&quot;</span>,
+                                  <span class="st">&quot;지방선거&quot;</span>,<span class="st">&quot;지방선거&quot;</span>,<span class="st">&quot;지방선거&quot;</span>,<span class="st">&quot;지방선거&quot;</span>),
+                  <span class="dt">subtype=</span><span class="kw">c</span>(<span class="st">&quot;15대&quot;</span>, <span class="st">&quot;16대&quot;</span>, <span class="st">&quot;17대&quot;</span>, <span class="st">&quot;18대&quot;</span>,
+                            <span class="st">&quot;17대&quot;</span>, <span class="st">&quot;18대&quot;</span>, <span class="st">&quot;19대&quot;</span>, <span class="st">&quot;20대&quot;</span>,
+                            <span class="st">&quot;3회&quot;</span>,<span class="st">&quot;4회&quot;</span>,<span class="st">&quot;5회&quot;</span>,<span class="st">&quot;6회&quot;</span>),
+                  <span class="dt">start=</span><span class="kw">as.POSIXct</span>(<span class="kw">c</span>(<span class="st">&quot;1997-12-18&quot;</span>,<span class="st">&quot;2002-12-19&quot;</span>,<span class="st">&quot;2007-12-19&quot;</span>,<span class="st">&quot;2012-12-19&quot;</span>,
+                                     <span class="st">&quot;2004-5-30&quot;</span>,<span class="st">&quot;2008-5-30&quot;</span>, <span class="st">&quot;2012-5-30&quot;</span>,<span class="st">&quot;2016-5-30&quot;</span>,
+                                     <span class="st">&quot;2002-7-1&quot;</span>, <span class="st">&quot;2006-7-1&quot;</span>, <span class="st">&quot;2010-7-1&quot;</span>,<span class="st">&quot;2014-7-1&quot;</span>)),
+                    <span class="dt">end=</span><span class="kw">as.POSIXct</span>(<span class="kw">c</span>(<span class="st">&quot;2002-12-18&quot;</span>,<span class="st">&quot;2007-12-18&quot;</span>,<span class="st">&quot;2012-12-19&quot;</span>,<span class="st">&quot;2017-12-19&quot;</span>,
+                                     <span class="st">&quot;2008-5-29&quot;</span>, <span class="st">&quot;2012-5-29&quot;</span>,<span class="st">&quot;2016-5-29&quot;</span>,<span class="st">&quot;2020-5-29&quot;</span>,
+                                     <span class="st">&quot;2006-6-30&quot;</span>, <span class="st">&quot;2010-6-30&quot;</span>, <span class="st">&quot;2014-6-30&quot;</span>,<span class="st">&quot;2018-6-30&quot;</span>)))
+
+<span class="kw">plot</span>(
+  <span class="kw">gvisTimeline</span>(<span class="dt">data=</span>election.dat, 
+               <span class="dt">rowlabel=</span><span class="st">&quot;type&quot;</span>, <span class="dt">barlabel=</span><span class="st">&quot;subtype&quot;</span>, 
+               <span class="dt">start=</span><span class="st">&quot;start&quot;</span>, <span class="dt">end=</span><span class="st">&quot;end&quot;</span>)
+)</code></pre></div>
+<!-- Timeline generated in R 3.2.4 by googleVis 0.5.10 package -->
+<!-- Fri Apr 29 13:40:09 2016 -->
+<!-- jsHeader -->
+<script type="text/javascript">
+ 
+// jsData 
+function gvisDataTimelineID466d548d7a24 () {
+var data = new google.visualization.DataTable();
+var datajson =
+[
+ [
+ "대통령",
+"15대",
+new Date(1997,11,18,0,0,0),
+new Date(2002,11,18,0,0,0) 
+],
+[
+ "대통령",
+"16대",
+new Date(2002,11,19,0,0,0),
+new Date(2007,11,18,0,0,0) 
+],
+[
+ "대통령",
+"17대",
+new Date(2007,11,19,0,0,0),
+new Date(2012,11,19,0,0,0) 
+],
+[
+ "대통령",
+"18대",
+new Date(2012,11,19,0,0,0),
+new Date(2017,11,19,0,0,0) 
+],
+[
+ "국회의원",
+"17대",
+new Date(2004,4,30,0,0,0),
+new Date(2008,4,29,0,0,0) 
+],
+[
+ "국회의원",
+"18대",
+new Date(2008,4,30,0,0,0),
+new Date(2012,4,29,0,0,0) 
+],
+[
+ "국회의원",
+"19대",
+new Date(2012,4,30,0,0,0),
+new Date(2016,4,29,0,0,0) 
+],
+[
+ "국회의원",
+"20대",
+new Date(2016,4,30,0,0,0),
+new Date(2020,4,29,0,0,0) 
+],
+[
+ "지방선거",
+"3회",
+new Date(2002,6,1,0,0,0),
+new Date(2006,5,30,0,0,0) 
+],
+[
+ "지방선거",
+"4회",
+new Date(2006,6,1,0,0,0),
+new Date(2010,5,30,0,0,0) 
+],
+[
+ "지방선거",
+"5회",
+new Date(2010,6,1,0,0,0),
+new Date(2014,5,30,0,0,0) 
+],
+[
+ "지방선거",
+"6회",
+new Date(2014,6,1,0,0,0),
+new Date(2018,5,30,0,0,0) 
+] 
+];
+data.addColumn('string','type');
+data.addColumn('string','subtype');
+data.addColumn('datetime','start');
+data.addColumn('datetime','end');
+data.addRows(datajson);
+return(data);
+}
+ 
+// jsDrawChart
+function drawChartTimelineID466d548d7a24() {
+var data = gvisDataTimelineID466d548d7a24();
+var options = {};
+options["width"] =    600;
+options["height"] =    200;
+
+    var chart = new google.visualization.Timeline(
+    document.getElementById('TimelineID466d548d7a24')
+    );
+    chart.draw(data,options);
+    
+
+}
+  
+ 
+// jsDisplayChart
+(function() {
+var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+var chartid = "timeline";
+  
+// Manually see if chartid is in pkgs (not all browsers support Array.indexOf)
+var i, newPackage = true;
+for (i = 0; newPackage && i < pkgs.length; i++) {
+if (pkgs[i] === chartid)
+newPackage = false;
+}
+if (newPackage)
+  pkgs.push(chartid);
+  
+// Add the drawChart function to the global list of callbacks
+callbacks.push(drawChartTimelineID466d548d7a24);
+})();
+function displayChartTimelineID466d548d7a24() {
+  var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+  var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+  window.clearTimeout(window.__gvisLoad);
+  // The timeout is set to 100 because otherwise the container div we are
+  // targeting might not be part of the document yet
+  window.__gvisLoad = setTimeout(function() {
+  var pkgCount = pkgs.length;
+  google.load("visualization", "1", { packages:pkgs, callback: function() {
+  if (pkgCount != pkgs.length) {
+  // Race condition where another setTimeout call snuck in after us; if
+  // that call added a package, we must not shift its callback
+  return;
+}
+while (callbacks.length > 0)
+callbacks.shift()();
+} });
+}, 100);
+}
+ 
+// jsFooter
+</script>
+<!-- jsChart -->
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID466d548d7a24"></script>
+<!-- divChart -->
+<div id="TimelineID466d548d7a24" style="width: 600; height: 200;">
+
+</div>
+<h3 id="일정데이터-시각화">일정데이터 시각화</h3>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/googleVis/">googleVis</a> : gvisTimeline 함수</li>
+<li><a href="https://cran.r-project.org/web/packages/plotrix/index.html">plotrix</a> : gantt.chart 함수</li>
+<li>ggplot 계열</li>
+<li><a href="http://stackoverflow.com/questions/9862519/gantt-style-time-line-plot-in-base-r">Gantt style time line plot (in base R) - Stack Overflow</a></li>
+<li><a href="http://stackoverflow.com/questions/20695311/chronological-timeline-with-points-in-time-and-format-date">Chronological timeline with points in time and format date</a></li>
+</ul>
+<h3 id="역대-선거데이터-스프레드쉬트-형식">역대 선거데이터 스프레드쉬트 형식</h3>
+<ul>
+<li>대통령</li>
+<li><a href="http://www.nec.go.kr/portal/bbs/view/B0000338/4742.do?menuNo=200061&amp;searchYear=&amp;searchMonth=&amp;searchWrd=%EB%8C%80%ED%86%B5%EB%A0%B9&amp;searchCnd=3&amp;viewType=&amp;pageIndex=2&amp;section=&amp;searchOption1=">제17대 대통령선거 개표자료</a></li>
+<li><a href="http://www.nec.go.kr/portal/bbs/view/B0000338/4739.do?menuNo=200061&amp;searchYear=&amp;searchMonth=&amp;searchWrd=%EC%A0%9C18%EB%8C%80&amp;searchCnd=3&amp;viewType=&amp;pageIndex=2&amp;section=&amp;searchOption1=">제18대 국회의원선거 개표자료</a></li>
+<li>국회의원</li>
+<li><a href="http://www.nec.go.kr/portal/bbs/view/B0000338/4793.do?menuNo=200061&amp;searchYear=&amp;searchMonth=&amp;searchWrd=%EA%B5%AD%ED%9A%8C%EC%9D%98%EC%9B%90&amp;searchCnd=3&amp;viewType=&amp;pageIndex=2&amp;section=&amp;searchOption1=">제19대 국회의원선거 투표구별 개표자료</a></li>
+<li><a href="http://www.nec.go.kr/portal/bbs/view/B0000338/33643.do?menuNo=200061&amp;searchYear=&amp;searchMonth=&amp;searchWrd=&amp;searchCnd=&amp;viewType=&amp;pageIndex=1&amp;section=&amp;searchOption1=">제20대 국회의원선거 투표구별 개표결과 자료</a></li>
+<li>지방선거</li>
+<li><a href="http://www.nec.go.kr/portal/bbs/view/B0000338/4730.do?menuNo=200061&amp;searchYear=&amp;searchMonth=&amp;searchWrd=%EC%A0%84%EA%B5%AD%EB%8F%99%EC%8B%9C%EC%A7%80%EB%B0%A9%EC%84%A0%EA%B1%B0&amp;searchCnd=3&amp;viewType=&amp;pageIndex=2&amp;section=&amp;searchOption1=">제5회 전국동시지방선거 읍면동별 개표자료</a></li>
+<li><a href="http://www.nec.go.kr/portal/bbs/view/B0000338/25013.do?menuNo=200061&amp;searchYear=2015&amp;searchMonth=01&amp;searchWrd=&amp;searchCnd=&amp;viewType=&amp;pageIndex=1&amp;section=&amp;searchOption1=">제6회 전국동시지방선거 읍면동별 개표결과</a></li>
+</ul>
+<h2 id="제20대-국회의원-선거-쟁점-survey-fail01-survey-fail02">제20대 국회의원 선거 쟁점 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h2>
+<p>갤럽 및 이와 유사한 여론조사 방법론을 동원한 여론조사 전문기관들이 대통령 선거를 비롯한 다양한 선거에서 점쟁이(?), 쪽집게(?) 노릇을 톡톡히 했다. 하지만, 이번 제20대 총선에서 새누리 압승으로 예상한 것이 틀렸고, 제1당의 위치도 내려놓게 되었다.</p>
+<p><img src="fig/lawmaker-overview.png" alt="제20대 총선 개요" width="70%" /></p>
+<h3 id="여론조사-데이터-사례">여론조사 데이터 (사례)</h3>
+<p>선거법에 따라 일정 표본크기 이상을 뽑아야만 여론조사를 공표할 수 있다는 규정에 따라 500개 이상 표본을 뽑아야하고, 특정지역이라는 제약조건을 만족시켜야 되고, 무작위라는 속성도 만족시켜야 되고, 비용도 줄여야 되는 여러 조건과 법규정을 준수해야 하기 때문에 KT 유선 집전화를 사용하여 여론조사에 사용되는 표본이 추출되고 이를 기반으로 하여 여론조사를 실시한다.</p>
+<p>| 구분 | XX일보 | YY일보 | ZZ일보 | KK일보 | |——–|————|———-|————-|————-| | 표본크기 | 1,000 | 511 | 500 | 600 | | 응답율 | 4.4% | 2.8% | 7.7% | 4.0% | | 조사방법 | 휴대전화/ ARS | 유무선전화 | RDD(임의걸기) | 유선전화 |<br />
+| 조사날짜 | 2/20일&quot; | 3/15일 | 3/19 | 4/1 | | 조사시간 | 11시~20시 | 09시~22시 |<br />
+10시~22시 |<br />
+14시~19시&quot; | | 조사기관 | OO리서치 | 리얼미터 | 리서치앤리서치 | 엠브레인 |</p>
+<p>ARS: 전화자동응답전화, RDD: Random Digit Dialing</p>
+<p><a href="https://www.nesdc.go.kr/">중앙선거관리위원회 - 중앙선거 여론조사 공정심의위원회</a></p>
+<h2 id="투표율">투표율</h2>
+<h4 id="사전투표율">사전투표율</h4>
+<p><img src="fig/pre-voting-survey.png" alt="사전 투표율" width="70%" /></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">구 분</th>
+<th align="left">제19대</th>
+<th align="left">제20대(예측)</th>
+<th align="left">증감율</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">전체</td>
+<td align="left">65.6%</td>
+<td align="left">70.8%</td>
+<td align="left">5.2%</td>
+</tr>
+<tr class="even">
+<td align="left">19-29세</td>
+<td align="left">48.2%</td>
+<td align="left">63.3%</td>
+<td align="left">15.1%</td>
+</tr>
+<tr class="odd">
+<td align="left">30대</td>
+<td align="left">64.2%</td>
+<td align="left">70.5%</td>
+<td align="left">6.3%</td>
+</tr>
+<tr class="even">
+<td align="left">40대</td>
+<td align="left">69.7%</td>
+<td align="left">70.6%</td>
+<td align="left">0.9%</td>
+</tr>
+<tr class="odd">
+<td align="left">50대</td>
+<td align="left">71.9%</td>
+<td align="left">73.5%</td>
+<td align="left">1.6%</td>
+</tr>
+<tr class="even">
+<td align="left">60세이상</td>
+<td align="left">72.1%</td>
+<td align="left">74.4%</td>
+<td align="left">2.3%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="선거구-현황">선거구 현황</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">구 분</th>
+<th align="left">제19대</th>
+<th align="left">제20대(예측)</th>
+<th align="left">제20대(실제)</th>
+<th align="left">증감율</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">전체</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">5.2%</td>
+</tr>
+<tr class="even">
+<td align="left">19-29세</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">15.1%</td>
+</tr>
+<tr class="odd">
+<td align="left">30대</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">6.3%</td>
+</tr>
+<tr class="even">
+<td align="left">40대</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">0.9%</td>
+</tr>
+<tr class="odd">
+<td align="left">50대</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">1.6%</td>
+</tr>
+<tr class="even">
+<td align="left">60세이상</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">2.3%</td>
+</tr>
+</tbody>
+</table>
+<p><a href="http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061">제20대 국회의원선거 투표구별 개표결과 자료</a></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="http://www.mediatoday.co.kr/?mod=news&amp;act=articleView&amp;idxno=129177">실제보다 여당이 높게 보이는 여론조사의 비밀</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="http://www.mediatoday.co.kr/?mod=news&amp;act=articleView&amp;idxno=129414">4‧13 총선, 여론조사가 빗나간 세 가지 이유</a><a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

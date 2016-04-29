@@ -31,7 +31,8 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [투표의 역사](00-vote-history.html) 
 1. [과학기술과 함께 하는 패러다임의 변화](01-vote-paradigm.html)
 1. [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
-1. [선거와 관련된 통계](03-vote-stat.html)
+1. [선거 데이터](03-vote-data.html)
+1. [여론조사](04-vote-survey.html)
 
 
 

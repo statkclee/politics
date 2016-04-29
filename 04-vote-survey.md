@@ -1,0 +1,322 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 20대 총선
+subtitle: 선거 데이터
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+
+~~~{.r}
+source("tools/chunk-options.R")
+library(googleVis)
+op <- options(gvis.plot.tag='chart')
+~~~
+
+## [선거정보](https://ko.wikipedia.org/wiki/대한민국의_선거)
+
+선거 정보에는 [대통령선거](https://ko.wikipedia.org/wiki/대한민국의_대통령_선거), 
+[국회의원선거](https://ko.wikipedia.org/wiki/대한민국_제20대_국회의원_선거), 
+[지방선거](https://ko.wikipedia.org/wiki/대한민국의_지방_선거)가 포함된다. 지방선거는
+지방의회 의원과 함께 지방자치단체장을 선출한다. __보통·평등·직접·비밀선거__ 기준에 의해 국민의 대표자를 선출한다. 
+
+### 역대 선거정보
+
+역대 선거정보는 중앙선거관리위원회 [선거통계시스템](http://info.nec.go.kr/)에서 그래픽 유저 인터페이스를 통해 확인할 수 있다.
+추가로, 
+
+* [선거관리위원회 대표 홈페이지](http://www.nec.go.kr)에서  `분야별 정보` > `선거정보` > `자료실`
+* [선거통계시스템 대표 홈페이지](http://info.nec.go.kr)에서 `홈페이지 자료실` 배너를 클릭
+
+선거관리위원회 대표 홈페이지나, 선거통계시스템 대표 홈페이지를 클릭하면 동일하게 [자료실](http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061)로 연결된다.
+
+### 역대 선거일정
+
+대통령 임기는 5년이고, 국회의원과 지방의회 및 자치장 임기는 4년이다. 대통령의 경우 15대부터, 국회의원의 경우
+17대부터, 지방의회의 경우 제3회 전국동시지방선거를 시각화하면 다음과 같다.
+
+
+~~~{.r}
+election.dat <- data.frame(type=c("대통령","대통령","대통령","대통령",
+                                  "국회의원","국회의원","국회의원","국회의원",
+                                  "지방선거","지방선거","지방선거","지방선거"),
+                  subtype=c("15대", "16대", "17대", "18대",
+                            "17대", "18대", "19대", "20대",
+                            "3회","4회","5회","6회"),
+                  start=as.POSIXct(c("1997-12-18","2002-12-19","2007-12-19","2012-12-19",
+                                     "2004-5-30","2008-5-30", "2012-5-30","2016-5-30",
+                                     "2002-7-1", "2006-7-1", "2010-7-1","2014-7-1")),
+                    end=as.POSIXct(c("2002-12-18","2007-12-18","2012-12-19","2017-12-19",
+                                     "2008-5-29", "2012-5-29","2016-5-29","2020-5-29",
+                                     "2006-6-30", "2010-6-30", "2014-6-30","2018-6-30")))
+
+plot(
+  gvisTimeline(data=election.dat, 
+               rowlabel="type", barlabel="subtype", 
+               start="start", end="end")
+)
+~~~
+
+<!-- Timeline generated in R 3.2.4 by googleVis 0.5.10 package -->
+<!-- Fri Apr 29 13:40:09 2016 -->
+
+
+<!-- jsHeader -->
+<script type="text/javascript">
+ 
+// jsData 
+function gvisDataTimelineID466d548d7a24 () {
+var data = new google.visualization.DataTable();
+var datajson =
+[
+ [
+ "대통령",
+"15대",
+new Date(1997,11,18,0,0,0),
+new Date(2002,11,18,0,0,0) 
+],
+[
+ "대통령",
+"16대",
+new Date(2002,11,19,0,0,0),
+new Date(2007,11,18,0,0,0) 
+],
+[
+ "대통령",
+"17대",
+new Date(2007,11,19,0,0,0),
+new Date(2012,11,19,0,0,0) 
+],
+[
+ "대통령",
+"18대",
+new Date(2012,11,19,0,0,0),
+new Date(2017,11,19,0,0,0) 
+],
+[
+ "국회의원",
+"17대",
+new Date(2004,4,30,0,0,0),
+new Date(2008,4,29,0,0,0) 
+],
+[
+ "국회의원",
+"18대",
+new Date(2008,4,30,0,0,0),
+new Date(2012,4,29,0,0,0) 
+],
+[
+ "국회의원",
+"19대",
+new Date(2012,4,30,0,0,0),
+new Date(2016,4,29,0,0,0) 
+],
+[
+ "국회의원",
+"20대",
+new Date(2016,4,30,0,0,0),
+new Date(2020,4,29,0,0,0) 
+],
+[
+ "지방선거",
+"3회",
+new Date(2002,6,1,0,0,0),
+new Date(2006,5,30,0,0,0) 
+],
+[
+ "지방선거",
+"4회",
+new Date(2006,6,1,0,0,0),
+new Date(2010,5,30,0,0,0) 
+],
+[
+ "지방선거",
+"5회",
+new Date(2010,6,1,0,0,0),
+new Date(2014,5,30,0,0,0) 
+],
+[
+ "지방선거",
+"6회",
+new Date(2014,6,1,0,0,0),
+new Date(2018,5,30,0,0,0) 
+] 
+];
+data.addColumn('string','type');
+data.addColumn('string','subtype');
+data.addColumn('datetime','start');
+data.addColumn('datetime','end');
+data.addRows(datajson);
+return(data);
+}
+ 
+// jsDrawChart
+function drawChartTimelineID466d548d7a24() {
+var data = gvisDataTimelineID466d548d7a24();
+var options = {};
+options["width"] =    600;
+options["height"] =    200;
+
+    var chart = new google.visualization.Timeline(
+    document.getElementById('TimelineID466d548d7a24')
+    );
+    chart.draw(data,options);
+    
+
+}
+  
+ 
+// jsDisplayChart
+(function() {
+var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+var chartid = "timeline";
+  
+// Manually see if chartid is in pkgs (not all browsers support Array.indexOf)
+var i, newPackage = true;
+for (i = 0; newPackage && i < pkgs.length; i++) {
+if (pkgs[i] === chartid)
+newPackage = false;
+}
+if (newPackage)
+  pkgs.push(chartid);
+  
+// Add the drawChart function to the global list of callbacks
+callbacks.push(drawChartTimelineID466d548d7a24);
+})();
+function displayChartTimelineID466d548d7a24() {
+  var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+  var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+  window.clearTimeout(window.__gvisLoad);
+  // The timeout is set to 100 because otherwise the container div we are
+  // targeting might not be part of the document yet
+  window.__gvisLoad = setTimeout(function() {
+  var pkgCount = pkgs.length;
+  google.load("visualization", "1", { packages:pkgs, callback: function() {
+  if (pkgCount != pkgs.length) {
+  // Race condition where another setTimeout call snuck in after us; if
+  // that call added a package, we must not shift its callback
+  return;
+}
+while (callbacks.length > 0)
+callbacks.shift()();
+} });
+}, 100);
+}
+ 
+// jsFooter
+</script>
+ 
+<!-- jsChart -->  
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID466d548d7a24"></script>
+ 
+<!-- divChart -->
+  
+<div id="TimelineID466d548d7a24" 
+  style="width: 600; height: 200;">
+</div>
+
+### 일정데이터 시각화
+
+* [googleVis](https://cran.r-project.org/web/packages/googleVis/) : gvisTimeline 함수
+* [plotrix](https://cran.r-project.org/web/packages/plotrix/index.html) : gantt.chart 함수
+* ggplot 계열
+  * [Gantt style time line plot (in base R) - Stack Overflow](http://stackoverflow.com/questions/9862519/gantt-style-time-line-plot-in-base-r)
+  * [Chronological timeline with points in time and format date](http://stackoverflow.com/questions/20695311/chronological-timeline-with-points-in-time-and-format-date)
+
+### 역대 선거데이터 스프레드쉬트 형식
+
+* 대통령
+  * [제17대 대통령선거 개표자료](http://www.nec.go.kr/portal/bbs/view/B0000338/4742.do?menuNo=200061&searchYear=&searchMonth=&searchWrd=%EB%8C%80%ED%86%B5%EB%A0%B9&searchCnd=3&viewType=&pageIndex=2&section=&searchOption1=)
+  * [제18대 국회의원선거 개표자료](http://www.nec.go.kr/portal/bbs/view/B0000338/4739.do?menuNo=200061&searchYear=&searchMonth=&searchWrd=%EC%A0%9C18%EB%8C%80&searchCnd=3&viewType=&pageIndex=2&section=&searchOption1=)
+* 국회의원
+  * [제19대 국회의원선거 투표구별 개표자료](http://www.nec.go.kr/portal/bbs/view/B0000338/4793.do?menuNo=200061&searchYear=&searchMonth=&searchWrd=%EA%B5%AD%ED%9A%8C%EC%9D%98%EC%9B%90&searchCnd=3&viewType=&pageIndex=2&section=&searchOption1=)
+  * [제20대 국회의원선거 투표구별 개표결과 자료](http://www.nec.go.kr/portal/bbs/view/B0000338/33643.do?menuNo=200061&searchYear=&searchMonth=&searchWrd=&searchCnd=&viewType=&pageIndex=1&section=&searchOption1=)
+* 지방선거
+  * [제5회 전국동시지방선거 읍면동별 개표자료](http://www.nec.go.kr/portal/bbs/view/B0000338/4730.do?menuNo=200061&searchYear=&searchMonth=&searchWrd=%EC%A0%84%EA%B5%AD%EB%8F%99%EC%8B%9C%EC%A7%80%EB%B0%A9%EC%84%A0%EA%B1%B0&searchCnd=3&viewType=&pageIndex=2&section=&searchOption1=)
+  * [제6회 전국동시지방선거 읍면동별 개표결과](http://www.nec.go.kr/portal/bbs/view/B0000338/25013.do?menuNo=200061&searchYear=2015&searchMonth=01&searchWrd=&searchCnd=&viewType=&pageIndex=1&section=&searchOption1=)
+
+
+## 제20대 국회의원 선거 쟁점 [^survey-fail01] [^survey-fail02]
+
+갤럽 및 이와 유사한 여론조사 방법론을 동원한 여론조사 전문기관들이 대통령 선거를 비롯한
+다양한 선거에서 점쟁이(?), 쪽집게(?) 노릇을 톡톡히 했다. 하지만, 이번 제20대 총선에서 
+새누리 압승으로 예상한 것이 틀렸고, 제1당의 위치도 내려놓게 되었다.
+
+[^survey-fail01]: [실제보다 여당이 높게 보이는 여론조사의 비밀](http://www.mediatoday.co.kr/?mod=news&act=articleView&idxno=129177)
+[^survey-fail02]: [4‧13 총선, 여론조사가 빗나간 세 가지 이유](http://www.mediatoday.co.kr/?mod=news&act=articleView&idxno=129414)
+
+<img src="fig/lawmaker-overview.png" alt="제20대 총선 개요" width="70%" />
+
+
+
+
+
+
+
+
+
+
+
+
+### 여론조사 데이터 (사례)
+
+선거법에 따라 일정 표본크기 이상을 뽑아야만 여론조사를 공표할 수 있다는 규정에 따라 500개 이상
+표본을 뽑아야하고, 특정지역이라는 제약조건을 만족시켜야 되고, 무작위라는 속성도 만족시켜야 되고,
+비용도 줄여야 되는 여러 조건과 법규정을 준수해야 하기 때문에 KT 유선 집전화를 사용하여 
+여론조사에 사용되는 표본이 추출되고 이를 기반으로 하여 여론조사를 실시한다.
+
+| 구분    | XX일보      |   YY일보  | ZZ일보       |  KK일보      |
+|--------|------------|----------|-------------|-------------|
+| 표본크기	 | 1,000	  |   511	 |  500        |  600        |
+| 응답율	 |  4.4%	  |   2.8%	 |  7.7%       |  4.0%       |
+| 조사방법	 | 휴대전화/
+ARS |  유무선전화 |
+ RDD(임의걸기) |  유선전화      |    
+| 조사날짜	 | 2/20일"	  |  3/15일	 | 3/19        |  4/1        |
+| 조사시간	 | 11시~20시   | 
+09시~22시 |  
+10시~22시   |   
+14시~19시" |
+| 조사기관	 | OO리서치	  |  리얼미터	 | 리서치앤리서치  |  엠브레인     |
+
+ARS: 전화자동응답전화, RDD: Random Digit Dialing
+
+
+[중앙선거관리위원회 - 중앙선거 여론조사 공정심의위원회](https://www.nesdc.go.kr/)
+
+
+
+
+## 투표율
+
+#### 사전투표율
+
+<img src="fig/pre-voting-survey.png" alt="사전 투표율" width="70%" />
+
+|  구 분  |  제19대   | 제20대(예측) |  증감율 |
+|---------|---------|-----------|--------|
+| 전체	  |  65.6%	|70.8%	    |  5.2%  |
+| 19-29세  |  48.2%	|63.3%	    |  15.1% |
+| 30대	  |  64.2%	|70.5%	    |  6.3%  |
+| 40대	  |  69.7%	|70.6%	    |  0.9%  |
+| 50대	  |  71.9%	|73.5%	    |  1.6%  |
+| 60세이상  |  72.1%	|74.4%	    |  2.3%  |
+
+### 선거구 현황
+
+|  구 분  |  제19대   | 제20대(예측) |제20대(실제)|  증감율 |
+|---------|---------|-----------|----------|-------|
+| 전체	  |     	|    	    |          | 5.2%  |
+| 19-29세  |     	|    	    |          | 15.1% |
+| 30대	  |     	|    	    |          | 6.3%  |
+| 40대	  |     	|    	    |          | 0.9%  |
+| 50대	  |     	|    	    |          | 1.6%  |
+| 60세이상  |     	|    	    |          | 2.3%  |
+
+[제20대 국회의원선거 투표구별 개표결과 자료](http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061)
+
