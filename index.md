@@ -33,7 +33,8 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
 1. [선거 데이터](03-vote-data.html)
 1. [여론조사](04-vote-survey.html)
-1. [인구통계학적 분석](05-vote-demographic.html)
+1. [인구통계 분석](05-vote-demographic.html)
+1. [선거구](06-vote-precinct.html)
 
 
 

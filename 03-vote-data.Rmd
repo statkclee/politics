@@ -38,7 +38,7 @@ op <- options(gvis.plot.tag='chart')
 대통령 임기는 5년이고, 국회의원과 지방의회 및 자치장 임기는 4년이다. 대통령의 경우 15대부터, 국회의원의 경우
 17대부터, 지방의회의 경우 제3회 전국동시지방선거를 시각화하면 다음과 같다.
 
-```{r ComboExample, results='asis', tidy=FALSE}
+```{r Timeline, results='asis', tidy=FALSE}
 election.dat <- data.frame(type=c("대통령","대통령","대통령","대통령",
                                   "국회의원","국회의원","국회의원","국회의원",
                                   "지방선거","지방선거","지방선거","지방선거"),
