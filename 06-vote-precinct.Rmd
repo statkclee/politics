@@ -1,7 +1,7 @@
 ---
 layout: page
-title: ë°ì´í„° ê³¼í•™ìê°€ ë°”ë¼ë³¸ 20ëŒ€ ì´ì„ 
-subtitle: ì¸êµ¬ í†µê³„(demography)
+title: µ¥ÀÌÅÍ °úÇĞÀÚ°¡ ¹Ù¶óº» 20´ë ÃÑ¼±
+subtitle: ÀÎ±¸ Åë°è(demography)
 output:
   html_document: 
     keep_md: yes
@@ -10,43 +10,67 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
+``` {r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
 library(googleVis)
 op <- options(gvis.plot.tag='chart')
+#knitr::opts_chunk$set(cache=TRUE)
 ```
 
-## ì„ ê±°êµ¬
 
-ì„ ê±°êµ¬ íšì • ê´€ë ¨ ì´ìŠˆ
+## ¼±°Å±¸
+
+¼±°Å±¸ È¹Á¤ °ü·Ã ÀÌ½´
+
+## Á¦20´ë ¼±°Å±¸ 
+
+Á¦20´ë ¼±°Å±¸ µ¥ÀÌÅÍ´Â ÆÀÆ÷Æş [GitHub](https://github.com/southkorea/southkorea-maps)¿¡¼­ °¡Á®¿Â´Ù. GeoJSON°ú 
+Topo JSON Çü½ÄÀ» ¸ğµÎ Áö¿øÇÑ´Ù.
+`ogrListLayers` ÇÔ¼ö¸¦ ÅëÇØ¼­ »ç¿ëÇÒ `layer=`¸¦ È®ÀÎÇÑ´Ù.
+
+``` {r korea_precinct, results='asis', tidy=FALSE}
+library(rgeos)
+library(rgdal) # gdal > 1.11.0
+library(ggplot2)
+
+ogrListLayers("../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json")
+# precincts
+ 
+ogrInfo("../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json", "precincts")
+
+map <-  readOGR(dsn="../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json", layer="precincts")
+ 
+plot(map)
+```
 
 
 
-#### ì‚¬ì „íˆ¬í‘œìœ¨
 
-<img src="fig/pre-voting-survey.png" alt="ì‚¬ì „ íˆ¬í‘œìœ¨" width="70%" />
+#### »çÀüÅõÇ¥À²
 
-|  êµ¬ ë¶„  |  ì œ19ëŒ€   | ì œ20ëŒ€(ì˜ˆì¸¡) |  ì¦ê°ìœ¨ |
+<img src="fig/pre-voting-survey.png" alt="»çÀü ÅõÇ¥À²" width="70%" />
+
+|  ±¸ ºĞ  |  Á¦19´ë   | Á¦20´ë(¿¹Ãø) |  Áõ°¨À² |
 |---------|---------|-----------|--------|
-| ì „ì²´    |  65.6%  |70.8%      |  5.2%  |
-| 19-29ì„¸  |  48.2%  |63.3%      |  15.1% |
-| 30ëŒ€   |  64.2%  |70.5%      |  6.3%  |
-| 40ëŒ€   |  69.7%  |70.6%      |  0.9%  |
-| 50ëŒ€   |  71.9%  |73.5%      |  1.6%  |
-| 60ì„¸ì´ìƒ  |  72.1% |74.4%      |  2.3%  |
+| ÀüÃ¼    |  65.6%  |70.8%      |  5.2%  |
+| 19-29¼¼  |  48.2%  |63.3%      |  15.1% |
+| 30´ë   |  64.2%  |70.5%      |  6.3%  |
+| 40´ë   |  69.7%  |70.6%      |  0.9%  |
+| 50´ë   |  71.9%  |73.5%      |  1.6%  |
+| 60¼¼ÀÌ»ó  |  72.1% |74.4%      |  2.3%  |
 
-### ì„ ê±°êµ¬ í˜„í™©
+### ¼±°Å±¸ ÇöÈ²
 
-|  êµ¬ ë¶„  |  ì œ19ëŒ€   | ì œ20ëŒ€(ì˜ˆì¸¡) |ì œ20ëŒ€(ì‹¤ì œ)|  ì¦ê°ìœ¨ |
+|  ±¸ ºĞ  |  Á¦19´ë   | Á¦20´ë(¿¹Ãø) |Á¦20´ë(½ÇÁ¦)|  Áõ°¨À² |
 |---------|---------|-----------|----------|-------|
-| ì „ì²´    |       |         |          | 5.2%  |
-| 19-29ì„¸  |       |         |          | 15.1% |
-| 30ëŒ€   |       |         |          | 6.3%  |
-| 40ëŒ€   |       |         |          | 0.9%  |
-| 50ëŒ€   |       |         |          | 1.6%  |
-| 60ì„¸ì´ìƒ  |      |         |          | 2.3%  |
+| ÀüÃ¼    |       |         |          | 5.2%  |
+| 19-29¼¼  |       |         |          | 15.1% |
+| 30´ë   |       |         |          | 6.3%  |
+| 40´ë   |       |         |          | 0.9%  |
+| 50´ë   |       |         |          | 1.6%  |
+| 60¼¼ÀÌ»ó  |      |         |          | 2.3%  |
 
-[ì œ20ëŒ€ êµ­íšŒì˜ì›ì„ ê±° íˆ¬í‘œêµ¬ë³„ ê°œí‘œê²°ê³¼ ìë£Œ](http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061)
+[Á¦20´ë ±¹È¸ÀÇ¿ø¼±°Å ÅõÇ¥±¸º° °³Ç¥°á°ú ÀÚ·á](http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061)
 
 
 
