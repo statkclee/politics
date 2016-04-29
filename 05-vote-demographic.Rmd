@@ -10,7 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE}
+```{r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
 library(googleVis)
 op <- options(gvis.plot.tag='chart')

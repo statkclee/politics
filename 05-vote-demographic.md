@@ -11,11 +11,6 @@ mainfont: NanumGothic
 ---
 
 
-~~~{.r}
-source("tools/chunk-options.R")
-library(googleVis)
-op <- options(gvis.plot.tag='chart')
-~~~
 
 
 ## 투표율

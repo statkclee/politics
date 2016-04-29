@@ -38,9 +38,6 @@
         <div class="col-md-10 col-md-offset-1">
           <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
           <h2 class="subtitle">선거 데이터</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">source</span>(<span class="st">&quot;tools/chunk-options.R&quot;</span>)
-<span class="kw">library</span>(googleVis)
-op &lt;-<span class="st"> </span><span class="kw">options</span>(<span class="dt">gvis.plot.tag=</span><span class="st">&#39;chart&#39;</span>)</code></pre></div>
 <h2 id="선거정보"><a href="https://ko.wikipedia.org/wiki/대한민국의_선거">선거정보</a></h2>
 <p>선거 정보에는 <a href="https://ko.wikipedia.org/wiki/대한민국의_대통령_선거">대통령선거</a>, <a href="https://ko.wikipedia.org/wiki/대한민국_제20대_국회의원_선거">국회의원선거</a>, <a href="https://ko.wikipedia.org/wiki/대한민국의_지방_선거">지방선거</a>가 포함된다. 지방선거는 지방의회 의원과 함께 지방자치단체장을 선출한다. <strong>보통·평등·직접·비밀선거</strong> 기준에 의해 국민의 대표자를 선출한다.</p>
 <h3 id="역대-선거정보">역대 선거정보</h3>
@@ -71,12 +68,12 @@ op &lt;-<span class="st"> </span><span class="kw">options</span>(<span class="dt
                <span class="dt">start=</span><span class="st">&quot;start&quot;</span>, <span class="dt">end=</span><span class="st">&quot;end&quot;</span>)
 )</code></pre></div>
 <!-- Timeline generated in R 3.2.4 by googleVis 0.5.10 package -->
-<!-- Fri Apr 29 13:41:18 2016 -->
+<!-- Fri Apr 29 15:51:49 2016 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataTimelineID46b247144a09 () {
+function gvisDataTimelineID4a166347770c () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -162,14 +159,14 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartTimelineID46b247144a09() {
-var data = gvisDataTimelineID46b247144a09();
+function drawChartTimelineID4a166347770c() {
+var data = gvisDataTimelineID4a166347770c();
 var options = {};
 options["width"] =    600;
 options["height"] =    200;
 
     var chart = new google.visualization.Timeline(
-    document.getElementById('TimelineID46b247144a09')
+    document.getElementById('TimelineID4a166347770c')
     );
     chart.draw(data,options);
     
@@ -193,9 +190,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartTimelineID46b247144a09);
+callbacks.push(drawChartTimelineID4a166347770c);
 })();
-function displayChartTimelineID46b247144a09() {
+function displayChartTimelineID4a166347770c() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -218,9 +215,9 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID46b247144a09"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID4a166347770c"></script>
 <!-- divChart -->
-<div id="TimelineID46b247144a09" style="width: 600; height: 200;">
+<div id="TimelineID4a166347770c" style="width: 600; height: 200;">
 
 </div>
 <h3 id="일정데이터-시각화">일정데이터 시각화</h3>

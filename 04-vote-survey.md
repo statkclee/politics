@@ -11,11 +11,6 @@ mainfont: NanumGothic
 ---
 
 
-~~~{.r}
-source("tools/chunk-options.R")
-library(googleVis)
-op <- options(gvis.plot.tag='chart')
-~~~
 
 
 ## 제20대 국회의원 선거 쟁점 [^survey-fail01] [^survey-fail02]

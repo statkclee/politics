@@ -11,11 +11,6 @@ mainfont: NanumGothic
 ---
 
 
-~~~{.r}
-source("tools/chunk-options.R")
-library(googleVis)
-op <- options(gvis.plot.tag='chart')
-~~~
 
 ## [선거정보](https://ko.wikipedia.org/wiki/대한민국의_선거)
 
@@ -62,14 +57,14 @@ plot(
 ~~~
 
 <!-- Timeline generated in R 3.2.4 by googleVis 0.5.10 package -->
-<!-- Fri Apr 29 13:41:18 2016 -->
+<!-- Fri Apr 29 15:51:49 2016 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataTimelineID46b247144a09 () {
+function gvisDataTimelineID4a166347770c () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -155,14 +150,14 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartTimelineID46b247144a09() {
-var data = gvisDataTimelineID46b247144a09();
+function drawChartTimelineID4a166347770c() {
+var data = gvisDataTimelineID4a166347770c();
 var options = {};
 options["width"] =    600;
 options["height"] =    200;
 
     var chart = new google.visualization.Timeline(
-    document.getElementById('TimelineID46b247144a09')
+    document.getElementById('TimelineID4a166347770c')
     );
     chart.draw(data,options);
     
@@ -186,9 +181,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartTimelineID46b247144a09);
+callbacks.push(drawChartTimelineID4a166347770c);
 })();
-function displayChartTimelineID46b247144a09() {
+function displayChartTimelineID4a166347770c() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -212,11 +207,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID46b247144a09"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID4a166347770c"></script>
  
 <!-- divChart -->
   
-<div id="TimelineID46b247144a09" 
+<div id="TimelineID4a166347770c" 
   style="width: 600; height: 200;">
 </div>
 
