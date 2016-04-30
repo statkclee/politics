@@ -14,7 +14,8 @@ mainfont: NanumGothic
 source("tools/chunk-options.R")
 library(googleVis)
 op <- options(gvis.plot.tag='chart')
-source("/Users/statkclee/Dropbox/01_data_science/00-package.R")
+#source("/Users/statkclee/Dropbox/01_data_science/00-package.R")
+setwd("/Users/statkclee/swc/politics")
 #knitr::opts_chunk$set(cache=TRUE) 
 
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
@@ -96,7 +97,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #================================================================
 # 1. 데이터 가져오기
 #================================================================
-
+library(googlesheets)
 glist <- gs_ls()
 # glist %>% glimpse()
 
@@ -108,7 +109,7 @@ v.dat <- gs_read(t.dat, ws='sample')
 
 `googleVis`에 포함된 생키 도해 함수 `gvisSankey`를 사용하여 시각화한다.
 
-``` {r sankey_data, tidy=FALSE}
+``` {r sankey_plot, results='asis', tidy=FALSE}
 library(googleVis)
 
 plot(
