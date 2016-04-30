@@ -14,7 +14,8 @@ mainfont: NanumGothic
 source("tools/chunk-options.R")
 library(googleVis)
 op <- options(gvis.plot.tag='chart')
-#knitr::opts_chunk$set(cache=TRUE)
+source("/Users/statkclee/Dropbox/01_data_science/00-package.R")
+#knitr::opts_chunk$set(cache=TRUE) 
 
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   require(grid)
@@ -83,7 +84,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 # 1. 데이터 가져오기
 #================================================================
 txt_type <- c(rep('text',4),rep('numeric', 5))
-polls.rd <- read_excel("party_polls.xlsx", sheet='Sheet2', col_type=txt_type)
+polls.rd <- read_excel("data/party_polls.xlsx", sheet='Sheet2', col_type=txt_type)
 polls.rd
 colnames(polls.rd) <- c("firm","year","month", "day","giho1","giho2","giho3","giho4","etc")
 ```
@@ -120,7 +121,7 @@ polls.avg <- polls.rd %>% group_by(date) %>%
 
 `ggplot2` 팩키지를 활용하여 정당별 지지율 정보를 시각화한다.
 
-```{r approval_rating_transform, tidy=FALSE}
+```{r approval_rating_visualization, tidy=FALSE}
 #================================================================
 # 3. 데이터 시각화
 #================================================================
