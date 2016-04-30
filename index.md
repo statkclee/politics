@@ -19,8 +19,6 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 > <iframe width="320" height="200" src="https://www.youtube.com/embed/TmnipWTyIpg" frameborder="0" allowfullscreen></iframe>  
 > 박용진 더불어민주당 대변인 - 서울 강북구 삼각산초 강연 중
 
-
-
 ## 데이터과학자가 바라본 제20대 총선
 
 > ### 추론에서 시각화로.. {.callout}
@@ -35,6 +33,23 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [여론조사](04-vote-survey.html)
 1. [인구통계 분석](05-vote-demographic.html)
 1. [선거구](06-vote-precinct.html)
+1. [여론조사 지지율](07-vote-approval-rating.html)
 
+> ### xwMOOC 오픈 교재
+> 
+> - [컴퓨터 과학 언플러그드](http://unplugged.xwmooc.org)  
+> - [리보그](http://reeborg.xwmooc.org)  
+>      - [러플](http://rur-ple.xwmooc.org)  
+> - [파이썬 거북이](http://swcarpentry.github.io/python-novice-turtles/index-kr.html)  
+> - [정보과학을 위한 파이썬](http://python.xwmooc.org)  
+> - [소프트웨어 카펜트리 5.3](http://statkclee.github.io/swcarpentry-version-5-3-new/)
+>     - [소프트웨어 카펜트리 5.2](http://swcarpentry.xwmooc.org)
+> - [통계적 사고](http://think-stat.xwmooc.org/)
+> - [IoT 오픈 하드웨어(라즈베리 파이)](http://raspberry-pi.xwmooc.org/)
+>     - [$100 오픈 컴퓨터](http://computer.xwmooc.org/)   
+>     - [$100 오픈 슈퍼컴퓨터](http://computers.xwmooc.org/)
+> - [R 데이터과학](http://data-science.xwmooc.org/)
+> - [R 팩키지](http://r-pkgs.xwmooc.org/)
+> - [기호 수학(Symbolic Math)](http://sympy.xwmooc.org/)
 
 
