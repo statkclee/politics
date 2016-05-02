@@ -35,6 +35,8 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [선거구](06-vote-precinct.html)
 1. [여론조사 지지율](07-vote-approval-rating.html)
     1. [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
+1. [투표율 분석](08-vote-ballots.html)
+
 
 > ### xwMOOC 오픈 교재
 > 
