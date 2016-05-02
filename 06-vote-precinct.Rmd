@@ -1,7 +1,7 @@
 ---
 layout: page
-title: µ•¿Ã≈Õ ∞˙«–¿⁄∞° πŸ∂Û∫ª 20¥Î √—º±
-subtitle: ¿Œ±∏ ≈Î∞Ë(demography)
+title: Îç∞Ïù¥ÌÑ∞ Í≥ºÌïôÏûêÍ∞Ä Î∞îÎùºÎ≥∏ 20ÎåÄ Ï¥ùÏÑ†
+subtitle: Ïù∏Íµ¨ ÌÜµÍ≥Ñ(demography)
 output:
   html_document: 
     keep_md: yes
@@ -18,15 +18,15 @@ op <- options(gvis.plot.tag='chart')
 ```
 
 
-## º±∞≈±∏
+## ÏÑ†Í±∞Íµ¨
 
-º±∞≈±∏ »π¡§ ∞¸∑√ ¿ÃΩ¥
+ÏÑ†Í±∞Íµ¨ ÌöçÏ†ï Í¥ÄÎ†® Ïù¥Ïäà
 
-## ¡¶20¥Î º±∞≈±∏ 
+## Ï†ú20ÎåÄ ÏÑ†Í±∞Íµ¨ 
 
-¡¶20¥Î º±∞≈±∏ µ•¿Ã≈Õ¥¬ ∆¿∆˜∆˛ [GitHub](https://github.com/southkorea/southkorea-maps)ø°º≠ ∞°¡Æø¬¥Ÿ. GeoJSON∞˙ 
-Topo JSON «¸Ωƒ¿ª ∏µŒ ¡ˆø¯«—¥Ÿ.
-`ogrListLayers` «‘ºˆ∏¶ ≈Î«ÿº≠ ªÁøÎ«“ `layer=`∏¶ »Æ¿Œ«—¥Ÿ.
+Ï†ú20ÎåÄ ÏÑ†Í±∞Íµ¨ Îç∞Ïù¥ÌÑ∞Îäî ÌåÄÌè¨ÌêÅ [GitHub](https://github.com/southkorea/southkorea-maps)ÏóêÏÑú Í∞ÄÏ†∏Ïò®Îã§. GeoJSONÍ≥º 
+Topo JSON ÌòïÏãùÏùÑ Î™®Îëê ÏßÄÏõêÌïúÎã§.
+`ogrListLayers` Ìï®ÏàòÎ•º ÌÜµÌï¥ÏÑú ÏÇ¨Ïö©Ìï† `layer=`Î•º ÌôïÏù∏ÌïúÎã§.
 
 ``` {r korea_precinct, results='asis', tidy=FALSE}
 library(rgeos)
@@ -38,40 +38,14 @@ ogrListLayers("../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json"
  
 ogrInfo("../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json", "precincts")
 
-map <-  readOGR(dsn="../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json", layer="precincts")
- 
-plot(map)
+map.20 <-  readOGR(dsn="../southkorea-maps/popong/precinct/assembly-precinct-20-geo.json", layer="precincts")
+
+map.19 <-  readOGR(dsn="../southkorea-maps/popong/precinct/assembly-precinct-19-geo.json", layer="precincts")
+
+par(mfrow = c(1, 2))  # 1 rows and 2 columns
+plot(map.19)
+plot(map.20)
 ```
 
-√‚√≥: [Overcoming D3 Cartographic Envy With R + ggplot](https://rud.is/b/2014/09/26/overcoming-d3-cartographic-envy-with-r-ggplot/)
-
-
-
-#### ªÁ¿¸≈ı«•¿≤
-
-<img src="fig/pre-voting-survey.png" alt="ªÁ¿¸ ≈ı«•¿≤" width="70%" />
-
-|  ±∏ ∫–  |  ¡¶19¥Î   | ¡¶20¥Î(øπ√¯) |  ¡ı∞®¿≤ |
-|---------|---------|-----------|--------|
-| ¿¸√º    |  65.6%  |70.8%      |  5.2%  |
-| 19-29ºº  |  48.2%  |63.3%      |  15.1% |
-| 30¥Î   |  64.2%  |70.5%      |  6.3%  |
-| 40¥Î   |  69.7%  |70.6%      |  0.9%  |
-| 50¥Î   |  71.9%  |73.5%      |  1.6%  |
-| 60ºº¿ÃªÛ  |  72.1% |74.4%      |  2.3%  |
-
-### º±∞≈±∏ «ˆ»≤
-
-|  ±∏ ∫–  |  ¡¶19¥Î   | ¡¶20¥Î(øπ√¯) |¡¶20¥Î(Ω«¡¶)|  ¡ı∞®¿≤ |
-|---------|---------|-----------|----------|-------|
-| ¿¸√º    |       |         |          | 5.2%  |
-| 19-29ºº  |       |         |          | 15.1% |
-| 30¥Î   |       |         |          | 6.3%  |
-| 40¥Î   |       |         |          | 0.9%  |
-| 50¥Î   |       |         |          | 1.6%  |
-| 60ºº¿ÃªÛ  |      |         |          | 2.3%  |
-
-[¡¶20¥Î ±π»∏¿«ø¯º±∞≈ ≈ı«•±∏∫∞ ∞≥«•∞·∞˙ ¿⁄∑·](http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061)
-
-
+Ï∂úÏ≤ò: [Overcoming D3 Cartographic Envy With R + ggplot](https://rud.is/b/2014/09/26/overcoming-d3-cartographic-envy-with-r-ggplot/)
 
