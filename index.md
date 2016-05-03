@@ -38,6 +38,8 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [투표율 분석](08-vote-ballots.html)
     1. [사전 투표율](09-vote-early.html)
     1. [역대선거 투표율](10-vote-history.html)
+1. [SNS](20-vote-sns.html)
+    1. [페이스북 페이지](21-vote-fb.html)
 
 > ### xwMOOC 오픈 교재
 > 
