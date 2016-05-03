@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자가 바라본 20대 총선</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-16', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
+          <h2 class="subtitle">역대선거 투표율</h2>
+<h2 id="역대투표율-분석">역대투표율 분석</h2>
+<p>제20대 총선의 경우 특정 지역구의 투표율을 분석하려면, 기본적인 통계적인 지식이 필요하다. 물론, 과거 선거에 대한 경험과 지식도 요구된다. 일단 성공적인 투표율 예측 및 현황 파악을 위해서 과거 선거중에서 가장 유사한 의미를 갖는 선거결과를 분석하는 것이 좋다.</p>
+<p>예를 들어, 제20대 총선의 가장 좋은 예측데이터는 아마도 제19대 총선이 될 것이다. 하지만, 4년전 데이터로 그동안 많은 변화가 있음을 상식적으로 이해할 수 있고, 선거구 획정등의 이유로 인해서 사과대사과 비교와 같은 논리가 적용이 되지 않는다. 그렇다고 다른 뾰족한 데이터를 찾는 것도 힘들다.</p>
+<p>그렇다고 포기할 것은 아니고, 2012년 있었던 대통령 선거, 2012년에 있었던 국회의원선거, 2014년에 있었던 지방자치단체장 선거, 교육감선거등의 자료를 취합하는 것은 어려운 일이 아니고, 이를 기반으로 하여 정확하지는 못하지만, 나름 추세는 확인할 수 있다.</p>
+<h3 id="역대-선거-투표율-분석-데이터-가져오기">1. 역대 선거 투표율 분석 데이터 가져오기</h3>
+<p>중앙선거관리위원회 <a href="http://www.nec.go.kr/portal/bbs/list/B0000338.do?menuNo=200061">분야별 정보 &gt; 선거정보 &gt; 자료실</a>에서 예측하려고 하는 분야 데이터를 모두 다운로드 받아 정리한다. 많은 부분 수작업으로 목표를 하고 있는 통계모형 혹은 시각화에 맞춰 데이터를 정리한다.</p>
+<p><a href="http://shiny.stat.ubc.ca/r-graph-catalog/">R Graph Catalog</a> 사이트에는 R 시각화를 위한 그래프 카탈로그가 전시되어 있고, 물론 코드와 데이터도 함께 제공되고 있다. 따라서, 해당 그래프 제작을 위한 데이터를 맞춰 <code>ggplot</code> 함수에 설정해서 넣으면 원하는 결과를 얻을 수 있다.</p>
+<p>역대선거 투표율 데이터 시각화를 하는 방법에 영감을 준 R 그래프는 <a href="http://shiny.stat.ubc.ca/r-graph-catalog/#fig05-04_barley-data">Fig05-04 Barley Data</a>로 더민주와 새누리 역대선거 지지율을 동별로 나눠 한눈에 비교할 수 있도록 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#================================================================</span>
+<span class="co"># 1. 데이터 가져오기</span>
+<span class="co">#================================================================</span>
+<span class="kw">library</span>(readxl)
+hd_data &lt;-<span class="st"> </span><span class="kw">read_excel</span>(<span class="st">&quot;~/Dropbox/01_data_science/survey-2016/data/04-역대선거/election.xlsx&quot;</span>)</code></pre></div>
+<h3 id="데이터-정제">2. 데이터 정제</h3>
+<p>데이터를 <code>ggplot</code>에 사용될 형태로 정제한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#================================================================</span>
+<span class="co"># 2. 데이터 정제</span>
+<span class="co">#================================================================</span>
+
+hd_data$election &lt;-<span class="st"> </span><span class="kw">factor</span>(hd_data$election,
+                           <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;01-대통령&quot;</span>, <span class="st">&quot;02-19대총선&quot;</span>,
+                                      <span class="st">&quot;03-성남시장&quot;</span>,<span class="st">&quot;04-교육감&quot;</span>,
+                                      <span class="st">&quot;05-도지사&quot;</span>))
+hd_data$party &lt;-<span class="st"> </span><span class="kw">factor</span>(hd_data$party)</code></pre></div>
+<h3 id="시각화">3. 시각화</h3>
+<p>2012년부터 실시된 주요 선거데이터를 <code>ggplot</code>으로 시각화한다. <code>ggplot</code>에서 한글처리를 위한 전처리 과정과 폰트 설정과정을 거치고, 글자크기도 보기좋게 설정한다. 대통령선거 이후 새누리와 더민주 득표율 변화를 주요 선거별로 비교해 볼 수 있고, 각 동수준에서도 이를 확연히 볼 수 있다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#================================================================</span>
+<span class="co"># 3. 데이터 시각화</span>
+<span class="co">#================================================================</span>
+
+<span class="kw">library</span>(ggplot2)
+<span class="kw">source</span>(<span class="st">&quot;~/Dropbox/01_data_science/00-hangul-plot-setting.R&quot;</span>) <span class="co"># http://freesearch.pe.kr/archives/4446 참조</span>
+
+<span class="kw">ggplot</span>(hd_data, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">as.numeric</span>(votes), <span class="dt">y =</span> dong, <span class="dt">group =</span> party)) +
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">shape =</span> party, <span class="dt">color=</span>party), <span class="dt">size =</span> <span class="fl">2.5</span>) +
+<span class="st">  </span><span class="kw">facet_wrap</span>(~<span class="st"> </span>election, <span class="dt">ncol =</span> <span class="dv">1</span>) +
+<span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values =</span><span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>)) +
+<span class="st">  </span><span class="kw">scale_shape_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">8</span>)) +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;득표수&quot;</span>, <span class="dt">y =</span> <span class="ot">NULL</span>) +
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;OO 지역구 역대 선거결과&quot;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">theme_bw</span>() +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid.minor =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">panel.grid.major.x =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">panel.margin =</span> <span class="kw">unit</span>(<span class="dv">0</span>, <span class="st">&quot;cm&quot;</span>),
+        <span class="dt">panel.grid.major.y =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;grey&quot;</span>),
+        <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="kw">rel</span>(<span class="fl">1.3</span>), <span class="dt">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>, <span class="dt">colour=</span><span class="st">&quot;blue&quot;</span>),
+        <span class="dt">strip.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>),
+        <span class="dt">axis.text.y =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>),
+        <span class="dt">axis.ticks.y =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>, <span class="dt">angle =</span> <span class="dv">0</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>),
+        <span class="dt">axis.title.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>),
+        <span class="dt">legend.title =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">legend.key =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">legend.position =</span> <span class="st">&quot;top&quot;</span>,
+        <span class="dt">legend.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">14</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>),
+        <span class="dt">legend.key.height =</span> <span class="kw">unit</span>(<span class="dv">0</span>,<span class="st">&quot;line&quot;</span>)) </code></pre></div>
+<p><img src="fig/voting_history_visualization-1.png" title="plot of chunk voting_history_visualization" alt="plot of chunk voting_history_visualization" style="display: block; margin: auto;" /></p>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
