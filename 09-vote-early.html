@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자가 바라본 20대 총선</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-16', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
+          <h2 class="subtitle">사전 투표율</h2>
+<h2 id="사전-투표율-early-voting-turnout">사전 투표율 (early voting turnout)</h2>
+<p>사전 투표는 사전투표란 선거일에 투표를 할 수 없는 선거인은 누구든지 별도의 신고없이 읍·면·동마다 설치된 사전투표소에서 선거일 전 5일부터 2일간 투표할 수 있는 제도로서 2013년 상반기 재·보궐선거에서 최초 도입됨<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
+<h2 id="전국-사전-투표율-분석-데이터">전국 사전 투표율 분석 데이터</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">시도명</th>
+<th align="left">선거인수</th>
+<th align="left">투표자수</th>
+<th align="left">인구대비선거인비율</th>
+<th align="left">지방선거사전투표율</th>
+<th align="left">총선사전투표율</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">평균</td>
+<td align="left">42,100,398</td>
+<td align="left">4,472,492</td>
+<td align="left">81.5</td>
+<td align="left">11.5</td>
+<td align="left">12.19</td>
+</tr>
+<tr class="even">
+<td align="left">서울특별시</td>
+<td align="left">8,423,654</td>
+<td align="left">837,130</td>
+<td align="left">83.8</td>
+<td align="left">11.1</td>
+<td align="left">11.61</td>
+</tr>
+<tr class="odd">
+<td align="left">부산광역시</td>
+<td align="left">2,952,961</td>
+<td align="left">253,396</td>
+<td align="left">83.9</td>
+<td align="left">8.9</td>
+<td align="left">9.83</td>
+</tr>
+<tr class="even">
+<td align="left">대구광역시</td>
+<td align="left">2,031,478</td>
+<td align="left">179,239</td>
+<td align="left">81.6</td>
+<td align="left">8</td>
+<td align="left">10.13</td>
+</tr>
+<tr class="odd">
+<td align="left">인천광역시</td>
+<td align="left">2,379,666</td>
+<td align="left">222,386</td>
+<td align="left">81.1</td>
+<td align="left">11.3</td>
+<td align="left">10.81</td>
+</tr>
+<tr class="even">
+<td align="left">광주광역시</td>
+<td align="left">1,158,598</td>
+<td align="left">158,455</td>
+<td align="left">78.7</td>
+<td align="left">13.3</td>
+<td align="left">15.75</td>
+</tr>
+<tr class="odd">
+<td align="left">대전광역시</td>
+<td align="left">1,214,402</td>
+<td align="left">136,185</td>
+<td align="left">80.0</td>
+<td align="left">11.2</td>
+<td align="left">12.94</td>
+</tr>
+<tr class="even">
+<td align="left">울산광역시</td>
+<td align="left">937,421</td>
+<td align="left">96,221</td>
+<td align="left">79.8</td>
+<td align="left">10.7</td>
+<td align="left">11.98</td>
+</tr>
+<tr class="odd">
+<td align="left">세종특별</td>
+<td align="left">167,798</td>
+<td align="left">24,289</td>
+<td align="left">75.4</td>
+<td align="left">15.1</td>
+<td align="left">16.85</td>
+</tr>
+<tr class="even">
+<td align="left">경기도</td>
+<td align="left">10,034,919</td>
+<td align="left">966,650</td>
+<td align="left">79.7</td>
+<td align="left">10.3</td>
+<td align="left">11.16</td>
+</tr>
+<tr class="odd">
+<td align="left">강원도</td>
+<td align="left">1,277,858</td>
+<td align="left">153,219</td>
+<td align="left">82.5</td>
+<td align="left">14.2</td>
+<td align="left">13.36</td>
+</tr>
+<tr class="even">
+<td align="left">충청북도</td>
+<td align="left">1,287,549</td>
+<td align="left">146,411</td>
+<td align="left">81.2</td>
+<td align="left">13.3</td>
+<td align="left">12.85</td>
+</tr>
+<tr class="odd">
+<td align="left">충청남도</td>
+<td align="left">1,683,854</td>
+<td align="left">180,411</td>
+<td align="left">80.8</td>
+<td align="left">11.9</td>
+<td align="left">12.13</td>
+</tr>
+<tr class="even">
+<td align="left">전라북도</td>
+<td align="left">1,520,032</td>
+<td align="left">233,465</td>
+<td align="left">81.3</td>
+<td align="left">16.1</td>
+<td align="left">17.32</td>
+</tr>
+<tr class="odd">
+<td align="left">전라남도</td>
+<td align="left">1,567,192</td>
+<td align="left">264,693</td>
+<td align="left">82.1</td>
+<td align="left">18</td>
+<td align="left">18.85</td>
+</tr>
+<tr class="even">
+<td align="left">경상북도</td>
+<td align="left">2,242,016</td>
+<td align="left">282,268</td>
+<td align="left">82.8</td>
+<td align="left">13.1</td>
+<td align="left">14.07</td>
+</tr>
+<tr class="odd">
+<td align="left">경상남도</td>
+<td align="left">2,719,668</td>
+<td align="left">290,791</td>
+<td align="left">80.6</td>
+<td align="left">11.9</td>
+<td align="left">12.19</td>
+</tr>
+<tr class="even">
+<td align="left">제주특별</td>
+<td align="left">501,332</td>
+<td align="left">47,283</td>
+<td align="left">79.0</td>
+<td align="left">11.1</td>
+<td align="left">10.7</td>
+</tr>
+</tbody>
+</table>
+<h3 id="사전투표율-데이터-가져오기">1. 사전투표율 데이터 가져오기</h3>
+<p><code>googlesheets</code> 팩키지를 활용하여 사전투표율 데이터를 분석하는데 엑셀을 대신하여 웹기반 스프레드쉬트를 활용한다. <code>사전투표율분석</code> 파일을 생성하고 <code>사전투표</code> 워크쉬트에 상기 표형식 데이터를 분석한다.</p>
+<p><code>t.dat</code>는 <code>googlesheet</code>, 리스트 데이터형이고, <code>gs_read</code> 함수를 통해 <code>tbl_df</code>, 데이터프레임이다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#================================================================</span>
+<span class="co"># 1. 데이터 가져오기</span>
+<span class="co">#================================================================</span>
+<span class="kw">library</span>(googlesheets)
+
+glist &lt;-<span class="st"> </span><span class="kw">gs_ls</span>()
+
+t.dat &lt;-<span class="st"> </span><span class="kw">gs_title</span>(<span class="st">&quot;사전투표율분석&quot;</span>)</code></pre></div>
+<pre class="output"><code>Sheet successfully identified: &quot;사전투표율분석&quot;
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">v.dat &lt;-<span class="st"> </span><span class="kw">gs_read</span>(t.dat, <span class="dt">ws=</span><span class="st">&#39;사전투표&#39;</span>)</code></pre></div>
+<pre class="output"><code>Accessing worksheet titled &#39;사전투표&#39;.
+</code></pre>
+<pre class="output"><code>No encoding supplied: defaulting to UTF-8.
+</code></pre>
+<h3 id="데이터-정제">2. 데이터 정제</h3>
+<p>사전투표분석을 위해 데이터프레임을 데이터 시각화를 위해 정리한다. 탐색적 데이터분석결과 <code>세종특별자치시</code>는 인구가 적어 상호비교를 하는데 도움이 되지 않아 제외한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(dplyr))
+<span class="kw">colnames</span>(v.dat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;시도&#39;</span>,<span class="st">&#39;선거인수&#39;</span>,<span class="st">&#39;투표자수&#39;</span>,<span class="st">&#39;인구대비선거인비율&#39;</span>,<span class="st">&#39;총선사전투표율&#39;</span>,<span class="st">&#39;지방선거사전투표율&#39;</span>)
+v.dat &lt;-<span class="st"> </span>v.dat %&gt;%
+<span class="st">  </span><span class="kw">filter</span>(!(시도 %in%<span class="st"> &quot;세종특별자치시&quot;</span>)) </code></pre></div>
+<h3 id="시각화">3. 시각화</h3>
+<p><code>ggplot</code>을 통해 인구대비 선거인비율(%)이 대략 82% 정도로 파악이 되고, 전국 평균과 비교하여 전라남도와 전라북도가 총선 사전투표율이 높은 반면, 대구광역시는 상대적으로 낮은 것이 시각화를 통해 드러난다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">source</span>(<span class="st">&quot;~/Dropbox/01_data_science/00-hangul-plot-setting.R&quot;</span>) <span class="co"># http://freesearch.pe.kr/archives/4446 참조</span>
+
+<span class="kw">ggplot</span>(<span class="dt">data =</span> v.dat) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x=</span>인구대비선거인비율,<span class="dt">y=</span>총선사전투표율) +
+<span class="st">  </span><span class="kw">geom_point</span>() +
+<span class="st">  </span><span class="kw">geom_smooth</span>() +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;지방선거사전투표율&quot;</span>, <span class="dt">x=</span><span class="st">&quot;인구대비 선거인비율(%)&quot;</span>, <span class="dt">y=</span><span class="st">&quot;총선사전투표율(%)&quot;</span>) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">x=</span>인구대비선거인비율,<span class="dt">y=</span>총선사전투표율, <span class="dt">label=</span>시도), <span class="dt">hjust=</span><span class="dv">1</span>, <span class="dt">vjust=</span><span class="dv">0</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>, <span class="dt">size=</span><span class="dv">3</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">25</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>, <span class="dt">colour=</span><span class="st">&quot;blue&quot;</span>),
+        <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>, <span class="dt">family=</span><span class="st">&quot;AppleGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/ealry_voting_visualization-1.png" title="plot of chunk ealry_voting_visualization" alt="plot of chunk ealry_voting_visualization" style="display: block; margin: auto;" /></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="http://www.nec.go.kr/portal/bbs/list/B0000357.do?menuNo=200561">사전투표제도</a><a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

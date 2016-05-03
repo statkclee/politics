@@ -10,48 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(googleVis)
-op <- options(gvis.plot.tag='chart')
-#knitr::opts_chunk$set(cache=TRUE) 
 
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  require(grid)
-  
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-  
-  numPlots = length(plots)
-  
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-  
-  if (numPlots==1) {
-    print(plots[[1]])
-    
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-    
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-      
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}
-```
 
 
 ## 사전 투표율 (early voting turnout)
@@ -90,7 +49,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 `t.dat`는 `googlesheet`, 리스트 데이터형이고, `gs_read` 함수를 통해 `tbl_df`, 데이터프레임이다.
 
-``` {r ealry_voting_import, tidy=FALSE}
+
+~~~{.r}
 #================================================================
 # 1. 데이터 가져오기
 #================================================================
@@ -99,28 +59,55 @@ library(googlesheets)
 glist <- gs_ls()
 
 t.dat <- gs_title("사전투표율분석")
+~~~
 
+
+
+~~~{.output}
+Sheet successfully identified: "사전투표율분석"
+
+~~~
+
+
+
+~~~{.r}
 v.dat <- gs_read(t.dat, ws='사전투표')
-```
+~~~
+
+
+
+~~~{.output}
+Accessing worksheet titled '사전투표'.
+
+~~~
+
+
+
+~~~{.output}
+No encoding supplied: defaulting to UTF-8.
+
+~~~
 
 ### 2. 데이터 정제
 
 사전투표분석을 위해 데이터프레임을 데이터 시각화를 위해 정리한다.
 탐색적 데이터분석결과 `세종특별자치시`는 인구가 적어 상호비교를 하는데 도움이 되지 않아 제외한다.
 
-``` {r ealry_voting_manipulation, tidy=FALSE}
+
+~~~{.r}
 suppressMessages(library(dplyr))
 colnames(v.dat) <- c('시도','선거인수','투표자수','인구대비선거인비율','총선사전투표율','지방선거사전투표율')
 v.dat <- v.dat %>%
   filter(!(시도 %in% "세종특별자치시")) 
-```
+~~~
 
 ### 3. 시각화
 
 `ggplot`을 통해 인구대비 선거인비율(%)이 대략 82% 정도로 파악이 되고, 전국 평균과 비교하여 전라남도와 전라북도가
 총선 사전투표율이 높은 반면, 대구광역시는 상대적으로 낮은 것이 시각화를 통해 드러난다.
 
-``` {r ealry_voting_visualization, tidy=FALSE}
+
+~~~{.r}
 library(ggplot2)
 source("~/Dropbox/01_data_science/00-hangul-plot-setting.R") # http://freesearch.pe.kr/archives/4446 참조
 
@@ -132,7 +119,9 @@ ggplot(data = v.dat) +
   geom_text(aes(x=인구대비선거인비율,y=총선사전투표율, label=시도), hjust=1, vjust=0, family="AppleGothic", size=3) +
   theme(plot.title = element_text(size=25, family="AppleGothic", colour="blue"),
         axis.text = element_text(size=10, family="AppleGothic"))
-```  
+~~~
+
+<img src="fig/ealry_voting_visualization-1.png" title="plot of chunk ealry_voting_visualization" alt="plot of chunk ealry_voting_visualization" style="display: block; margin: auto;" />
 
 
 
