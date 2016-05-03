@@ -27,13 +27,12 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 > 그리고, 튜링과 함께하는 인공지능... 
 
 1. [투표의 역사](00-vote-history.html) 
-1. [과학기술과 함께 하는 패러다임의 변화](01-vote-paradigm.html)
-1. [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
+    1. [과학기술과 함께 하는 패러다임의 변화](01-vote-paradigm.html)
+    1. [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
 1. [선거 데이터](03-vote-data.html)
 1. [여론조사](04-vote-survey.html)
-1. [인구통계 분석](05-vote-demographic.html)
-1. [선거구](06-vote-precinct.html)
-1. [여론조사 지지율](07-vote-approval-rating.html)
+    1. [인구통계 분석](05-vote-demographic.html)
+    1. [여론조사 지지율](07-vote-approval-rating.html)
     1. [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
 1. [투표율 분석](08-vote-ballots.html)
     1. [사전 투표율](09-vote-early.html)
@@ -41,6 +40,9 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [디지털 미디어](20-vote-digial-media.html)
     1. [페이스북 페이지](21-vote-fb.html)
     1. [페이스북 페이지 분석](22-vote-fb-page.html)
+1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
+    1. [선거구](06-vote-precinct.html)
+    1. [선거정보 매핑]()
 
 > ### xwMOOC 오픈 교재
 > 
