@@ -1,4 +1,14 @@
-# 데이터 과학자가 바라본 20대 총선
+---
+layout: page
+title: 데이터 과학자가 바라본 20대 총선
+subtitle: 여론조사 지지율 흐름 (Sankey diagram)
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
 
 
 
@@ -46,6 +56,18 @@
 #================================================================
 library(googlesheets)
 glist <- gs_ls()
+~~~
+
+
+
+~~~{.output}
+Auto-refreshing stale OAuth token.
+
+~~~
+
+
+
+~~~{.r}
 # glist %>% glimpse()
 
 t.dat <- gs_title("sankeyplot-data")
@@ -107,14 +129,14 @@ plot(
 ~~~
 
 <!-- Sankey generated in R 3.2.4 by googleVis 0.5.10 package -->
-<!-- Sat Apr 30 15:43:02 2016 -->
+<!-- Wed May  4 13:47:34 2016 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataSankeyID5a451b8c07a0 () {
+function gvisDataSankeyID4333f628b4a () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -177,8 +199,8 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartSankeyID5a451b8c07a0() {
-var data = gvisDataSankeyID5a451b8c07a0();
+function drawChartSankeyID4333f628b4a() {
+var data = gvisDataSankeyID4333f628b4a();
 var options = {};
 options["width"] =    400;
 options["height"] =    250;
@@ -195,7 +217,7 @@ options["sankey"] = {link:{color:{fill:'lightblue'}},
                };
 
     var chart = new google.visualization.Sankey(
-    document.getElementById('SankeyID5a451b8c07a0')
+    document.getElementById('SankeyID4333f628b4a')
     );
     chart.draw(data,options);
     
@@ -219,9 +241,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartSankeyID5a451b8c07a0);
+callbacks.push(drawChartSankeyID4333f628b4a);
 })();
-function displayChartSankeyID5a451b8c07a0() {
+function displayChartSankeyID4333f628b4a() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -245,10 +267,10 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartSankeyID5a451b8c07a0"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartSankeyID4333f628b4a"></script>
  
 <!-- divChart -->
   
-<div id="SankeyID5a451b8c07a0" 
+<div id="SankeyID4333f628b4a" 
   style="width: 400; height: 250;">
 </div>
