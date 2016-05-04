@@ -43,6 +43,7 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
     1. [선거구](06-vote-precinct.html)
     1. [선거정보 매핑]()
+    1. [생활안전](31-vote-probation-office.html)
 
 > ### xwMOOC 오픈 교재
 > 
