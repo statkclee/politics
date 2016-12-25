@@ -16,16 +16,16 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 >     * 박정희 대통령 - 경부고속도로
 >     * 김대중 대통령 - 정보고속도로
 > 
-> <table>
->     <tr>
->         <td> 박용진 의원 - 서울 강북구 삼각산초 강연 중 </td>
->         <td> 손학규 정계복귀 기자회견 </td>
->     </tr>
->     <tr>
->         <td> <iframe width="320" height="200" src="https://www.youtube.com/embed/TmnipWTyIpg" frameborder="0" allowfullscreen></iframe> </td>
->         <td> <iframe width="320" height="180" src="https://www.youtube.com/embed/S7J_n_6-Tos" frameborder="0" allowfullscreen></iframe> </td>
->     </tr>
-> </table>
+<table>
+     <tr>
+         <td> 박용진 의원 - 서울 강북구 삼각산초 강연 중 </td>
+         <td> 손학규 정계복귀 기자회견 </td>
+     </tr>
+     <tr>
+         <td> <iframe width="320" height="200" src="https://www.youtube.com/embed/TmnipWTyIpg" frameborder="0" allowfullscreen></iframe> </td>
+         <td> <iframe width="320" height="200" src="https://www.youtube.com/embed/hLqVcl4iwPc" frameborder="0" allowfullscreen></iframe> </td>
+     </tr>
+</table>
 
 ## 데이터과학자가 바라본 제19대 대통령 선거
 
