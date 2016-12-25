@@ -59,7 +59,7 @@ subtitle: 데이터 과학자가 바라본 20대 총선
     1. [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
     1. [얼굴에 나타난 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-emotion.html)
     1. [동영상 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-video.html)
-    1.   - [KBS (2016-12-07)인공지능으로 분석한 대통령의 마음…슬픔은 어디에?](http://news.kbs.co.kr/news/view.do?ncd=3390429)
+        - [KBS (2016-12-07)인공지능으로 분석한 대통령의 마음…슬픔은 어디에?](http://news.kbs.co.kr/news/view.do?ncd=3390429)
     1. [텍스트 감성분석](http://statkclee.github.io/deep-learning/ms-cognitive-text-sentiment.html)
 
 
