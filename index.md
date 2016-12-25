@@ -16,10 +16,18 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 >     * 박정희 대통령 - 경부고속도로
 >     * 김대중 대통령 - 정보고속도로
 > 
-> <iframe width="320" height="200" src="https://www.youtube.com/embed/TmnipWTyIpg" frameborder="0" allowfullscreen></iframe>  
-> 박용진 더불어민주당 대변인 - 서울 강북구 삼각산초 강연 중
+> <table>
+>     <tr>
+>         <td> 박용진 의원 - 서울 강북구 삼각산초 강연 중 </td>
+>         <td> 손학규 정계복귀 기자회견 </td>
+>     </tr>
+>     <tr>
+>         <td> <iframe width="320" height="200" src="https://www.youtube.com/embed/TmnipWTyIpg" frameborder="0" allowfullscreen></iframe> </td>
+>         <td> <iframe width="320" height="180" src="https://www.youtube.com/embed/S7J_n_6-Tos" frameborder="0" allowfullscreen></iframe> </td>
+>     </tr>
+> </table>
 
-## 데이터과학자가 바라본 제20대 총선
+## 데이터과학자가 바라본 제19대 대통령 선거
 
 > ### 추론에서 시각화로.. {.callout}
 >
@@ -27,23 +35,31 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 > 그리고, 튜링과 함께하는 인공지능... 
 
 1. [투표의 역사](00-vote-history.html) 
-    1. [과학기술과 함께 하는 패러다임의 변화](01-vote-paradigm.html)
-    1. [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
+    - [과학기술과 함께 하는 패러다임의 변화](01-vote-paradigm.html)
+    - [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
 1. [선거 데이터](03-vote-data.html)
 1. [여론조사](04-vote-survey.html)
-    1. [인구통계 분석](05-vote-demographic.html)
-    1. [여론조사 지지율](07-vote-approval-rating.html)
-    1. [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
+    - [인구통계 분석](05-vote-demographic.html)
+    - [여론조사 지지율](07-vote-approval-rating.html)
+    - [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
 1. [투표율 분석](08-vote-ballots.html)
-    1. [사전 투표율](09-vote-early.html)
-    1. [역대선거 투표율](10-vote-history.html)
+    - [사전 투표율](09-vote-early.html)
+    - [역대선거 투표율](10-vote-history.html)
 1. [디지털 미디어](20-vote-digial-media.html)
-    1. [페이스북 페이지](21-vote-fb.html)
-    1. [페이스북 페이지 분석](22-vote-fb-page.html)
+    - [페이스북 페이지](21-vote-fb.html)
+    - [페이스북 페이지 분석](22-vote-fb-page.html)
 1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
-    1. [선거구](06-vote-precinct.html)
-    1. [투표 지리정보 매핑](30-vote-geoinfo.html)
-    1. [생활안전](31-vote-probation-office.html)
+    - [투표 지리정보 매핑](30-vote-geoinfo.html)
+    - [제18대 대통령 선거](http://statkclee.github.io/data-science/geo-18-president.html)
+    - [제20대 총선 선거구](06-vote-precinct.html)
+    - [생활안전](31-vote-probation-office.html)
+1. [기계와 더불어 사는 한국인 - 패러다임 전환](https://statkclee.github.io/xwMOOC/paradigm/)
+    - [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
+    - [얼굴에 나타난 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-emotion.html)
+    - [동영상 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-video.html)
+        - [KBS (2016-12-07)인공지능으로 분석한 대통령의 마음…슬픔은 어디에?](http://news.kbs.co.kr/news/view.do?ncd=3390429)
+    - [텍스트 감성분석](http://statkclee.github.io/deep-learning/ms-cognitive-text-sentiment.html)
+
 
 > ### xwMOOC 오픈 교재
 > 
@@ -58,7 +74,7 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 > - [IoT 오픈 하드웨어(라즈베리 파이)](http://raspberry-pi.xwmooc.org/)
 >     - [$100 오픈 컴퓨터](http://computer.xwmooc.org/)   
 >     - [$100 오픈 슈퍼컴퓨터](http://computers.xwmooc.org/)
-> - [R 데이터과학](http://data-science.xwmooc.org/)
+> - [R 데이터과학](http://statkclee.github.io/data-science)
 > - [R 팩키지](http://r-pkgs.xwmooc.org/)
 > - [기호 수학(Symbolic Math)](http://sympy.xwmooc.org/)
 
