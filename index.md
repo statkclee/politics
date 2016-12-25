@@ -1,7 +1,7 @@
 ---
 layout: page
-title: 정보 민주화
-subtitle: 데이터 과학자가 바라본 20대 총선
+title: 정치 민주화, 경제 민주화, 그리고 정보 민주화
+subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
 ---
 
 > ### 정치란 무엇인가?
@@ -27,8 +27,6 @@ subtitle: 데이터 과학자가 바라본 20대 총선
          <td> <iframe width="320" height="200" src="https://www.youtube.com/embed/hLqVcl4iwPc" frameborder="0" allowfullscreen></iframe> </td>
      </tr>
 </table>
-
-## 데이터 과학자와 함께 하는 제19대 대통령 선거
 
 > ### 추론에서 시각화를 거쳐 인공지능으로... {.callout}
 >
