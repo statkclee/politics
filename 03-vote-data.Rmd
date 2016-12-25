@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 데이터 과학자가 바라본 20대 총선
-subtitle: 선거 데이터와 국회의원
+subtitle: 선거 데이터와 대통령, 국회의원
 output:
   html_document: 
     keep_md: yes
@@ -16,9 +16,9 @@ library(googleVis)
 op <- options(gvis.plot.tag='chart')
 ```
 
-> ### 대통령과 국회의원이 되면 생기는 권한
+> ### 대통령과 국회의원이 되면 생기는 권한 
 > 
-
+>
 <table>
      <tr>
          <td> 대한민국 대통령이 누릴수 있는 특권 TOP 18 </td>
@@ -26,7 +26,7 @@ op <- options(gvis.plot.tag='chart')
      </tr>
      <tr>
          <td> <iframe width="320" height="180" src="https://www.youtube.com/embed/F8ipamI199I" frameborder="0" allowfullscreen></iframe> </td>
-         <td> <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fyonhapvideo%2Fvideos%2F1585369938441868%2F&show_text=0&width=560" width="320" height="180" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allowFullScreen="true"></iframe> </td>
+         <td> <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fyonhapvideo%2Fvideos%2F1585369938441868%2F" width="320" height="180" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allowFullScreen="true"></iframe> </td>
      </tr>
 </table>
 
