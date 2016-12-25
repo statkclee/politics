@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 데이터 과학자가 바라본 20대 총선
-subtitle: 선거 데이터
+subtitle: 선거 데이터와 대통령, 국회의원
 output:
   html_document: 
     keep_md: yes
@@ -10,6 +10,153 @@ output:
 mainfont: NanumGothic
 ---
 
+
+
+> ### 대통령과 국회의원이 되면 생기는 권한 
+> 
+>
+<table>
+     <tr>
+         <td> 대한민국 대통령이 누릴수 있는 특권 TOP 18 </td>
+         <td> 국회의원이 누리는 특권 어디까지...? </td>
+     </tr>
+     <tr>
+         <td> <iframe width="320" height="180" src="https://www.youtube.com/embed/F8ipamI199I" frameborder="0" allowfullscreen></iframe> </td>
+         <td> <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fyonhapvideo%2Fvideos%2F1585369938441868%2F" width="320" height="180" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allowFullScreen="true"></iframe> </td>
+     </tr>
+</table>
+
+## 대통령 [^wiki-president] 
+
+[^wiki-president]: [위키: 대통령](https://ko.wikipedia.org/wiki/대통령)
+
+대통령(大統領, president)은 대통령은 국회와 더불어 국민의 대표기관으로 대한민국 최고 수반으로서 국민의 직접 투표에 의해 선출된다.
+사회 공중에 대한 약속을 함 또는 그 약속 즉, 정부나 지방자치단체의 국민을 향한 약속을 의미하는 **대통령공약**은 
+정치, 사회, 경제, 교육, 문화 등 다양한 분야에 여러 공약들을 제시하여 자신의 정치관 및 가치관 등을 국민에게 표현하고
+대통령은 국민들과의 약속을 지키면서 국가 정부를 운영해 나아간다.
+
+- 헌법상 지위 : 대통령은 헌법 수호자의 지위와 국가원수 및 행정수반의 지위를 겸한다. 
+    - 대한민국 헌법 제66조 제2항과 제3항에 “대통령은 국가의 독립, 영토의 보전, 국가의 계속성과 헌법을 수호할 책무를 진다. 대통령은 조국의 평화적 통일을 위한 성실한 의무를 진다.”라고 규정, 
+    - 대한민국 헌법은 “국가의 원수이며 외국에 대하여 국가를 대표한다.” 라고 규정, 
+    - 대한민국 헌법 제66조 제4항에 “행정권은 대통령을 수반으로 하는 정부에 속한다.”라고 규정.
+- 대통령의 의무: 헌법 준수의 의무, 영업 활동의 금지, 겸직 금지의 의무, 청렴의 의무 등
+    - 헌법 수호 의무
+    - 국가의 독립·보전의무
+    - 직무 수행 의무
+    - 겸직 금지 의무
+    - 평화 통일 노력 의무
+- 영향력과 권한: 대통령이라는 직위 자체의 영향력은 상당하다. 정치, 사회, 경제, 교육, 문화 등 다양한 분야에 여러 공약들을 통해서 사회적으로 엄청난 영향력을 미치고 있다. 또한,
+한 국가를 대표하는 사람으로서 국가에 대한 홍보 및 이미지 메이킹의 선도주자로서의 역할을 하면서 동시에 국제사회에서 한 국가로서의 역할을 한다는 그 자체로서 엄청난 국제적인 영향력을 지닌다.
+   - 국가대표자의 지위: 외교에 관한 권한
+   - 국가 및 헌법의 수호자의 지위: 국군통수권, 긴급명령권, 긴급재정·경제처분 또는 명령권, 계엄선포권, 위헌정당해산제소권
+   - 국정의 통합·조정자의 지위: 헌법개정안 발안권, 국가중요정책에 대한 국민투표 부의권, 법률안 제출 및 공포권, 국회 임시회 집회 요구권, 사면·감형·복권에 관한 권한, 국회 출석·발언권
+   - 헌법기관 구성자의 지위
+   - 행정부 수반의 지위: 법률안 거부권, 행정입법권, 행정부 구성권, 공무원 임면권
+
+## 국회의원 [^lawmaker]
+
+국회의원(國會議員)은 대한민국 국회의 의원으로, 국회의 구성원이다. 상임위원회 위원장 등 특별한 보직을 맡지 않는 한 차관급 예우를 받는 정무직 국가공무원이다. 국회의원은 보좌직원을 총 9명 둘 수 있다.
+
+* 보좌관(4급상당 별정직국가공무원) 2명
+* 비서관(5급상당 별정직국가공무원) 2명
+* 비서(6급상당 별정직국가공무원) 1명
+* 비서(7급상당 별정직국가공무원) 1명
+* 비서(9급상당 별정직국가공무원) 1명
+* 인턴비서(계약직) 2명
+
+### 국회의원의 의무
+
+|   **헌법에 규정된 의무**              |  **국회법에 규정된 의무**      |
+|---------------------------------------|---------------------------------------|
+| 국민 전체의 봉사자                    |  의원으로서의 품위를 유지할 의무  |
+| 금지된 겸직의 금지                    |  출석할 의무 |
+| 청렴의 의무                           |  회의장의 질서를 준수할 의무 |
+| 국가 이익을 우선하여 양심에 따라 직무를 행할 의무 |  다른 의원을 모욕하거나 발언을 방해하지 않을 의무 |
+| 지위와 특권의 남용을 금지             |  국정감사 및 국정조사에서의 주의 의무 |
+|                                       | 국회 의장의 명령에 복종할 의무 |
+
+[^lawmaker]: [대한민국의 국회의원](https://ko.wikipedia.org/wiki/대한민국의_국회의원)
+
+
+> ### 선거공영제
+>
+> * 선거는 국가의 존속과 국민 전체의 이익을 위하여 국가의 공적 업무를 수행할 국민의 대표자를 선출하는 행위이므로 이에 **소요되는 비용은 원칙적으로 국가가 부담**하는 것이 바람직하다. 선거에는 막대한 비용이 소요되므로 이를 부담할 국가의 재정상황을 고려하여야 함은 물론 현재의 정치상황과 선거문화를 고려하여 국가가 부담하는 비용이 무분별하게 사용되지 않도록 적절한 조치를 취하여야 하는 것이다. 진지한 공직 취임의 의사가 없거나 선거를 개인적인 목적에 악용하려는 사람들이 자유롭게 입후보할 수 있게 되어 **후보자가 난립**하게 된다.
+> * 유권자들이 후보자의 자질과 능력을 고려하여 선거를 치러야 하며, 후보자 또는 정당의 정치자금 내지 재력에 의존하지 않아야 한다는 원칙 하에 **선거관련 비용을 국가가 부담하는 것**을 말한다. 이를 위해 당선자 내지 일정 비율 이상의 득표를 한 후보자에 대해서는 선거비용의 전액 또는 일부를 보전할 수 있도록 함으로써, 선거비용의 부담이 후보자로 나서는 것을 가로막지 못하게 하고 있다. [^wiki-ground]
+
+[^wiki-ground]: [선거공영제, 위키피디아](https://ko.wikipedia.org/wiki/선거공영제)
+
+## 제20대 총선 [^nec-info]
+
+[^nec-info]: [중앙선거관리위원회 선거통계시스템](http://info.nec.go.kr/)
+
+### 선거일정
+
+홈 > 제20대 국회의원선거 > 기본현황 > 선거일정
+
+* 예비 후보자등록 (12/15~)
+* 후보자등록 신청 (3/24,25)
+* 재외투표소 투표 (3/30 ~ 4/4)
+* 선거기간개시 (3/31): 3/31 ~ 4/12
+* 선거인명부 확정 (4/1)
+* 사전투표 (4/8~4/9)
+* 투표 (4/13)
+* 개표 (4/13 투표종료후 즉시)
+* 선거비용 보전청구 (4/25)
+* 선거비용 보전 (6/12)
+
+
+### 국회의원 후보 선택 기준 [^voting-criteria]
+
+선거관리위원회에서 16년 3월말 발표한 설문조사에 의하면, 국회의원 투표를 하는 기준은 인물/능력(35.1%), 정책/공약(27.3%), 소속정당(16.0%) 순으로 조사되었다. 선택기준 3가지가 78.4%를 차지한다.
+
+<img src="fig/voting-criteria.png" alt="후보선택기준" width="70%" />
+
+| 구 분  |17대총선 |18대총선  |19대총선  |20대총선 |
+|-------|-------|-------|-------|-------|
+|인물/능력  |41.7%  |34.2%  |30.8%  |35.1%  |
+|정책/공약  |15.2%  |30.8%  |34.0%  |27.3%  |
+|소속정당 |24.2%  |15.8%  |13.8%  |16.0%  |
+|정치경력 |6.6% |4.2% |4.4% |5.8%   |
+|기타     |12.4%  |14.9%  |17.0%  |15.8%  |
+
+[^voting-criteria]: [국회의원선거에 "반드시 투표하겠다" 63.9%](http://www.nec.go.kr/portal/bbs/viewPop/B0000342/33190.do?menuNo=200602&searchYear=&searchMonth=&searchWrd=&searchCnd=&viewType=&pageIndex=1), 선거관리위원회, 16.03.30. 
+
+
+### 국회의원 투표 정보
+
+정당, 인물, 정책/공약 정보가 중앙선거관리위원회를 통해 관리되고 선거전, 선거가 끝난 후에도 제공되고 있다.
+
+
+* 후보인물
+    * [후보자명부](http://info.nec.go.kr/) : 홈 > 제20대 국회의원선거 > 후보자 > 후보자 명부
+    * 후보자정보공개는 선거기간에 한해 중앙선관위에서 관리하는 정보를 제공
+        * 기본정보, 재산, 병역, 납세, 전과, 학력, 공직선거경력 
+        * 상당한 후보 및 가족 **개인정보**가 포함되어 **악용우려**가 있어 선거기간에만 공개   
+* 정책/공약 (지역구 및 비례대표)
+    * [제20대 지역구 국회의원 선거공보](http://policy.nec.go.kr/svc/policy/PolicyList.do)  
+    * 비례대표
+        * [더불어민주당](http://policy.nec.go.kr/skin/doc.html?fn=20160419160028245_1.pdf&rs=/preview/html/20160428/)
+        * [새누리당](http://policy.nec.go.kr/skin/doc.html?fn=20160419160016188_1.pdf&rs=/preview/html/20160428/)
+        * [국민의당](http://policy.nec.go.kr/skin/doc.html?fn=20160419160043368_1.pdf&rs=/preview/html/20160428/)
+        * [정의당](http://policy.nec.go.kr/skin/doc.html?fn=20160419160057819_1.pdf&rs=/preview/html/20160428/)
+* 정당
+  * [정당정책 20대 총선 공약](http://policy.nec.go.kr/svc/policy/PolicyContent02.do)
+      * [더불어민주당](http://policy.nec.go.kr/skin/doc.html?fn=201604130200.pdf&rs=/preview/html/20160428/)
+      * [새누리당](http://policy.nec.go.kr/skin/doc.html?fn=201604130100.pdf&rs=/preview/html/20160428/)    
+      * [국민의당](http://policy.nec.go.kr/skin/doc.html?fn=201604130300.pdf&rs=/preview/html/20160428/)
+      * [정의당](http://policy.nec.go.kr/skin/doc.html?fn=201604130400.pdf&rs=/preview/html/20160428/)
+  * 정당 기본정보
+      * [더불어민주당](http://theminjoo.kr/) [강령/정강 정책](http://theminjoo.kr/platform.do)
+      * [새누리당](http://www.saenuriparty.kr/) [강령](http://www.saenuriparty.kr/web/intro/web/listPreambleView.do)
+      * [국민의당](http://people21.kr/) [정책방향](http://people21.kr/policy/)
+      * [정의당](http://www.justice21.org/) [강령](http://www.justice21.org/newhome/about/info02.html)
+
+
+### 국회의원 관련 통계 정보
+
+* **정당** 에 대한 정당지지율 정보는 [중앙선거관리위원회 중앙선거여론조사 공정심의위원회](http://www.nesdc.go.kr)에서 제공한다.
+* 인물(?)
+* **정책** 은 [한국매니페스토실천본부](http://www.manifesto.or.kr/) 자료광장 문서자료실에서 확인가능하다.
 
 
 ## [선거정보](https://ko.wikipedia.org/wiki/대한민국의_선거)
@@ -56,89 +203,89 @@ plot(
 )
 ~~~
 
-<!-- Timeline generated in R 3.2.4 by googleVis 0.5.10 package -->
-<!-- Wed May  4 13:41:53 2016 -->
+<!-- Timeline generated in R 3.3.2 by googleVis 0.6.1 package -->
+<!-- Sun Dec 25 13:11:19 2016 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataTimelineID2ca1337efbd () {
+function gvisDataTimelineIDdd52114c3fc () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
- "대통령",
+"대통령",
 "15대",
 new Date(1997,11,18,0,0,0),
-new Date(2002,11,18,0,0,0) 
+new Date(2002,11,18,0,0,0)
 ],
 [
- "대통령",
+"대통령",
 "16대",
 new Date(2002,11,19,0,0,0),
-new Date(2007,11,18,0,0,0) 
+new Date(2007,11,18,0,0,0)
 ],
 [
- "대통령",
+"대통령",
 "17대",
 new Date(2007,11,19,0,0,0),
-new Date(2012,11,19,0,0,0) 
+new Date(2012,11,19,0,0,0)
 ],
 [
- "대통령",
+"대통령",
 "18대",
 new Date(2012,11,19,0,0,0),
-new Date(2017,11,19,0,0,0) 
+new Date(2017,11,19,0,0,0)
 ],
 [
- "국회의원",
+"국회의원",
 "17대",
 new Date(2004,4,30,0,0,0),
-new Date(2008,4,29,0,0,0) 
+new Date(2008,4,29,0,0,0)
 ],
 [
- "국회의원",
+"국회의원",
 "18대",
 new Date(2008,4,30,0,0,0),
-new Date(2012,4,29,0,0,0) 
+new Date(2012,4,29,0,0,0)
 ],
 [
- "국회의원",
+"국회의원",
 "19대",
 new Date(2012,4,30,0,0,0),
-new Date(2016,4,29,0,0,0) 
+new Date(2016,4,29,0,0,0)
 ],
 [
- "국회의원",
+"국회의원",
 "20대",
 new Date(2016,4,30,0,0,0),
-new Date(2020,4,29,0,0,0) 
+new Date(2020,4,29,0,0,0)
 ],
 [
- "지방선거",
+"지방선거",
 "3회",
 new Date(2002,6,1,0,0,0),
-new Date(2006,5,30,0,0,0) 
+new Date(2006,5,30,0,0,0)
 ],
 [
- "지방선거",
+"지방선거",
 "4회",
 new Date(2006,6,1,0,0,0),
-new Date(2010,5,30,0,0,0) 
+new Date(2010,5,30,0,0,0)
 ],
 [
- "지방선거",
+"지방선거",
 "5회",
 new Date(2010,6,1,0,0,0),
-new Date(2014,5,30,0,0,0) 
+new Date(2014,5,30,0,0,0)
 ],
 [
- "지방선거",
+"지방선거",
 "6회",
 new Date(2014,6,1,0,0,0),
-new Date(2018,5,30,0,0,0) 
+new Date(2018,5,30,0,0,0)
 ] 
 ];
 data.addColumn('string','type');
@@ -150,14 +297,14 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartTimelineID2ca1337efbd() {
-var data = gvisDataTimelineID2ca1337efbd();
+function drawChartTimelineIDdd52114c3fc() {
+var data = gvisDataTimelineIDdd52114c3fc();
 var options = {};
-options["width"] =    600;
-options["height"] =    200;
+options["width"] = 600;
+options["height"] = 200;
 
     var chart = new google.visualization.Timeline(
-    document.getElementById('TimelineID2ca1337efbd')
+    document.getElementById('TimelineIDdd52114c3fc')
     );
     chart.draw(data,options);
     
@@ -181,9 +328,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartTimelineID2ca1337efbd);
+callbacks.push(drawChartTimelineIDdd52114c3fc);
 })();
-function displayChartTimelineID2ca1337efbd() {
+function displayChartTimelineIDdd52114c3fc() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -207,11 +354,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID2ca1337efbd"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineIDdd52114c3fc"></script>
  
 <!-- divChart -->
   
-<div id="TimelineID2ca1337efbd" 
+<div id="TimelineIDdd52114c3fc" 
   style="width: 600; height: 200;">
 </div>
 
