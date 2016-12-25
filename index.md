@@ -15,6 +15,7 @@ subtitle: 데이터 과학자가 바라본 20대 총선
 > * 사례
 >     * 박정희 대통령 - 경부고속도로
 >     * 김대중 대통령 - 정보고속도로
+>     * 차기 대통령 - ?????
 > 
 <table>
      <tr>
@@ -27,38 +28,39 @@ subtitle: 데이터 과학자가 바라본 20대 총선
      </tr>
 </table>
 
-## 데이터과학자가 바라본 제19대 대통령 선거
+## 데이터 과학자와 함께 하는 제19대 대통령 선거
 
-> ### 추론에서 시각화로.. {.callout}
+> ### 추론에서 시각화를 거쳐 인공지능으로... {.callout}
 >
 > 여론조사에서 나온 숫자, 문자를 추론하던 선거에서 시각화하는 선거로...  
 > 그리고, 튜링과 함께하는 인공지능... 
 
 1. [투표의 역사](00-vote-history.html) 
     - [과학기술과 함께 하는 패러다임의 변화](01-vote-paradigm.html)
-    - [제20대 국회의원 선거: 전장(battle field) ...](02-vote-overview.html)
-1. [선거 데이터](03-vote-data.html)
-1. [여론조사](04-vote-survey.html)
-    - [인구통계 분석](05-vote-demographic.html)
-    - [여론조사 지지율](07-vote-approval-rating.html)
-    - [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
-1. [투표율 분석](08-vote-ballots.html)
-    - [사전 투표율](09-vote-early.html)
-    - [역대선거 투표율](10-vote-history.html)
-1. [디지털 미디어](20-vote-digial-media.html)
-    - [페이스북 페이지](21-vote-fb.html)
-    - [페이스북 페이지 분석](22-vote-fb-page.html)
-1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
-    - [투표 지리정보 매핑](30-vote-geoinfo.html)
-    - [제18대 대통령 선거](http://statkclee.github.io/data-science/geo-18-president.html)
-    - [제20대 총선 선거구](06-vote-precinct.html)
-    - [생활안전](31-vote-probation-office.html)
-1. [기계와 더불어 사는 한국인 - 패러다임 전환](https://statkclee.github.io/xwMOOC/paradigm/)
-    - [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
-    - [얼굴에 나타난 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-emotion.html)
-    - [동영상 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-video.html)
-        - [KBS (2016-12-07)인공지능으로 분석한 대통령의 마음…슬픔은 어디에?](http://news.kbs.co.kr/news/view.do?ncd=3390429)
-    - [텍스트 감성분석](http://statkclee.github.io/deep-learning/ms-cognitive-text-sentiment.html)
+1. **전통적인 선거** 
+    1. [선거 데이터: 전장(battle field) ...](03-vote-data.html)
+    1. [여론조사: 제20대 국회의원 선거](04-vote-survey.html)
+        - [인구통계 분석](05-vote-demographic.html)
+        - [여론조사 지지율](07-vote-approval-rating.html)
+        - [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
+    1. [투표율 분석: 제20대 국회의원 선거](08-vote-ballots.html)
+        - [사전 투표율](09-vote-early.html)
+        - [역대선거 투표율](10-vote-history.html)
+1. **진화하는 선거**        
+    1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
+        - [투표 지리정보 매핑](30-vote-geoinfo.html)
+        - [제18대 대통령 선거](http://statkclee.github.io/data-science/geo-18-president.html)
+        - [제20대 총선 선거구](06-vote-precinct.html)
+        - [생활안전](31-vote-probation-office.html)
+    1. [SNS 디지털 미디어](20-vote-digial-media.html)
+        - [페이스북 페이지](21-vote-fb.html)
+        - [페이스북 페이지 분석](22-vote-fb-page.html)
+1. [**기계와 더불어 사는 한국인** - 패러다임 전환](https://statkclee.github.io/xwMOOC/paradigm/)
+    1. [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
+    1. [얼굴에 나타난 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-emotion.html)
+    1. [동영상 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-video.html)
+    1.   - [KBS (2016-12-07)인공지능으로 분석한 대통령의 마음…슬픔은 어디에?](http://news.kbs.co.kr/news/view.do?ncd=3390429)
+    1. [텍스트 감성분석](http://statkclee.github.io/deep-learning/ms-cognitive-text-sentiment.html)
 
 
 > ### xwMOOC 오픈 교재
