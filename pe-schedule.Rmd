@@ -14,6 +14,8 @@ mainfont: NanumGothic
 source("tools/chunk-options.R")
 library(googleVis)
 op <- options(gvis.plot.tag='chart')
+library(extrafont)
+font_import()
 ```
 
 ## 1. 제19대 대통령 선거 일정
@@ -24,8 +26,8 @@ op <- options(gvis.plot.tag='chart')
 - 박근혜 대통령 탄핵 기각 : 탄핵안이 기각되면 제19대 대통령 선거일정에 맞춰 "2017-12-20" 실시
 - 박근혜 대통형 탄행 인용 
     - 최장("2017-06-01"): 탁핵이 인용되더라도 박근혜 대통령 변호인단의 의견이 최대한 반영(총10개월: 탄핵심판 6개월, 조기대선 2개월, 대통령 취입 2개월)
-    - 합리적 추론("2017-05-01"): 박영수 특검의 조사결과를 반영하여 탄핵인용("2016-12-21" 특검 출범후 70일 기간 반영)
-    - 최단("2017-04-01"): 박한철 헌법재판소 소장 임기 반영("2017-01-31" 만료) 
+    - 합리적 추론("2017-05-01"): **박영수** 특검의 조사결과를 반영하여 탄핵인용("2016-12-21" 특검 출범후 70일 기간 반영)
+    - 최단("2017-04-01"): **박한철** 헌법재판소 소장 임기 반영("2017-01-31" 만료) 
 
 
 ```{r Timeline, results='asis', tidy=FALSE}
@@ -52,7 +54,7 @@ election.dat <- data.frame(type=c("탄핵기각","탄핵기각","탄핵기각","
 plt <- gvisTimeline(data=election.dat,
                     rowlabel="type", barlabel="subtype",
                     start="start", end="end",
-                    options=list(width="1024px", height="500px", timeline="{showRowLabels:true}"))
+                    options=list(width="1024px", height="270px", timeline="{showRowLabels:true}"))
 
 plt_header <- plt$html$header
 plt_header <- gsub("charset=utf-8", "charset=euc-kr", plt_header)
@@ -83,7 +85,8 @@ library(readr)
 
 pe_event <- read_csv("data/presential-election-schedule-events.csv")
 
-timelineS(pe_event,  buffer.days = 10, main="박근혜 대통령 탄핵 전후 주요 사건", label.direction = "up", label.length = c(0.2,0.8,0.4,1.2), label.position = 3,
+par(family="NanumGothic")
+timelineS(pe_event,  buffer.days = 17, main="박근혜 대통령 탄핵 전후 주요 사건", label.direction = "up", label.length = c(0.2,0.8,0.4,1.2), label.position = 3,
 label.color = "blue", pch = "-", labels=paste0(pe_event[[1]], "\n", pe_event[[2]]), scale = "month", scale.format="%m-%d", label.angle=45)
 ```
 

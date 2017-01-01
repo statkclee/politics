@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 19대 대선</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 19대 대선</h1>
+          <h2 class="subtitle">제19대 대통령선거 일정</h2>
+<h2 id="제19대-대통령-선거-일정">1. 제19대 대통령 선거 일정</h2>
+<p>박근혜 대통령 탄핵으로 제19대 대통령선거 일정이 기존 “2017-12-20”에서 앞당겨질 가능성이 커졌다. 박근혜 대통령 탄핵 이후 제19대 대통령 선거 일정에 다음과 같은 시나리오가 가능하다.</p>
+<ul>
+<li>박근혜 대통령 탄핵 기각 : 탄핵안이 기각되면 제19대 대통령 선거일정에 맞춰 “2017-12-20” 실시</li>
+<li>박근혜 대통형 탄행 인용
+<ul>
+<li>최장(“2017-06-01”): 탁핵이 인용되더라도 박근혜 대통령 변호인단의 의견이 최대한 반영(총10개월: 탄핵심판 6개월, 조기대선 2개월, 대통령 취입 2개월)</li>
+<li>합리적 추론(“2017-05-01”): <strong>박영수</strong> 특검의 조사결과를 반영하여 탄핵인용(“2016-12-21” 특검 출범후 70일 기간 반영)</li>
+<li>최단(“2017-04-01”): <strong>박한철</strong> 헌법재판소 소장 임기 반영(“2017-01-31” 만료)</li>
+</ul></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">warn=</span>-<span class="dv">1</span>)
+<span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(googleVis))
+
+election.dat &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">type=</span><span class="kw">c</span>(<span class="st">&quot;탄핵기각&quot;</span>,<span class="st">&quot;탄핵기각&quot;</span>,<span class="st">&quot;탄핵기각&quot;</span>,<span class="st">&quot;탄핵기각&quot;</span>,
+                                  <span class="st">&quot;탄핵인용(최장)&quot;</span>,<span class="st">&quot;탄핵인용(최장)&quot;</span>,<span class="st">&quot;탄핵인용(최장)&quot;</span>,<span class="st">&quot;탄핵인용(최장)&quot;</span>,
+                                  <span class="st">&quot;탄핵인용(특검)&quot;</span>,<span class="st">&quot;탄핵인용(특검)&quot;</span>,<span class="st">&quot;탄핵인용(특검)&quot;</span>,<span class="st">&quot;탄핵인용(특검)&quot;</span>,
+                                  <span class="st">&quot;탄핵인용(최단)&quot;</span>,<span class="st">&quot;탄핵인용(최단)&quot;</span>,<span class="st">&quot;탄핵인용(최단)&quot;</span>,<span class="st">&quot;탄핵인용(최단)&quot;</span>),
+                           <span class="dt">subtype=</span><span class="kw">c</span>(<span class="st">&quot;탄핵전&quot;</span>, <span class="st">&quot;헌재심판&quot;</span>, <span class="st">&quot;대통령 업무복귀&quot;</span>, <span class="st">&quot;19대 인수위&quot;</span>,
+                                     <span class="st">&quot;탄핵전&quot;</span>, <span class="st">&quot;헌재심판&quot;</span>, <span class="st">&quot;조기대선&quot;</span>, <span class="st">&quot;19대 인수위&quot;</span>,
+                                     <span class="st">&quot;탄핵전&quot;</span>, <span class="st">&quot;헌재심판&quot;</span>, <span class="st">&quot;조기대선&quot;</span>, <span class="st">&quot;19대 인수위&quot;</span>,
+                                     <span class="st">&quot;탄핵전&quot;</span>, <span class="st">&quot;헌재심판&quot;</span>, <span class="st">&quot;조기대선&quot;</span>, <span class="st">&quot;19대 인수위&quot;</span>),
+                           <span class="dt">start=</span><span class="kw">as.POSIXct</span>(<span class="kw">c</span>(<span class="st">&quot;2016-10-24&quot;</span>,<span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-6-10&quot;</span>,<span class="st">&quot;2017-12-20&quot;</span>,
+                                              <span class="st">&quot;2016-10-24&quot;</span>,<span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-6-10&quot;</span>,<span class="st">&quot;2017-8-11&quot;</span>,
+                                              <span class="st">&quot;2016-10-24&quot;</span>,<span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-3-1&quot;</span>,<span class="st">&quot;2017-5-1&quot;</span>,
+                                              <span class="st">&quot;2016-10-24&quot;</span>,<span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-2-1&quot;</span>,<span class="st">&quot;2017-4-1&quot;</span>)),
+                           <span class="dt">end=</span><span class="kw">as.POSIXct</span>(<span class="kw">c</span>(<span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-6-9&quot;</span>,<span class="st">&quot;2017-12-19&quot;</span>,<span class="st">&quot;2018-2-25&quot;</span>,
+                                            <span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-6-9&quot;</span>,<span class="st">&quot;2017-8-10&quot;</span>,<span class="st">&quot;2017-10-11&quot;</span>,
+                                            <span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-2-28&quot;</span>,<span class="st">&quot;2017-4-30&quot;</span>,<span class="st">&quot;2017-8-1&quot;</span>,
+                                            <span class="st">&quot;2016-12-9&quot;</span>,<span class="st">&quot;2017-1-31&quot;</span>,<span class="st">&quot;2017-3-31&quot;</span>,<span class="st">&quot;2017-5-30&quot;</span>)))
+
+plt &lt;-<span class="st"> </span><span class="kw">gvisTimeline</span>(<span class="dt">data=</span>election.dat,
+                    <span class="dt">rowlabel=</span><span class="st">&quot;type&quot;</span>, <span class="dt">barlabel=</span><span class="st">&quot;subtype&quot;</span>,
+                    <span class="dt">start=</span><span class="st">&quot;start&quot;</span>, <span class="dt">end=</span><span class="st">&quot;end&quot;</span>,
+                    <span class="dt">options=</span><span class="kw">list</span>(<span class="dt">width=</span><span class="st">&quot;1024px&quot;</span>, <span class="dt">height=</span><span class="st">&quot;270px&quot;</span>, <span class="dt">timeline=</span><span class="st">&quot;{showRowLabels:true}&quot;</span>))
+
+plt_header &lt;-<span class="st"> </span>plt$html$header
+plt_header &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;charset=utf-8&quot;</span>, <span class="st">&quot;charset=euc-kr&quot;</span>, plt_header)
+plt$html$header &lt;-<span class="st"> </span>plt_header
+
+<span class="kw">plot</span>(plt)</code></pre></div>
+<!-- Timeline generated in R 3.3.2 by googleVis 0.6.1 package -->
+<!-- Sun Jan  1 17:07:01 2017 -->
+<!-- jsHeader -->
+<script type="text/javascript">
+ 
+// jsData 
+function gvisDataTimelineID26034a520677 () {
+var data = new google.visualization.DataTable();
+var datajson =
+[
+ [
+"탄핵기각",
+"탄핵전",
+new Date(2016,9,24,0,0,0),
+new Date(2016,11,9,0,0,0)
+],
+[
+"탄핵기각",
+"헌재심판",
+new Date(2016,11,9,0,0,0),
+new Date(2017,5,9,0,0,0)
+],
+[
+"탄핵기각",
+"대통령 업무복귀",
+new Date(2017,5,10,0,0,0),
+new Date(2017,11,19,0,0,0)
+],
+[
+"탄핵기각",
+"19대 인수위",
+new Date(2017,11,20,0,0,0),
+new Date(2018,1,25,0,0,0)
+],
+[
+"탄핵인용(최장)",
+"탄핵전",
+new Date(2016,9,24,0,0,0),
+new Date(2016,11,9,0,0,0)
+],
+[
+"탄핵인용(최장)",
+"헌재심판",
+new Date(2016,11,9,0,0,0),
+new Date(2017,5,9,0,0,0)
+],
+[
+"탄핵인용(최장)",
+"조기대선",
+new Date(2017,5,10,0,0,0),
+new Date(2017,7,10,0,0,0)
+],
+[
+"탄핵인용(최장)",
+"19대 인수위",
+new Date(2017,7,11,0,0,0),
+new Date(2017,9,11,0,0,0)
+],
+[
+"탄핵인용(특검)",
+"탄핵전",
+new Date(2016,9,24,0,0,0),
+new Date(2016,11,9,0,0,0)
+],
+[
+"탄핵인용(특검)",
+"헌재심판",
+new Date(2016,11,9,0,0,0),
+new Date(2017,1,28,0,0,0)
+],
+[
+"탄핵인용(특검)",
+"조기대선",
+new Date(2017,2,1,0,0,0),
+new Date(2017,3,30,0,0,0)
+],
+[
+"탄핵인용(특검)",
+"19대 인수위",
+new Date(2017,4,1,0,0,0),
+new Date(2017,7,1,0,0,0)
+],
+[
+"탄핵인용(최단)",
+"탄핵전",
+new Date(2016,9,24,0,0,0),
+new Date(2016,11,9,0,0,0)
+],
+[
+"탄핵인용(최단)",
+"헌재심판",
+new Date(2016,11,9,0,0,0),
+new Date(2017,0,31,0,0,0)
+],
+[
+"탄핵인용(최단)",
+"조기대선",
+new Date(2017,1,1,0,0,0),
+new Date(2017,2,31,0,0,0)
+],
+[
+"탄핵인용(최단)",
+"19대 인수위",
+new Date(2017,3,1,0,0,0),
+new Date(2017,4,30,0,0,0)
+] 
+];
+data.addColumn('string','type');
+data.addColumn('string','subtype');
+data.addColumn('datetime','start');
+data.addColumn('datetime','end');
+data.addRows(datajson);
+return(data);
+}
+ 
+// jsDrawChart
+function drawChartTimelineID26034a520677() {
+var data = gvisDataTimelineID26034a520677();
+var options = {};
+options["width"] = "1024px";
+options["height"] = "270px";
+options["timeline"] = {showRowLabels:true};
+
+    var chart = new google.visualization.Timeline(
+    document.getElementById('TimelineID26034a520677')
+    );
+    chart.draw(data,options);
+    
+
+}
+  
+ 
+// jsDisplayChart
+(function() {
+var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+var chartid = "timeline";
+  
+// Manually see if chartid is in pkgs (not all browsers support Array.indexOf)
+var i, newPackage = true;
+for (i = 0; newPackage && i < pkgs.length; i++) {
+if (pkgs[i] === chartid)
+newPackage = false;
+}
+if (newPackage)
+  pkgs.push(chartid);
+  
+// Add the drawChart function to the global list of callbacks
+callbacks.push(drawChartTimelineID26034a520677);
+})();
+function displayChartTimelineID26034a520677() {
+  var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+  var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+  window.clearTimeout(window.__gvisLoad);
+  // The timeout is set to 100 because otherwise the container div we are
+  // targeting might not be part of the document yet
+  window.__gvisLoad = setTimeout(function() {
+  var pkgCount = pkgs.length;
+  google.load("visualization", "1", { packages:pkgs, callback: function() {
+  if (pkgCount != pkgs.length) {
+  // Race condition where another setTimeout call snuck in after us; if
+  // that call added a package, we must not shift its callback
+  return;
+}
+while (callbacks.length > 0)
+callbacks.shift()();
+} });
+}, 100);
+}
+ 
+// jsFooter
+</script>
+<!-- jsChart -->
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartTimelineID26034a520677"></script>
+<!-- divChart -->
+<div id="TimelineID26034a520677" style="width: 1024px; height: 270px;">
+
+</div>
+<h2 id="박근혜-대통령-탄핵">2. 박근혜 대통령 탄핵</h2>
+<p>박근혜 대통령 탄핵 직후 중요 사건을 열거하면 다음과 같다.</p>
+<ul>
+<li>손학규 정계복귀, 2016-10-20</li>
+<li>JTBC 최순실 태블릿보도, 2016-10-24</li>
+<li>1차 촛불집회, 2016-10-29</li>
+<li>6차 촛불집회, 2016-12-03</li>
+<li>국회탄핵안 통과, 2016-12-09</li>
+<li>국민주권 개혁회의 구성, 2016-12-13</li>
+<li>박영수특검 착수, 2016-12-20</li>
+<li>박한철 소장 임기만료, 2017-01-31</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(timelineS)
+<span class="kw">library</span>(readr)
+
+pe_event &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/presential-election-schedule-events.csv&quot;</span>)</code></pre></div>
+<pre class="output"><code>Parsed with column specification:
+cols(
+  Event = col_character(),
+  Date = col_date(format = &quot;&quot;)
+)
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>)
+<span class="kw">timelineS</span>(pe_event,  <span class="dt">buffer.days =</span> <span class="dv">17</span>, <span class="dt">main=</span><span class="st">&quot;박근혜 대통령 탄핵 전후 주요 사건&quot;</span>, <span class="dt">label.direction =</span> <span class="st">&quot;up&quot;</span>, <span class="dt">label.length =</span> <span class="kw">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>,<span class="fl">0.4</span>,<span class="fl">1.2</span>), <span class="dt">label.position =</span> <span class="dv">3</span>,
+<span class="dt">label.color =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">pch =</span> <span class="st">&quot;-&quot;</span>, <span class="dt">labels=</span><span class="kw">paste0</span>(pe_event[[<span class="dv">1</span>]], <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, pe_event[[<span class="dv">2</span>]]), <span class="dt">scale =</span> <span class="st">&quot;month&quot;</span>, <span class="dt">scale.format=</span><span class="st">&quot;%m-%d&quot;</span>, <span class="dt">label.angle=</span><span class="dv">45</span>)</code></pre></div>
+<p><img src="fig/presential-election-events-1.png" title="plot of chunk presential-election-events" alt="plot of chunk presential-election-events" style="display: block; margin: auto;" /></p>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
