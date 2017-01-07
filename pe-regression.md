@@ -10,17 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(HistData) # install.packages("HistData")
-library(ggplot2)
-library(broom)
-library(tidyverse)
-library(gridExtra)
-library(extrafont)
-loadfonts()
-theme_set(theme_gray(base_family='NanumGothic'))
-```
+
 
 ## 1. 회귀분석
 
@@ -37,7 +27,8 @@ theme_set(theme_gray(base_family='NanumGothic'))
 
 원본 데이터가 인치로 되어 있어 이를 센티미터로 변환한 후 회귀분석을 실행한다.
 
-``` {r regression-galton, message=FALSE, warning=FALSE, comment=FALSE}
+
+~~~{.r}
 # 0. 환경설정 ----------------------------------------
 # library(HistData) # install.packages("HistData")
 # library(ggplot2)
@@ -54,7 +45,7 @@ GaltonFamilies <- GaltonFamilies %>%
          mother = 2.54 * mother,
          midparentHeight = 2.54 * midparentHeight,
          childHeight = 2.54 * childHeight)
-```
+~~~
 
 ### 1.2. 회귀모형
 
@@ -65,20 +56,55 @@ GaltonFamilies <- GaltonFamilies %>%
     - $\text{자식 신장} = \beta_0 + \beta_1 \times \text{아버지 신장} + \epsilon$
     - $\text{자식 신장} = \beta_0 + \beta_1 \times \text{어머니 신장} + \epsilon$
 
-``` {r regression-galton-model, message=FALSE, warning=FALSE, comment=FALSE}
+
+~~~{.r}
 # 2. 회귀분석 ----------------------------------------
 parent_mod <- lm(childHeight ~ midparentHeight, data=GaltonFamilies)
 father_mod <- lm(childHeight ~ father, data=GaltonFamilies)
 mother_mod <- lm(childHeight ~ mother, data=GaltonFamilies)
 
 coef(parent_mod)
-coef(father_mod)
-coef(mother_mod)
-```
+~~~
 
-- 부모 신장을 평균내어 자식 신장을 예측한 모형 (`parent_mod`) 회귀계수: `r coef(parent_mod)[2]`
-- 아버지 신장으로 자식 신장을 예측한 모형 (`father_mod`) 회귀계수: `r coef(father_mod)[2]`
-- 어머니 신장으로 자식 신장을 예측한 모형 (`mother_mod`) 회귀계수: `r coef(mother_mod)[2]`
+
+
+~~~{.output}
+FALSE     (Intercept) midparentHeight 
+FALSE      57.4960510       0.6373609
+
+~~~
+
+
+
+~~~{.r}
+coef(father_mod)
+~~~
+
+
+
+~~~{.output}
+FALSE (Intercept)      father 
+FALSE  101.953809    0.384505
+
+~~~
+
+
+
+~~~{.r}
+coef(mother_mod)
+~~~
+
+
+
+~~~{.output}
+FALSE (Intercept)      mother 
+FALSE 118.3312440   0.3145428
+
+~~~
+
+- 부모 신장을 평균내어 자식 신장을 예측한 모형 (`parent_mod`) 회귀계수: 0.6373609
+- 아버지 신장으로 자식 신장을 예측한 모형 (`father_mod`) 회귀계수: 0.384505
+- 어머니 신장으로 자식 신장을 예측한 모형 (`mother_mod`) 회귀계수: 0.3145428
 
 
 ### 1.3. 시각화
@@ -86,7 +112,8 @@ coef(mother_mod)
 부모 평균신장과 아버지, 어머니 신장으로 자식 신장을 예측하게 되면 기울기가 모두 1보다 작아 
 평균으로 회귀하는 것이 시각적으로 확인된다.
 
-``` {r regression-galton-viz, message=FALSE, warning=FALSE, comment=FALSE}
+
+~~~{.r}
 # 3. 시각화 ------------------------------------------ 
 # 3.1. 어머니, 아버지 부모평균신장으로 자식신장 예측
 ggplot(GaltonFamilies) +
@@ -98,7 +125,11 @@ ggplot(GaltonFamilies) +
     x = "부모 평균 신장(단위: 센티미터)",
     y = "자식 신장(단위: 센티미터)"
   )
+~~~
 
+<img src="fig/regression-galton-viz-1.png" title="plot of chunk regression-galton-viz" alt="plot of chunk regression-galton-viz" style="display: block; margin: auto;" />
+
+~~~{.r}
 # 3.2. 어머니, 아버지 각각 신장으로 자식신장 예측
 father_g <- ggplot(GaltonFamilies, aes(father, childHeight)) +
   geom_point(alpha=0.3) +
@@ -119,6 +150,8 @@ mother_g <- ggplot(GaltonFamilies, aes(mother, childHeight)) +
   )
 
 grid.arrange(father_g, mother_g, ncol=2)
-```
+~~~
+
+<img src="fig/regression-galton-viz-2.png" title="plot of chunk regression-galton-viz" alt="plot of chunk regression-galton-viz" style="display: block; margin: auto;" />
 
 
