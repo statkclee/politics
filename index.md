@@ -64,6 +64,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [동영상 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-video.html)
         - [KBS (2016-12-07)인공지능으로 분석한 대통령의 마음…슬픔은 어디에?](http://news.kbs.co.kr/news/view.do?ncd=3390429)
     1. [텍스트 감성분석](http://statkclee.github.io/deep-learning/ms-cognitive-text-sentiment.html)
+    1. [회귀분석 - 재벌개혁](pe-regression.html)
 
 
 > ### xwMOOC 오픈 교재
