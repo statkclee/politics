@@ -10,13 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(tidyverse)
-library(gridExtra)
-library(ggplot2)
-options(warn=-1)
-```
+
 
 ## 1. 인구 피라미드 [^idbr]
 
@@ -31,12 +25,20 @@ IDB를 팩키지화하여 데이터 추출작업을 편리하게 만든 것이 `
 대한민국을 찾아 뽑아내야 하기 때문에 가장 먼저 국가코드를 확인한다.
 `countrycode()` 함수를 활용하여 대한민국 국가코드는 "KS" 임이 확인된다.
 
-``` {r idbr-population-pyramid, message=FALSE}
+
+~~~{.r}
 library(idbr) #install.packages('idbr')
 
 library(countrycode)
 countrycode('Korea', 'country.name', 'fips104')
-```
+~~~
+
+
+
+~~~{.output}
+[1] "KS"
+
+~~~
 
 ### 1.2. 데이터 가져오기
 
@@ -44,7 +46,8 @@ API를 통한 인증방식을 통해 데이터를 열어주고 있기 때문에
 미국 통계국 인증웹페이지 <http://api.census.gov/data/key_signup.html> 에서 전자우편을 통해 API키를 발급받는다.
 `idb1()` 함수 국가코드, 기간, 인증키를 설정하면 데이터를 쭉 불러와서 데이터프레임으로 정리한다.
 
-``` {r idbr-population-pyramid-data, message=FALSE, eval=FALSE}
+
+~~~{.r}
 library(tidyverse)
 library(idbr) # devtools::install_github('walkerke/idbr')
 library(ggplot2)
@@ -67,14 +70,15 @@ korea <- bind_rows(male, female) %>%
   mutate(abs_pop = abs(POP))
 
 korea <- korea %>% mutate(SEX = ifelse(SEX == "Male", "남자", "여자"))
-```
+~~~
 
 ### 1.3. 인구 피라미드 애니메이션
 
 1990년부터 2050년까지 각 연도별 `ggplot`을 활용하여 인구 피라미드를 생성하고 나서 이를 `gif` 파일로 변환시키면 
 인구 피라미드 애니메이션이 완성된다.
 
-``` {r idbr-population-pyramid-animation, message=FALSE, eval=FALSE}
+
+~~~{.r}
 saveGIF({  
   for (i in 1990:2050) {    
     title <- as.character(i)    
@@ -104,7 +108,7 @@ saveGIF({
     print(g1)
   }
 }, movie.name = 'korea_pyramid.gif', interval = 0.3, ani.width = 700, ani.height = 600)
-```
+~~~
 <img src="fig/korea_pyramid.gif" alt="인구 피라미드 변화 1990 - 2050" />
 
 ## 2. 대선이 있던 년도별 인구구조 변화
@@ -114,7 +118,8 @@ saveGIF({
 1992년 ~ 2017년 대선 년도별 인구구조 변화를 시각화하면 다음과 같다.
 `ggplot` 짝꿍 `gridExtra` 팩키지를 활용하여 `grid.arrange()` 함수를 활용하여 시각화하면 다음과 같다.
 
-``` {r idbr-population-pyramid-election, message=FALSE, fig.width=10}
+
+~~~{.r}
 # library(gridExtra)
 
 korea <- read_csv("data/korea_pop_idb.csv")
@@ -147,19 +152,27 @@ for(i in seq_along(election_year)) {
 }
 
 grid.arrange(p1992, p1997, p2002, p2007, p2012, p2017, nrow=2, ncol=3)
-```
+~~~
+
+<img src="fig/idbr-population-pyramid-election-1.png" title="plot of chunk idbr-population-pyramid-election" alt="plot of chunk idbr-population-pyramid-election" style="display: block; margin: auto;" />
 
 ### 2.2. 1990년 대선과 2017년 대선 인구구조 비교
 
-``` {r idbr-population-pyramid-election-2012, message=FALSE}
+
+~~~{.r}
 grid.arrange(p2012, p2017, ncol=2)
-```
+~~~
+
+<img src="fig/idbr-population-pyramid-election-2012-1.png" title="plot of chunk idbr-population-pyramid-election-2012" alt="plot of chunk idbr-population-pyramid-election-2012" style="display: block; margin: auto;" />
 
 ### 2.3. 2012년 대선과 2017년 대선 인구구조 비교
 
-``` {r idbr-population-pyramid-election-1992, message=FALSE}
+
+~~~{.r}
 grid.arrange(p1992, p2017, ncol=2)
-```
+~~~
+
+<img src="fig/idbr-population-pyramid-election-1992-1.png" title="plot of chunk idbr-population-pyramid-election-1992" alt="plot of chunk idbr-population-pyramid-election-1992" style="display: block; margin: auto;" />
 
 
 

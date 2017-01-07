@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">대한민국 인구 피라미드</h2>
+<h2 id="인구-피라미드-idbr">1. 인구 피라미드 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></h2>
+<p>1990년도부터 2050년까지 대한민국 인구구조 변화를 <a href="http://www.census.gov/population/international/data/idb/informationGateway.php">미국 통계국 데이터베이스(IDB)</a>를 활용하여 인구 피라미드 구조 변화를 통해 시각적으로 이해한다.</p>
+<h3 id="국가코드-확인">1.1. 국가코드 확인</h3>
+<p>IDB를 팩키지화하여 데이터 추출작업을 편리하게 만든 것이 <code>idbr</code> 팩키지다. 대한민국을 찾아 뽑아내야 하기 때문에 가장 먼저 국가코드를 확인한다. <code>countrycode()</code> 함수를 활용하여 대한민국 국가코드는 “KS” 임이 확인된다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(idbr) <span class="co">#install.packages(&#39;idbr&#39;)</span>
+
+<span class="kw">library</span>(countrycode)
+<span class="kw">countrycode</span>(<span class="st">&#39;Korea&#39;</span>, <span class="st">&#39;country.name&#39;</span>, <span class="st">&#39;fips104&#39;</span>)</code></pre></div>
+<pre class="output"><code>[1] &quot;KS&quot;
+</code></pre>
+<h3 id="데이터-가져오기">1.2. 데이터 가져오기</h3>
+<p>API를 통한 인증방식을 통해 데이터를 열어주고 있기 때문에 미국 통계국 인증웹페이지 <a href="http://api.census.gov/data/key_signup.html" class="uri">http://api.census.gov/data/key_signup.html</a> 에서 전자우편을 통해 API키를 발급받는다. <code>idb1()</code> 함수 국가코드, 기간, 인증키를 설정하면 데이터를 쭉 불러와서 데이터프레임으로 정리한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(idbr) <span class="co"># devtools::install_github(&#39;walkerke/idbr&#39;)</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(animation)
+<span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()
+
+<span class="kw">idb_api_key</span>(<span class="st">&quot;7aexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;</span>)
+
+male &lt;-<span class="st"> </span><span class="kw">idb1</span>(<span class="st">&#39;KS&#39;</span>, <span class="dv">1990</span>:<span class="dv">2050</span>, <span class="dt">sex =</span> <span class="st">&#39;male&#39;</span>) %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">SEX =</span> <span class="st">&#39;Male&#39;</span>)
+
+female &lt;-<span class="st"> </span><span class="kw">idb1</span>(<span class="st">&#39;KS&#39;</span>, <span class="dv">1990</span>:<span class="dv">2050</span>, <span class="dt">sex =</span> <span class="st">&#39;female&#39;</span>) %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">POP =</span> POP *<span class="st"> </span>-<span class="dv">1</span>,
+         <span class="dt">SEX =</span> <span class="st">&#39;Female&#39;</span>)
+
+korea &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(male, female) %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">abs_pop =</span> <span class="kw">abs</span>(POP))
+
+korea &lt;-<span class="st"> </span>korea %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">SEX =</span> <span class="kw">ifelse</span>(SEX ==<span class="st"> &quot;Male&quot;</span>, <span class="st">&quot;남자&quot;</span>, <span class="st">&quot;여자&quot;</span>))</code></pre></div>
+<h3 id="인구-피라미드-애니메이션">1.3. 인구 피라미드 애니메이션</h3>
+<p>1990년부터 2050년까지 각 연도별 <code>ggplot</code>을 활용하여 인구 피라미드를 생성하고 나서 이를 <code>gif</code> 파일로 변환시키면 인구 피라미드 애니메이션이 완성된다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">saveGIF</span>({  
+  for (i in <span class="dv">1990</span>:<span class="dv">2050</span>) {    
+    title &lt;-<span class="st"> </span><span class="kw">as.character</span>(i)    
+    year_data &lt;-<span class="st"> </span>dplyr::<span class="kw">filter</span>(korea, time ==<span class="st"> </span>i)
+    
+    g1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(year_data, <span class="kw">aes</span>(<span class="dt">x =</span> AGE, <span class="dt">y =</span> POP, <span class="dt">fill =</span> SEX, <span class="dt">width =</span> <span class="dv">1</span>)) +
+<span class="st">      </span><span class="kw">coord_fixed</span>() +<span class="st"> </span>
+<span class="st">      </span><span class="kw">coord_flip</span>() +
+<span class="st">      </span><span class="kw">geom_bar</span>(<span class="dt">data =</span> <span class="kw">subset</span>(year_data, SEX ==<span class="st"> &quot;남자&quot;</span>), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +
+<span class="st">      </span><span class="kw">geom_bar</span>(<span class="dt">data =</span> <span class="kw">subset</span>(year_data, SEX ==<span class="st"> &quot;여자&quot;</span>), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +
+<span class="st">      </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(-<span class="dv">500000</span>, <span class="dv">500000</span>, <span class="dv">250000</span>),
+                         <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&#39;50 만&#39;</span>, <span class="st">&#39;25 만&#39;</span>, <span class="st">&#39;0&#39;</span>, <span class="st">&#39;25 만&#39;</span>, <span class="st">&#39;50 만&#39;</span>), 
+                         <span class="dt">limits =</span> <span class="kw">c</span>(<span class="kw">min</span>(korea$POP)-<span class="dv">50000</span>, <span class="kw">max</span>(korea$POP))) +
+<span class="st">      </span><span class="kw">theme_economist</span>(<span class="dt">base_size =</span> <span class="dv">14</span>) +<span class="st"> </span>
+<span class="st">      </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&#39;#ff9896&#39;</span>, <span class="st">&#39;#d62728&#39;</span>)) +<span class="st"> </span>
+<span class="st">      </span><span class="kw">labs</span>(
+        <span class="dt">title =</span> <span class="kw">paste0</span>(<span class="st">&quot;대한민국 인구구조 변화 &quot;</span>, title),
+        <span class="dt">subtitle =</span> <span class="st">&quot;1990 ~ 2050&quot;</span>,
+        <span class="dt">caption =</span> <span class="st">&quot;데이터: 미국 통계국(IDB): idbr R 팩키지&quot;</span>,
+        <span class="dt">x =</span> <span class="st">&quot;연령&quot;</span>,
+        <span class="dt">y =</span> <span class="st">&quot;인구&quot;</span>
+      ) +
+<span class="st">      </span><span class="co"># theme_minimal(base_family=&quot;NanumMyeongjo&quot;) +</span>
+<span class="st">      </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">legend.title =</span> <span class="kw">element_blank</span>(), 
+            <span class="dt">legend.text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumMyeongjo&quot;</span>)) +<span class="st"> </span>
+<span class="st">      </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>))
+    <span class="kw">print</span>(g1)
+  }
+}, <span class="dt">movie.name =</span> <span class="st">&#39;korea_pyramid.gif&#39;</span>, <span class="dt">interval =</span> <span class="fl">0.3</span>, <span class="dt">ani.width =</span> <span class="dv">700</span>, <span class="dt">ani.height =</span> <span class="dv">600</span>)</code></pre></div>
+<p><img src="fig/korea_pyramid.gif" alt="인구 피라미드 변화 1990 - 2050" /></p>
+<h2 id="대선이-있던-년도별-인구구조-변화">2. 대선이 있던 년도별 인구구조 변화</h2>
+<h3 id="최근-6번-대선-인구구조-변화">2.1. 최근 6번 대선 인구구조 변화</h3>
+<p>1992년 ~ 2017년 대선 년도별 인구구조 변화를 시각화하면 다음과 같다. <code>ggplot</code> 짝꿍 <code>gridExtra</code> 팩키지를 활용하여 <code>grid.arrange()</code> 함수를 활용하여 시각화하면 다음과 같다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library(gridExtra)</span>
+
+korea &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/korea_pop_idb.csv&quot;</span>)
+korea &lt;-<span class="st"> </span>korea %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">SEX =</span> <span class="kw">ifelse</span>(SEX ==<span class="st"> &quot;Male&quot;</span>, <span class="st">&quot;남자&quot;</span>, <span class="st">&quot;여자&quot;</span>))
+
+vis_election &lt;-<span class="st"> </span>function(df, title) { 
+  g1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x =</span> AGE, <span class="dt">y =</span> POP, <span class="dt">fill =</span> SEX, <span class="dt">width =</span> <span class="dv">1</span>)) +
+<span class="st">    </span><span class="kw">coord_fixed</span>() +<span class="st"> </span><span class="kw">coord_flip</span>() +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">data =</span> <span class="kw">subset</span>(df, SEX ==<span class="st"> &quot;남자&quot;</span>), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">data =</span> <span class="kw">subset</span>(df, SEX ==<span class="st"> &quot;여자&quot;</span>), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="dv">18</span>, <span class="dt">color=</span><span class="st">&quot;darkblue&quot;</span>) +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(-<span class="dv">500000</span>, <span class="dv">500000</span>, <span class="dv">250000</span>),
+                       <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&#39;50 만&#39;</span>, <span class="st">&#39;25 만&#39;</span>, <span class="st">&#39;0&#39;</span>, <span class="st">&#39;25 만&#39;</span>, <span class="st">&#39;50 만&#39;</span>), 
+                       <span class="dt">limits =</span> <span class="kw">c</span>(<span class="kw">min</span>(korea$POP)-<span class="dv">50000</span>, <span class="kw">max</span>(korea$POP))) +
+<span class="st">    </span><span class="kw">theme_economist</span>(<span class="dt">base_size =</span> <span class="dv">14</span>, <span class="dt">base_family=</span><span class="st">&quot;NanumMyeongjo&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&#39;#ff9896&#39;</span>, <span class="st">&#39;#d62728&#39;</span>)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">labs</span>(
+      <span class="dt">title =</span> <span class="kw">paste0</span>(title, <span class="st">&quot; 인구구조&quot;</span>),
+      <span class="dt">x =</span> <span class="st">&quot;연령&quot;</span>,
+      <span class="dt">y =</span> <span class="st">&quot;&quot;</span>
+    ) +<span class="st"> </span><span class="kw">guides</span>(<span class="dt">fill=</span><span class="ot">FALSE</span>)
+}
+
+election_year &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1992</span>, <span class="dv">1997</span>, <span class="dv">2002</span>, <span class="dv">2007</span>, <span class="dv">2012</span>, <span class="dv">2017</span>)
+
+for(i in <span class="kw">seq_along</span>(election_year)) {
+  df &lt;-<span class="st"> </span>korea %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(time ==<span class="st"> </span>election_year[i])
+  p_name &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;p&quot;</span>, election_year[i])
+  <span class="kw">assign</span>(p_name, <span class="kw">vis_election</span>(df, election_year[i]))
+}
+
+<span class="kw">grid.arrange</span>(p1992, p1997, p2002, p2007, p2012, p2017, <span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">ncol=</span><span class="dv">3</span>)</code></pre></div>
+<p><img src="fig/idbr-population-pyramid-election-1.png" title="plot of chunk idbr-population-pyramid-election" alt="plot of chunk idbr-population-pyramid-election" style="display: block; margin: auto;" /></p>
+<h3 id="년-대선과-2017년-대선-인구구조-비교">2.2. 1990년 대선과 2017년 대선 인구구조 비교</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">grid.arrange</span>(p2012, p2017, <span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
+<p><img src="fig/idbr-population-pyramid-election-2012-1.png" title="plot of chunk idbr-population-pyramid-election-2012" alt="plot of chunk idbr-population-pyramid-election-2012" style="display: block; margin: auto;" /></p>
+<h3 id="년-대선과-2017년-대선-인구구조-비교-1">2.3. 2012년 대선과 2017년 대선 인구구조 비교</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">grid.arrange</span>(p1992, p2017, <span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
+<p><img src="fig/idbr-population-pyramid-election-1992-1.png" title="plot of chunk idbr-population-pyramid-election-1992" alt="plot of chunk idbr-population-pyramid-election-1992" style="display: block; margin: auto;" /></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="http://www.arilamstein.com/blog/2016/06/06/idbr-access-us-census-bureau-international-data-base-r/">idbr: access the US Census Bureau International Data Base in R</a><a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
