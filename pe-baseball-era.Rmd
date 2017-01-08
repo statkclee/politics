@@ -21,8 +21,11 @@ library(extrafont)
 library(gridExtra)
 library(ggrepel)
 library(DT)
+library(rvest)
+library(httr)
 loadfonts()
 theme_set(theme_gray(base_family='NanumGothic'))
+options(warn=-1)
 ```
 
 ## 1. 가설 검정 개요
@@ -52,7 +55,7 @@ MLB 투수 유전자는 유전이 될까? 아버지보다 나은 아들은 존�
 
 `Lahman` 데이터베이스를 R 팩키지를 통해 쉽게 가져올 수 있는 점이 눈에 띈다.
 
-``` {r pe-baseball-wiki, message=FALSE, eval=FALSE}
+``` {r pe-baseball-setup, message=FALSE, eval=FALSE}
 # 0. 환경설정 ----------------------------------------
 library(ggplot2)
 library(tidyverse)
@@ -63,6 +66,8 @@ library(extrafont)
 library(gridExtra)
 library(ggrepel)
 library(DT)
+library(rvest)
+library(httr)
 loadfonts()
 ```
 
@@ -149,7 +154,7 @@ datatable(player_m_list)
 키값이 `playerID`가 된다. 그 다음 투수의 가장 중요한 성능지표인 방어율(ERA)를 `Pitching` 데이터에서
 선수 전체 기간에 대한 방어율을 계산하는 공식은 다음과 같다.
 
-$\frac{\text{ER}}{\frac{\text{IPouts}}{3}} \times 9$
+$$\frac{\text{ER}}{\frac{\text{IPouts}}{3}} \times 9$$
 
 - 평균자책점(ERA, Earned Run Average): 게임당 투수가 내준 점수, 즉 투수 자책점의 평균이다.
 - 자책점(ER, Earned Run): 다른 수비에러 없이 실점하는 경우, 해당 실점은 투수 책임으로 투수 자책점이 된다.
@@ -203,7 +208,7 @@ ggplot(player_viz_df, aes(father_era, son_era)) +
                      limits = c(2, 10)) +
   geom_text_repel(aes(label=ifelse(son_era < father_era, son,'')))
 
-player_viz_df %>% dplyr::filter(son_era<father_era) %>% 
+player_viz_df %>% dplyr::filter(son_era<father_era) %>% arrange(son_era) %>% 
   dplyr::select(family_key, father, father_era, son, son_era) %>% 
   datatable() %>% 
   formatRound("father_era", digits = 2) %>% 
@@ -234,7 +239,7 @@ ggplot(player_viz_df, aes(father_era, son_era)) +
                      limits = c(2, 9)) +
   geom_text_repel(aes(label=ifelse(son_era > father_era, son,'')))
 
-player_viz_df %>% dplyr::filter(son_era>father_era) %>% 
+player_viz_df %>% dplyr::filter(son_era>father_era) %>% arrange(father_era) %>% 
   dplyr::select(family_key, father, father_era, son, son_era) %>% 
   datatable() %>% 
   formatRound("father_era", digits = 2) %>% 
