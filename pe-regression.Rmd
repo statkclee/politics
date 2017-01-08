@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 회귀분석
+subtitle: 회귀분석 - 부모님 신장과 자식 신장
 output:
   html_document: 
     keep_md: yes
