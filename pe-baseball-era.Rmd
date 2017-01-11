@@ -30,7 +30,7 @@ options(warn=-1)
 
 ## 1. 가설 검정 개요
 
-[손학규](https://namu.wiki/w/손학규) [동아시아 미래재단] 상임이사로 작년 정계복귀를 하면서 발간한 [강진일기](http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791195823086&orderClick=JAI)에서 재벌개혁에 영감을 받아, 그것도 주말에 ... 1월 첫주 주말 R 코딩한 산출물입니다.
+[손학규](https://namu.wiki/w/손학규) [동아시아 미래재단](http://www.future21.or.kr) 상임이사로 작년 정계복귀를 하면서 발간한 [강진일기](http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791195823086&orderClick=JAI)에서 재벌개혁 부분을 읽다가 영감을 받아, 그것도 주말에 ... 1월 첫주 주말 R 코딩한 산출물입니다.
 
 MLB 투수 유전자는 유전이 될까? 아버지보다 나은 아들은 존재하는가?
 데이터를 통해 나온 결론부터 말한다면, 
