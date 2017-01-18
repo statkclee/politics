@@ -28,7 +28,7 @@ library(listviewer) # 리스트 자료형 살펴보기
 
 | Text Mining of Presidential Campaign Speeches in R - Romney vs. Obama  | How to Build a Text Mining, Machine Learning Document Classification System in R! |
 |-------------------------------------------------------------------------|---------------------------------------------------------------------|
-|<iframe width="560" height="315" src="https://www.youtube.com/embed/2Znairz-hvU" frameborder="0" allowfullscreen></iframe>|<iframe width="320" height="180" src="https://www.youtube.com/embed/j1V2McKbkLo" frameborder="0" allowfullscreen></iframe>|
+|<iframe width="320" height="180" src="https://www.youtube.com/embed/2Znairz-hvU" frameborder="0" allowfullscreen></iframe>|<iframe width="320" height="180" src="https://www.youtube.com/embed/j1V2McKbkLo" frameborder="0" allowfullscreen></iframe>|
 
 
 [^speeches-text-classifier]: [Martin Schweinberger (2016), Text Mining with R: Building a Text Classifier](http://www.martinschweinberger.de/blog/textclass/)
@@ -52,7 +52,7 @@ Timothy DAuria가 작성한 R코드를 바탕으로 더 이상 지원이 되지�
 텍스트 데이터 처리를 위한 `tm` 팩키지, 리스트 자료형 처리를 위한 `purrr`, 리스트 자료형을 살펴보기 위한 `listviewer`,
 knn 예측모형을 위한 `class` 팩키지를 동원한다.
 
-``` {r text-classifier-setup, eval=FALSE}
+``` {r text-classifier-setup}
 # 0. 환경설정 ------------------------------------
 
 rm(list=ls(all=T)) # 작업환경 대청소
@@ -114,7 +114,7 @@ jsonedit(candTDM, mode = "view", elementId = "candTDM")
 # 텍스트 쌓기: 리스트를 데이터프레임 변환
 tdm.stack <- map_df(candTDM, rbind, fill=TRUE)
 tdm.stack[is.na(tdm.stack)] <- 0 # 결측값 0 치환
-head(tdm.stack)
+# head(tdm.stack)
 ```
 
 ### 2.3. `knn` 예측모형
@@ -135,7 +135,7 @@ tdm.stack.nl <- tdm.stack[, !colnames(tdm.stack) %in% "targetcandidate"]
 knn.pred <- knn(tdm.stack.nl[train.idx, ], tdm.stack.nl[test.idx, ], tdm.cand[train.idx])
 
 # 모형 성능
-conf.mat <- table("Predictions" = knn.pred , Actual = tdm.cand[test.idx])
+(conf.mat <- table("Predictions" = knn.pred , Actual = tdm.cand[test.idx]))
 # 정확도 계산
 (accuracy <- sum(diag(conf.mat))/length(test.idx) * 100)
 ```
