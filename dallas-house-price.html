@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">주택가격 변동 국가 비교(한국, 독일, 스페인, 프랑스, 일본, 미국)</h2>
+<h2 id="주택가격-국제-비교-lenkiefer-house-price-index">1. 주택가격 국제 비교 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></h2>
+<p>달라스 연방준비은행은 국제 주택가격 데이터베이스를 통해 주택정보를 엑셀 형태로 제공하고 있다. <a href="https://www.dallasfed.org">Federal Reserve Bank of Dallas 웹사이트</a> 접속해서 데이터를 <a href="https://www.dallasfed.org/institute/houseprice/">International House Price Database</a>에서 국제 주택데이터를 다운로드 받을 수 있다.</p>
+<p>많은 나라가 있지만 한국과 비교가 많이 되는 5개국을 뽑아 한국 포함 총 6개국에 대해서 2005년을 기준점 100으로 놓았을 때 주택가격 동향을 비교해 보자.</p>
+<p><img src="fig/hpi_compare international.gif" alt="주택가격 변화 국제 비교" width="100%" /></p>
+<h2 id="주택가격-국제-비교-시각화">2. 주택가격 국제 비교 시각화</h2>
+<p><a href="http://lenkiefer.com/2016/12/10/global-house-price-trends">Global house price trends</a> 블로그에 게시된 코드를 기반으로 오류를 수정하고, 2016년 3분기 데이터 <code>hp1603.xlsx</code> 최신 국제주택가격 데이터를 반영했으며, 한글화하였다.</p>
+<h3 id="환경설정">2.1. 환경설정</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 --------------------------------------------------------------------------</span>
+<span class="kw">library</span>(data.table)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(readxl)
+<span class="kw">library</span>(zoo)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(animation)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()</code></pre></div>
+<h3 id="국제-주택가격-데이터">2.2. 국제 주택가격 데이터</h3>
+<p>주택가격 국제 비교를 위해 사용된 한국 데이터를 사용했다고 밝히고 있다. <a href="http://www.dallasfed.org/assets/documents/institute/wpapers/2011/0099.pdf">한국 및 국제 주택가격 표준화를 위해 사용된 방법</a>을 참고한다. 최신 <a href="http://nland.kbstar.com/quics?page=B025966&amp;cc=b044009:b044009">국민은행 KB주택가격통향</a> 데이터를 비교하여 살펴보면 좋겠다. 국제 비교를 위해 2005년을 100으로 넣고 국제비교를 했지만, 국민은행 주택가격동향에서는 가장 최근 시점을 100으로 놓고 상대적으로 과거 시세 정보를 표현하고 있다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 가져오기 --------------------------------------------------------------------------</span>
+
+hpi &lt;-<span class="st"> </span><span class="kw">read_excel</span>(<span class="st">&quot;data/hp1603.xlsx&quot;</span>,<span class="dt">sheet=</span><span class="st">&quot;HPI&quot;</span>)
+var_names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;date&quot;</span>, <span class="st">&quot;Australia&quot;</span>, <span class="st">&quot;Belgium&quot;</span>, <span class="st">&quot;Canada&quot;</span>, <span class="st">&quot;Switzerland&quot;</span>, <span class="st">&quot;독일&quot;</span>, 
+               <span class="st">&quot;Denmark&quot;</span>, <span class="st">&quot;스페인&quot;</span>, <span class="st">&quot;Finland&quot;</span>, <span class="st">&quot;프랑스&quot;</span>, <span class="st">&quot;UK&quot;</span>, <span class="st">&quot;Ireland&quot;</span>, <span class="st">&quot;Italy&quot;</span>, 
+               <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;한국&quot;</span>, <span class="st">&quot;Luxembourg&quot;</span>, <span class="st">&quot;Netherlands&quot;</span>, <span class="st">&quot;Norway&quot;</span>, <span class="st">&quot;New Zealand&quot;</span>, 
+               <span class="st">&quot;Sweden&quot;</span>, <span class="st">&quot;미국&quot;</span>, <span class="st">&quot;S. Africa&quot;</span>, <span class="st">&quot;Croatia&quot;</span>, <span class="st">&quot;Israel&quot;</span>, <span class="st">&quot;blank&quot;</span>, <span class="st">&quot;Aggregate&quot;</span>)
+<span class="kw">names</span>(hpi) &lt;-<span class="st"> </span>var_names
+hpi$date &lt;-<span class="st"> </span><span class="kw">as.Date</span>(<span class="kw">as.yearqtr</span>(hpi$date, <span class="dt">format =</span> <span class="st">&quot;%Y:Q%q&quot;</span>))
+hpi &lt;-<span class="st"> </span>hpi %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(!<span class="kw">is.na</span>(date)) %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(-blank, -Aggregate)
+
+<span class="co"># 2. 데이터 정제 --------------------------------------------------------------------------</span>
+
+hpi.dt &lt;-<span class="st"> </span>hpi %&gt;%<span class="st"> </span><span class="kw">gather</span>(<span class="dt">key=</span>country,<span class="dt">value=</span>hpi ,-<span class="kw">c</span>(date)) %&gt;%<span class="st"> </span><span class="kw">data.table</span>()
+dlist&lt;-<span class="kw">unique</span>(hpi.dt$date)</code></pre></div>
+<h3 id="한국을-포함한-6개국-주택가격-변화-시각화">2.3. 한국을 포함한 6개국 주택가격 변화 시각화</h3>
+<p>“한국”, “독일”, “스페인”, “프랑스”, “일본”, “미국” 총 6개국에 대해 2005년 주택가격을 100으로 두고 계절변동을 반영한 시계열 주택가격변동을 정적 그래프를 통해 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3. 주택가격변동 시각화  --------------------------------------------------------------------------</span>
+
+korea_friends &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;한국&quot;</span>, <span class="st">&quot;독일&quot;</span>, <span class="st">&quot;스페인&quot;</span>, <span class="st">&quot;프랑스&quot;</span>, <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;미국&quot;</span>)
+
+<span class="co"># 3.1. 주택가격 국제 비교 ------------------------------------------------------------------</span>
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span>hpi.dt[<span class="kw">year</span>(date)&gt;<span class="dv">2004</span> &amp;<span class="st"> </span>
+<span class="st">                     </span>(country %in%<span class="st"> </span>korea_friends)],
+       <span class="kw">aes</span>(<span class="dt">x=</span>date,<span class="dt">y=</span>hpi, <span class="dt">color=</span>country, <span class="dt">label=</span>country))+
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>)+
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">121</span>],dlist[<span class="dv">167</span>]+<span class="kw">years</span>(<span class="dv">1</span>),<span class="st">&quot;2 year&quot;</span>),
+               <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">121</span>],dlist[<span class="dv">167</span>]+<span class="kw">years</span>(<span class="dv">1</span>)))+
+<span class="st">  </span><span class="kw">facet_wrap</span>(~country)+
+<span class="st">  </span><span class="kw">theme_minimal</span>()+<span class="st"> </span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="dv">100</span>,<span class="dt">linetype=</span><span class="dv">2</span>)+
+<span class="st">  </span><span class="kw">scale_y_log10</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">75</span>,<span class="dv">200</span>,<span class="dv">25</span>),<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">60</span>,<span class="dv">225</span>))+<span class="st"> </span><span class="kw">theme_fivethirtyeight</span>()+
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;국제 주택가격 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st">@lenkiefer 자료출처: 달라스 연방준비은행 국제 주택가격 데이터베이스: http://www.dallasfed.org/institute/houseprice/&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;시계열 조정 반영한 지수 (2005=100, 로그척도)&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/dallas-hpi-viz-comparison-1.png" title="plot of chunk dallas-hpi-viz-comparison" alt="plot of chunk dallas-hpi-viz-comparison" style="display: block; margin: auto;" /></p>
+<h3 id="한국-일본-미국-주택가격-시각화">2.4. 한국, 일본, 미국 주택가격 시각화</h3>
+<p>facet 그래프가 아니라 한국, 일본, 미국 주택가격 변화를 한장의 그래프로 시각화하여 비교를 용이하게 한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.2. 한국, 일본, 미국 비교 ------------------------------------------------------------------</span>
+<span class="kw">ggplot</span>(<span class="dt">data=</span>hpi.dt[<span class="kw">year</span>(date)&gt;<span class="dv">2004</span> &amp;<span class="st"> </span>(country %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;미국&quot;</span>, <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;한국&quot;</span>))],
+       <span class="kw">aes</span>(<span class="dt">x=</span>date,<span class="dt">y=</span>hpi,<span class="dt">color=</span>country,<span class="dt">label=</span>country,<span class="dt">linetype=</span>country)) +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>)+
+<span class="st">  </span><span class="kw">theme_minimal</span>()+<span class="st"> </span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="dv">100</span>,<span class="dt">linetype=</span><span class="dv">2</span>) +
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">121</span>],dlist[<span class="dv">167</span>]+<span class="kw">years</span>(<span class="dv">1</span>),<span class="st">&quot;2 year&quot;</span>),
+               <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">121</span>],dlist[<span class="dv">167</span>]+<span class="kw">years</span>(<span class="dv">1</span>))) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>hpi.dt[date==dlist[<span class="dv">167</span>] &amp;<span class="st"> </span>country %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;미국&quot;</span>, <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;한국&quot;</span>)], <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">30</span>) +
+<span class="st">  </span><span class="kw">scale_y_log10</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">75</span>,<span class="dv">200</span>,<span class="dv">25</span>),<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">60</span>,<span class="dv">225</span>))+<span class="st"> </span><span class="kw">theme_fivethirtyeight</span>()+
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,<span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">7</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;국제 주택가격 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st">@lenkiefer 자료출처: 달라스 연방준비은행 국제 주택가격 데이터베이스: http://www.dallasfed.org/institute/houseprice/&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;시계열 조정 반영한 지수 (2005=100, 로그척도)&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/dallas-hpi-viz-three-country-1.png" title="plot of chunk dallas-hpi-viz-three-country" alt="plot of chunk dallas-hpi-viz-three-country" style="display: block; margin: auto;" /></p>
+<h3 id="한국을-포함한-6개국-주택가격-변화-애니메이션">2.5. 한국을 포함한 6개국 주택가격 변화 애니메이션</h3>
+<p>한국을 포함한 6개국 주택가격 변화를 애니메이션으로 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.3. 주택가격 변동 애니메이션----------------------------------------------------</span>
+hpi.plot&lt;-function(i){
+  <span class="kw">ggplot</span>(<span class="dt">data=</span>hpi.dt[<span class="kw">year</span>(date)&gt;<span class="dv">2004</span> &amp;<span class="st"> </span>
+<span class="st">                       </span>date&lt;=dlist[i] &amp;
+<span class="st">                       </span>country %in%<span class="st"> </span>korea_friends],
+         <span class="kw">aes</span>(<span class="dt">x=</span>date,<span class="dt">y=</span>hpi,<span class="dt">color=</span>country,<span class="dt">linetype=</span>country,<span class="dt">label=</span>country))+
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>)+
+<span class="st">    </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">121</span>],dlist[<span class="dv">167</span>]+<span class="kw">years</span>(<span class="dv">1</span>),<span class="st">&quot;1 year&quot;</span>),
+                 <span class="dt">date_labels=</span><span class="st">&quot;%Y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">121</span>],dlist[<span class="dv">167</span>]+<span class="kw">years</span>(<span class="dv">1</span>)))+
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="dt">data=</span>hpi.dt[date==dlist[i] &amp;
+<span class="st">                            </span>country %in%<span class="st"> </span>korea_friends],
+              <span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">nudge_x=</span><span class="dv">30</span>)+
+<span class="st">    </span><span class="kw">theme_minimal</span>()+<span class="st"> </span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="dv">100</span>,<span class="dt">linetype=</span><span class="dv">2</span>)+
+<span class="st">    </span><span class="kw">scale_y_log10</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">75</span>,<span class="dv">200</span>,<span class="dv">25</span>),<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">75</span>,<span class="dv">200</span>))+<span class="st"> </span><span class="kw">theme_fivethirtyeight</span>()+
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,<span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;국제 주택가격 비교&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st">@lenkiefer 자료출처: 달라스 연방준비은행 국제 주택가격 데이터베이스: http://www.dallasfed.org/institute/houseprice/&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;시계열 조정 반영한 지수 (2005=100, 로그척도)&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))
+}
+
+
+oopt =<span class="st"> </span><span class="kw">ani.options</span>(<span class="dt">interval =</span> <span class="fl">0.15</span>)
+<span class="kw">saveGIF</span>({for (i in <span class="dv">121</span>:<span class="dv">167</span>) {
+  g &lt;-<span class="st"> </span><span class="kw">hpi.plot</span>(i)
+  
+  <span class="kw">print</span>(g)
+  <span class="kw">print</span>(i)
+  <span class="kw">ani.pause</span>()
+}
+  
+  for (i2 in <span class="dv">1</span>:<span class="dv">20</span>) {
+    <span class="kw">print</span>(g)
+    <span class="kw">ani.pause</span>()
+  }
+}, <span class="dt">movie.name=</span><span class="st">&quot;hpi_compare international.gif&quot;</span>,<span class="dt">ani.width =</span> <span class="dv">750</span>, <span class="dt">ani.height =</span> <span class="dv">400</span>)</code></pre></div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="http://lenkiefer.com/2016/12/10/global-house-price-trends">Global house price trends</a><a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

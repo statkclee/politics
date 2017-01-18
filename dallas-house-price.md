@@ -10,18 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(data.table)
-library(tidyverse)
-library(lubridate)
-library(readxl)
-library(zoo)
-library(ggthemes)
-library(animation)
-library(extrafont)
-loadfonts()
-```
+
 
 ## 1. 주택가격 국제 비교 [^lenkiefer-house-price-index]
 
@@ -43,7 +32,8 @@ loadfonts()
 
 ### 2.1. 환경설정
 
-``` {r dallas-hpi-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 --------------------------------------------------------------------------
 library(data.table)
 library(tidyverse)
@@ -54,7 +44,7 @@ library(ggthemes)
 library(animation)
 library(extrafont)
 loadfonts()
-```
+~~~
 
 ### 2.2. 국제 주택가격 데이터
 
@@ -63,7 +53,8 @@ loadfonts()
 최신 [국민은행 KB주택가격통향](http://nland.kbstar.com/quics?page=B025966&cc=b044009:b044009) 데이터를 비교하여 살펴보면 좋겠다.
 국제 비교를 위해 2005년을 100으로 넣고 국제비교를 했지만, 국민은행 주택가격동향에서는 가장 최근 시점을 100으로 놓고 상대적으로 과거 시세 정보를 표현하고 있다.
 
-``` {r dallas-hpi-import}
+
+~~~{.r}
 # 1. 데이터 가져오기 --------------------------------------------------------------------------
 
 hpi <- read_excel("data/hp1603.xlsx",sheet="HPI")
@@ -79,14 +70,15 @@ hpi <- hpi %>% dplyr::filter(!is.na(date)) %>% dplyr::select(-blank, -Aggregate)
 
 hpi.dt <- hpi %>% gather(key=country,value=hpi ,-c(date)) %>% data.table()
 dlist<-unique(hpi.dt$date)
-```
+~~~
 
 ### 2.3. 한국을 포함한 6개국 주택가격 변화 시각화
 
 "한국", "독일", "스페인", "프랑스", "일본", "미국" 총 6개국에 대해 2005년 주택가격을 100으로 두고 
 계절변동을 반영한 시계열 주택가격변동을 정적 그래프를 통해 시각화한다.
 
-``` {r dallas-hpi-viz-comparison}
+
+~~~{.r}
 # 3. 주택가격변동 시각화  --------------------------------------------------------------------------
 
 korea_friends <- c("한국", "독일", "스페인", "프랑스", "일본", "미국")
@@ -108,14 +100,17 @@ ggplot(data=hpi.dt[year(date)>2004 &
        caption="\n@lenkiefer 자료출처: 달라스 연방준비은행 국제 주택가격 데이터베이스: http://www.dallasfed.org/institute/houseprice/",
        subtitle="시계열 조정 반영한 지수 (2005=100, 로그척도)") +
   theme(text=element_text(family="NanumGothic"))
-```
+~~~
+
+<img src="fig/dallas-hpi-viz-comparison-1.png" title="plot of chunk dallas-hpi-viz-comparison" alt="plot of chunk dallas-hpi-viz-comparison" style="display: block; margin: auto;" />
 
 ### 2.4. 한국, 일본, 미국 주택가격 시각화
 
 facet 그래프가 아니라 한국, 일본, 미국 주택가격 변화를 한장의 그래프로 시각화하여 비교를 용이하게 한다.
 
 
-``` {r dallas-hpi-viz-three-country}
+
+~~~{.r}
 # 3.2. 한국, 일본, 미국 비교 ------------------------------------------------------------------
 ggplot(data=hpi.dt[year(date)>2004 & (country %in% c("미국", "일본", "한국"))],
        aes(x=date,y=hpi,color=country,label=country,linetype=country)) +
@@ -131,13 +126,16 @@ ggplot(data=hpi.dt[year(date)>2004 & (country %in% c("미국", "일본", "한국
        caption="\n@lenkiefer 자료출처: 달라스 연방준비은행 국제 주택가격 데이터베이스: http://www.dallasfed.org/institute/houseprice/",
        subtitle="시계열 조정 반영한 지수 (2005=100, 로그척도)") +
   theme(text=element_text(family="NanumGothic"))
-```
+~~~
+
+<img src="fig/dallas-hpi-viz-three-country-1.png" title="plot of chunk dallas-hpi-viz-three-country" alt="plot of chunk dallas-hpi-viz-three-country" style="display: block; margin: auto;" />
 
 ### 2.5. 한국을 포함한 6개국 주택가격 변화 애니메이션
 
 한국을 포함한 6개국 주택가격 변화를 애니메이션으로 시각화한다.
 
-``` {r dallas-hpi-viz-animation, eval=FALSE}
+
+~~~{.r}
 # 3.3. 주택가격 변동 애니메이션----------------------------------------------------
 hpi.plot<-function(i){
   ggplot(data=hpi.dt[year(date)>2004 & 
@@ -174,4 +172,4 @@ saveGIF({for (i in 121:167) {
     ani.pause()
   }
 }, movie.name="hpi_compare international.gif",ani.width = 750, ani.height = 400)
-```
+~~~
