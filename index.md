@@ -69,6 +69,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [회귀분석 - MLB 투수 유전자는 유전이 될까?](pe-baseball-era.html)
 1. 저녁이 없던 삶
     1. [주택가격 변동 국가 비교: 한국, 독일, 스페인, 프랑스, 일본, 미국](dallas-house-price.html) 
+    1. [OECD 주요국가 연간 노동시간](oecd-annual-labor-hour.html) 
 
 
 > ### xwMOOC 오픈 교재
