@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">OECD 주요국가 연간 노동시간</h2>
+<h2 id="oecd-주요국가-연간-노동시간-oecd-annual-labor-hour-yonhapnews-oecd-labor-hours">1. OECD 주요국가 연간 노동시간 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h2>
+<p>저녁이 있는 삶이 2012년 손학규 대표가 대통령 출마를 선언하면서 한국사회에 던진 출사표다. 저녁이 있는 삶을 보장받기 위해서 물리적으로 최소한 보장받아야 하는 것이 여유시간이다. OECD에서 매년 조사하고 있는 주요국가 연간 노동시간을 시각화해서 더 나아질 여유가 있는지 살펴보자.</p>
+<p><img src="fig/working_hours_compare international.gif" alt="주요국가 연평균 노동시간 추이" width="100%" /></p>
+<h2 id="oecd-주요-국가별-연간-노동시간-추이-시각화">2. OECD 주요 국가별 연간 노동시간 추이 시각화</h2>
+<p>OECD 공개 데이터를 구글에서 검색하면 쉽게 OECD <a href="https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS">Average annual hours actually worked per worker</a> 웹사이트에 접속하게 된다. 엑셀이나 <code>.csv</code> 등 분석에 용이한 형태로 다운로드 받는다.</p>
+<h3 id="환경설정">2.1. 환경설정</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 --------------------------------------------------------------------------</span>
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(animation)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()</code></pre></div>
+<h3 id="oecd-연간-노동시간-데이터">2.2. OECD 연간 노동시간 데이터</h3>
+<p>데이터를 불러와서 시계열 데이터형태로 변형한 후에, 한국을 비롯한 주요 국가를 선택하고, 한글화 작업을 한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 가져오기 --------------------------------------------------------------------------</span>
+<span class="co"># https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS</span>
+wh &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ANHRS_18012017111048897.csv&quot;</span>)
+
+wh$date &lt;-<span class="st"> </span><span class="kw">as.Date</span>(<span class="kw">paste0</span>(wh$Time,<span class="st">&quot;-01-01&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;%Y-%m-%d&quot;</span>))
+
+korea_friends &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Korea&quot;</span>, <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;Spain&quot;</span>, <span class="st">&quot;France&quot;</span>, <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;United States&quot;</span>, <span class="st">&quot;Mexico&quot;</span>, <span class="st">&quot;Russian Federation&quot;</span>, <span class="st">&quot;OECD countries&quot;</span>)
+
+wh_df &lt;-<span class="st"> </span>wh %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(Country %in%<span class="st"> </span>korea_friends &amp;<span class="st"> `</span><span class="dt">Employment status</span><span class="st">`</span> %in%<span class="st"> &quot;Total employment&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span>dplyr::<span class="kw">select</span>(date, Country, <span class="dt">work_hour=</span>Value)
+
+<span class="co"># 2. 데이터 정제 --------------------------------------------------------------------------</span>
+
+wh_df$Country &lt;-<span class="st"> </span>plyr::<span class="kw">revalue</span>(wh_df$Country, <span class="kw">c</span>(<span class="st">&quot;Germany&quot;</span> =<span class="st">&quot;독일&quot;</span>,
+                                                <span class="st">&quot;Korea&quot;</span> =<span class="st"> &quot;한국&quot;</span>,
+                                                <span class="st">&quot;France&quot;</span>=<span class="st">&quot;프랑스&quot;</span>,
+                                                <span class="st">&quot;Mexico&quot;</span> =<span class="st"> &quot;멕시코&quot;</span>,
+                                                <span class="st">&quot;Spain&quot;</span> =<span class="st"> &quot;스페인&quot;</span>,
+                                                <span class="st">&quot;United States&quot;</span> =<span class="st"> &quot;미국&quot;</span>,
+                                                <span class="st">&quot;Russian Federation&quot;</span> =<span class="st"> &quot;러시아&quot;</span>,
+                                                <span class="st">&quot;Japan&quot;</span> =<span class="st"> &quot;일본&quot;</span>,
+                                                <span class="st">&quot;OECD countries&quot;</span> =<span class="st"> &quot;OECD평균&quot;</span>))</code></pre></div>
+<h3 id="한국을-포함한-9개국-연간-노동시간-시각화">2.3. 한국을 포함한 9개국 연간 노동시간 시각화</h3>
+<p>“한국”, “독일”, “스페인”, “프랑스”, “일본”, “미국”, “멕시코”, “러시아” 8개국과 “OECD평균” 총 9곳에 대해 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.1. 연간 근로시간 국제 비교 ------------------------------------------------------------------</span>
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span>wh_df, <span class="kw">aes</span>(<span class="dt">x=</span>date,<span class="dt">y=</span>work_hour, <span class="dt">color=</span>Country, <span class="dt">label=</span>Country))+
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>) +
+<span class="st">  </span><span class="kw">facet_wrap</span>(~Country) +
+<span class="st">  </span><span class="kw">theme_minimal</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="dv">1766</span>, <span class="dt">linetype=</span><span class="dv">2</span>)+
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;연간 평균 노동시간&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: OECD.Stat : https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;OECD 2015년 평균 노동시간 1,766시간/년 (점선)&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/oecd-labor-hour-facet-1.png" title="plot of chunk oecd-labor-hour-facet" alt="plot of chunk oecd-labor-hour-facet" style="display: block; margin: auto;" /></p>
+<h3 id="한국-일본-미국-독일-oecd-평균-일괄비교">2.4. 한국, 일본, 미국, 독일, OECD 평균 일괄비교</h3>
+<p>facet 그래프가 아니라 한국, 일본, 미국, 독일, OECD 평균, 연간 노동시간을 일괄비교하는 시각화 그래프를 생성한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.2. 한국, 일본, 미국, 독일, OECD 평균 ------------------------------------------------------------------</span>
+dlist &lt;-<span class="st"> </span><span class="kw">unique</span>(wh_df$date)
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span> wh_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(Country %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;한국&quot;</span>, <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;독일&quot;</span>, <span class="st">&quot;미국&quot;</span>, <span class="st">&quot;OECD평균&quot;</span>)),
+       <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>work_hour, <span class="dt">color=</span>Country, <span class="dt">label=</span>Country, <span class="dt">linetype=</span>Country)) +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>)+
+<span class="st">  </span><span class="kw">theme_minimal</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist, <span class="dt">n=</span><span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;2 year&quot;</span>),
+               <span class="dt">date_labels=</span> <span class="st">&quot;%Y&quot;</span>, <span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>],dlist[<span class="dv">16</span>]+<span class="kw">years</span>(<span class="dv">1</span>))) +
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="dv">1766</span>,<span class="dt">linetype=</span><span class="dv">2</span>) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>wh_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date ==<span class="st"> </span><span class="kw">tail</span>(dlist, <span class="dt">n=</span><span class="dv">1</span>) &amp;<span class="st"> </span>Country %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;한국&quot;</span>, <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;독일&quot;</span>, <span class="st">&quot;미국&quot;</span>, <span class="st">&quot;OECD평균&quot;</span>)), <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">30</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,<span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">7</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;연간 평균 노동시간&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: OECD.Stat : https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;OECD 2016년 평균 노동시간 1,766시간/년 (점선)&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/oecd-labor-hour-major-country-1.png" title="plot of chunk oecd-labor-hour-major-country" alt="plot of chunk oecd-labor-hour-major-country" style="display: block; margin: auto;" /></p>
+<h3 id="한국을-포함한-6개국-연간-노동시간-변화-애니메이션">2.5. 한국을 포함한 6개국 연간 노동시간 변화 애니메이션</h3>
+<p>한국을 포함한 6개국 연간 노동시간 변화를 애니메이션으로 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.3. 연간 노동시간 애니메이션----------------------------------------------------</span>
+wh_plot &lt;-<span class="st"> </span>function(i){
+  <span class="kw">ggplot</span>(<span class="dt">data=</span> wh_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date&lt;=dlist[i], Country %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;일본&quot;</span>, <span class="st">&quot;한국&quot;</span>, <span class="st">&quot;독일&quot;</span>, <span class="st">&quot;미국&quot;</span>, <span class="st">&quot;멕시코&quot;</span>, <span class="st">&quot;OECD평균&quot;</span>)),
+         <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>work_hour, <span class="dt">color=</span>Country, <span class="dt">label=</span>Country, <span class="dt">linetype=</span>Country)) +
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>)+
+<span class="st">    </span><span class="kw">theme_minimal</span>() +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist, <span class="dt">n=</span><span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;2 year&quot;</span>),
+                 <span class="dt">date_labels=</span> <span class="st">&quot;%Y&quot;</span>, <span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>],dlist[<span class="dv">16</span>]+<span class="kw">years</span>(<span class="dv">1</span>))) +
+<span class="st">    </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.numeric</span>(<span class="kw">ymd</span>(<span class="st">&quot;2012-01-01&quot;</span>)), <span class="dt">linetype=</span><span class="dv">3</span>) +
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="dt">data=</span>wh_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date==<span class="kw">tail</span>(dlist[i], <span class="dt">n=</span><span class="dv">1</span>) &amp;<span class="st"> </span>Country %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;일본&quot;</span>, <span class="st">&quot;한국&quot;</span>, <span class="st">&quot;독일&quot;</span>, <span class="st">&quot;미국&quot;</span>, <span class="st">&quot;멕시코&quot;</span>, <span class="st">&quot;OECD평균&quot;</span>)), <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">30</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,<span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">7</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;연간 평균 노동시간&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: OECD.Stat : https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;저녁이 있는 삶 출간(2012년)&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))
+}
+
+oopt =<span class="st"> </span><span class="kw">ani.options</span>(<span class="dt">interval =</span> <span class="fl">0.5</span>)
+<span class="kw">saveGIF</span>({for (i in <span class="dv">1</span>:<span class="dv">16</span>) {
+  g &lt;-<span class="st"> </span><span class="kw">wh_plot</span>(i)
+  
+  <span class="kw">print</span>(g)
+  <span class="kw">print</span>(i)
+  <span class="kw">ani.pause</span>()
+}
+  
+  for (i2 in <span class="dv">1</span>:<span class="dv">20</span>) {
+    <span class="kw">print</span>(g)
+    <span class="kw">ani.pause</span>()
+  }
+}, <span class="dt">movie.name=</span><span class="st">&quot;working_hours_compare international.gif&quot;</span>, <span class="dt">ani.width =</span> <span class="dv">750</span>, <span class="dt">ani.height =</span> <span class="dv">400</span>)</code></pre></div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS">Average annual hours actually worked per worker</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="http://www.yonhapnews.co.kr/bulletin/2016/08/13/0200000000AKR20160813053100009.HTML">연합뉴스, yulsid@yna.co.kr, 韓 노동시간 OECD 2위…日보다 두달 더 일하고 임금은 4분의3</a><a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

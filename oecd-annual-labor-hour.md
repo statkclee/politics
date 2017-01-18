@@ -10,15 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(tidyverse)
-library(lubridate)
-library(ggthemes)
-library(animation)
-library(extrafont)
-loadfonts()
-```
+
 
 ## 1. OECD 주요국가 연간 노동시간 [^oecd-annual-labor-hour] [^yonhapnews-oecd-labor-hours]
 
@@ -39,7 +31,8 @@ OECD 공개 데이터를 구글에서 검색하면 쉽게 OECD [Average annual h
 
 ### 2.1. 환경설정
 
-``` {r oecd-labor-hour-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 --------------------------------------------------------------------------
 library(tidyverse)
 library(lubridate)
@@ -47,14 +40,15 @@ library(ggthemes)
 library(animation)
 library(extrafont)
 loadfonts()
-```
+~~~
 
 ### 2.2. OECD 연간 노동시간 데이터
 
 데이터를 불러와서 시계열 데이터형태로 변형한 후에,
 한국을 비롯한 주요 국가를 선택하고, 한글화 작업을 한다.
 
-``` {r oecd-labor-hour-import, warn=FALSE, message=FALSE}
+
+~~~{.r}
 # 1. 데이터 가져오기 --------------------------------------------------------------------------
 # https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS
 wh <- read_csv("data/ANHRS_18012017111048897.csv")
@@ -77,14 +71,15 @@ wh_df$Country <- plyr::revalue(wh_df$Country, c("Germany" ="독일",
                                                 "Russian Federation" = "러시아",
                                                 "Japan" = "일본",
                                                 "OECD countries" = "OECD평균"))
-```
+~~~
 
 ### 2.3. 한국을 포함한 9개국 연간 노동시간 시각화
 
 "한국", "독일", "스페인", "프랑스", "일본", "미국", "멕시코", "러시아" 8개국과 "OECD평균" 총 9곳에 대해 
 시각화한다.
 
-``` {r oecd-labor-hour-facet}
+
+~~~{.r}
 # 3.1. 연간 근로시간 국제 비교 ------------------------------------------------------------------
 
 ggplot(data=wh_df, aes(x=date,y=work_hour, color=Country, label=Country))+
@@ -98,14 +93,17 @@ ggplot(data=wh_df, aes(x=date,y=work_hour, color=Country, label=Country))+
        caption="\n 자료출처: OECD.Stat : https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS",
        subtitle="OECD 2015년 평균 노동시간 1,766시간/년 (점선)") +
   theme(text=element_text(family="NanumGothic"))
-```
+~~~
+
+<img src="fig/oecd-labor-hour-facet-1.png" title="plot of chunk oecd-labor-hour-facet" alt="plot of chunk oecd-labor-hour-facet" style="display: block; margin: auto;" />
 
 ### 2.4. 한국, 일본, 미국, 독일, OECD 평균 일괄비교
 
 facet 그래프가 아니라 한국, 일본, 미국, 독일, OECD 평균, 연간 노동시간을 일괄비교하는 시각화 그래프를 생성한다.
 
 
-``` {r oecd-labor-hour-major-country}
+
+~~~{.r}
 # 3.2. 한국, 일본, 미국, 독일, OECD 평균 ------------------------------------------------------------------
 dlist <- unique(wh_df$date)
 
@@ -123,13 +121,16 @@ ggplot(data= wh_df %>% dplyr::filter(Country %in% c("한국", "일본", "독일"
          caption="\n 자료출처: OECD.Stat : https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS",
          subtitle="OECD 2016년 평균 노동시간 1,766시간/년 (점선)") +
     theme(text=element_text(family="NanumGothic"))
-```
+~~~
+
+<img src="fig/oecd-labor-hour-major-country-1.png" title="plot of chunk oecd-labor-hour-major-country" alt="plot of chunk oecd-labor-hour-major-country" style="display: block; margin: auto;" />
 
 ### 2.5. 한국을 포함한 6개국 연간 노동시간 변화 애니메이션
 
 한국을 포함한 6개국 연간 노동시간 변화를 애니메이션으로 시각화한다.
 
-``` {r oecd-labor-hour-animation, eval=FALSE}
+
+~~~{.r}
 # 3.3. 연간 노동시간 애니메이션----------------------------------------------------
 wh_plot <- function(i){
   ggplot(data= wh_df %>% dplyr::filter(date<=dlist[i], Country %in% c("일본", "한국", "독일", "미국", "멕시코", "OECD평균")),
@@ -162,4 +163,4 @@ saveGIF({for (i in 1:16) {
     ani.pause()
   }
 }, movie.name="working_hours_compare international.gif", ani.width = 750, ani.height = 400)
-```
+~~~
