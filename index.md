@@ -58,6 +58,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
     1. **텍스트 데이터**
         - [저녁이 있는 삶 – 손학규](http://statkclee.github.io/ml/ml-book.html)
+        - [연설문 판별 - 오바마 vs. 롬니](text-classify-speeches.html)
 1. [**기계와 더불어 사는 한국인** - 패러다임 전환](https://statkclee.github.io/xwMOOC/paradigm/)
     1. [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
     1. [얼굴에 나타난 감정분석](http://statkclee.github.io/deep-learning/ms-oxford-emotion.html)

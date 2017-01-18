@@ -1,0 +1,145 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 20대 총선
+subtitle: 연설문 판별 - 오바마 vs. 롬니
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+library(dplyr)
+library(tm) # 텍스트 데이터 처리
+library(purrr) # 함수형 프로그래밍
+library(class) # knn
+library(listviewer) # 리스트 자료형 살펴보기
+```
+
+
+## 1. 2012년 오바마와 롬니 대선 연설문 [^speeches-text-classifier]
+
+오바마와 롬니 후보는 2012년 대통령 선거에 임하면서 수 많은 연설문을 남겼다.
+연설문만 놓고 어떤 후보가 연설을 했는지 맞춰보는 예측 모형을 개발해 보자.
+
+
+| Text Mining of Presidential Campaign Speeches in R - Romney vs. Obama  | How to Build a Text Mining, Machine Learning Document Classification System in R! |
+|-------------------------------------------------------------------------|---------------------------------------------------------------------|
+|<iframe width="560" height="315" src="https://www.youtube.com/embed/2Znairz-hvU" frameborder="0" allowfullscreen></iframe>|<iframe width="320" height="180" src="https://www.youtube.com/embed/j1V2McKbkLo" frameborder="0" allowfullscreen></iframe>|
+
+
+[^speeches-text-classifier]: [Martin Schweinberger (2016), Text Mining with R: Building a Text Classifier](http://www.martinschweinberger.de/blog/textclass/)
+
+### 1.1. 연설 데이터
+
+2012년 당시 재선을 노리는 오바마(Barack Obama) 민주당 후보와 롬니(Mitt Romney) 공화당 후보 연설문 데이터를 바탕으로 어느 후보의 연설문인지 
+예측하는 분류 모형을 개발하는 것이 목적이다. 데이터는 [Martin Schweinberger 웹사이트](http://martinschweinberger.de/docs/data/speeches.zip)에서 다운로드 받을 수 있다.
+원본 데이터를 웹사이트에서 [다운로드 받는 코드](http://martinschweinberger.de/docs/scripts/DownloadingSpeechesTM.r)도 다운로드 받아 연설문 데이터로 생성시킬 수 있다.
+하지만, 오바마 연설문 데이터는 [http://obamaspeeches.com/](http://obamaspeeches.com/)에서 여전히 가능하지만 롬니 후보 웹사이트는 닫혔다. 
+따라서, 연설문 압축 데이터를 풀어 분석에 활용한다.
+
+
+## 2. 오바마와 롬니 연설문 분류
+
+Timothy DAuria가 작성한 R코드를 바탕으로 더 이상 지원이 되지않는 `plyr` 팩키지의 기능을 `purrr` 팩키지의 함수형 프로그래밍 코드로 바꾸고, 
+리스트 데이터를 `str` 함수 대신 `listviewer` 팩키지를 활용하여 볼 수 있도록 작업 과정의 가독성을 일부 향상시켰다.
+
+### 2.1. 환경설정
+
+텍스트 데이터 처리를 위한 `tm` 팩키지, 리스트 자료형 처리를 위한 `purrr`, 리스트 자료형을 살펴보기 위한 `listviewer`,
+knn 예측모형을 위한 `class` 팩키지를 동원한다.
+
+``` {r text-classifier-setup, eval=FALSE}
+# 0. 환경설정 ------------------------------------
+
+rm(list=ls(all=T)) # 작업환경 대청소
+options(stringsAsFactors=FALSE) # 문자열을 요인형으로 자동변환 방지
+
+library(tm) # 텍스트 데이터 처리
+library(purrr) # 함수형 프로그래밍
+library(class) # knn
+library(listviewer) # 리스트 자료형 살펴보기
+```
+
+### 2.2. 연설문 데이터 정제
+
+롬니 연설문 68개, 오바마 연설문 102개 텍스트 파일을 불러와서 이를 정제하고 말뭉치(Corpus)를 생성한다.
+`cleanCorpus`, `generateTDM` 함수를 두개 만들어서 데이터프레임으로 생성시킨다.
+
+``` {r text-classifier-data}
+# 모수 설정
+candidates <- c("romney", "obama")
+pathname <- "data/speeches/"
+
+# 1. 데이터 정제작업 ------------------------------------
+# 텍스트 정제 함수
+cleanCorpus <- function ( corpus ){
+  corpus.tmp <- tm_map(corpus , removePunctuation)
+  corpus.tmp <- tm_map(corpus.tmp, removePunctuation)
+  corpus.tmp <- tm_map(corpus.tmp, stripWhitespace)
+  corpus.tmp <- tm_map(corpus.tmp, content_transformer(tolower))
+  corpus.tmp <- tm_map(corpus.tmp, removeWords, stopwords("english"))
+  return(corpus.tmp)
+}  
+
+# TDM 생성 함수
+generateTDM <- function (cand , path ){
+  s.dir <- sprintf("%s/%s", path , cand )
+  s.cor <- Corpus(DirSource(directory = s.dir, encoding="UTF-8"))
+  s.cor.cl <- cleanCorpus(s.cor)
+  s.tdm <- TermDocumentMatrix(s.cor.cl)
+  s.tdm <- removeSparseTerms(s.tdm, 0.7)
+  result <- list(name = cand, tdm = s.tdm)
+}
+
+# 텍스트 정제 후 TDM 생성
+tdm <- map(candidates, generateTDM, path=pathname)
+jsonedit(tdm, mode = "view", elementId = "tdm")
+
+# 대통령 후보자 명칭 붙이는 함수
+bindCandidatetoTDM <- function(tdm) {
+  s.mat <- t(data.matrix(tdm[["tdm"]]))
+  s.df <- as.data.frame(s.mat, stringsAsFactors=FALSE)
+  s.df <- cbind (s.df, rep(tdm[["name"]], nrow(s.df)))
+  colnames(s.df)[ncol(s.df)] <- "targetcandidate"
+  return(s.df)
+}
+
+candTDM <- map(tdm, bindCandidatetoTDM)
+jsonedit(candTDM, mode = "view", elementId = "candTDM")
+
+# 텍스트 쌓기: 리스트를 데이터프레임 변환
+tdm.stack <- map_df(candTDM, rbind, fill=TRUE)
+tdm.stack[is.na(tdm.stack)] <- 0 # 결측값 0 치환
+head(tdm.stack)
+```
+
+### 2.3. `knn` 예측모형
+
+`class` 팩키지 `knn` 알고리즘을 사용해서 훈련 표본과 검증표본을 7:3으로 나눠 예측 모형을 생성하고 
+실제문서와 비교하여 예측모형 성능을 확인한다. 
+
+``` {r text-classifier-knn}
+# 2. knn 예측 모형 ------------------------------------
+# 훈련 표본과 검증 표본 7:3
+train.idx <- sample(nrow(tdm.stack), ceiling(nrow(tdm.stack) * 0.7))
+test.idx <- (1:nrow(tdm.stack))[-train.idx]
+
+# knn 군집분석
+tdm.cand <- tdm.stack[, "targetcandidate"]
+tdm.stack.nl <- tdm.stack[, !colnames(tdm.stack) %in% "targetcandidate"]
+
+knn.pred <- knn(tdm.stack.nl[train.idx, ], tdm.stack.nl[test.idx, ], tdm.cand[train.idx])
+
+# 모형 성능
+conf.mat <- table("Predictions" = knn.pred , Actual = tdm.cand[test.idx])
+# 정확도 계산
+(accuracy <- sum(diag(conf.mat))/length(test.idx) * 100)
+```
+  
+  
+  
+  
