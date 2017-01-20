@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">자살자수 국제비교(10만명당 자살자수)</h2>
+<h2 id="oecd-주요국가-자살자수-oecd-annual-labor-hour-yonhapnews-oecd-labor-hours">1. OECD 주요국가 자살자수 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h2>
+<p>저녁이 있는 삶이 2012년 손학규 대표가 대통령 출마를 선언하면서 한국사회에 던진 출사표다. 저녁이 있는 삶을 보장받기 위해서 자살에 내몰릴 정도로 물질적 뿐만아니라 정신적으로도 안정성이 확보된 사회여야만 한다. OECD에서 매년 조사하고 있는 주요국가 자살자수(10만명당) 데이터를 시각화해서 국내외 언론에서 언급하고 있는 심각한 사회문제를 다시 생각해본다. <a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> <a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a></p>
+<p>이렇게 슬픈 심정으로 데이터를 분석한 적은 처음이다. 데이터를 분석하는 사람으로서 이렇게 자괴감을 느껴본 적은 없다. 참담하다.</p>
+<p><img src="fig/suicide_compare_international.gif" alt="주요국가 십만명당 자살자수 추이" width="100%" /></p>
+<h2 id="oecd-주요-십만명당-자살자수-추이-시각화">2. OECD 주요 십만명당 자살자수 추이 시각화</h2>
+<p>OECD 공개 데이터를 구글에서 검색하면 쉽게 OECD <a href="https://data.oecd.org/healthstat/suicide-rates.htm">Suicide rates</a> 웹사이트에 접속하게 된다. 엑셀이나 <code>.csv</code> 등 분석에 용이한 형태로 다운로드 받는다.</p>
+<h3 id="환경설정">2.1. 환경설정</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 --------------------------------------------------------------------------</span>
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(animation)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()</code></pre></div>
+<h3 id="oecd-십만명당-자살자수-데이터">2.2. OECD 십만명당 자살자수 데이터</h3>
+<p>데이터를 불러와서 시계열 데이터형태로 변형한 후에, 한국을 비롯한 주요 국가를 선택하고, 한글화 작업을 한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 가져오기 --------------------------------------------------------------------------</span>
+<span class="co"># https://data.oecd.org/healthstat/suicide-rates.htm</span>
+suicide_dat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/DP_LIVE_19012017113839293.csv&quot;</span>, <span class="dt">col_names=</span><span class="ot">TRUE</span>)
+
+<span class="co"># korea_friends &lt;- c(&quot;Korea&quot;, &quot;Germany&quot;, &quot;Spain&quot;, &quot;Japan&quot;, &quot;United States&quot;, &quot;OECD countries&quot;)</span>
+korea_friends &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;한국&quot;</span>, <span class="st">&quot;독일&quot;</span>, <span class="st">&quot;스페인&quot;</span>, <span class="st">&quot;일본&quot;</span>, <span class="st">&quot;미국&quot;</span>, <span class="st">&quot;프랑스&quot;</span>)
+<span class="co"># korea_friends &lt;- c(&quot;KOR&quot;, &quot;DEU&quot;, &quot;ESP&quot;, &quot;JPN&quot;, &quot;USA&quot;, &quot;FRA&quot;)</span>
+
+
+<span class="co"># 2. 데이터 정제 --------------------------------------------------------------------------</span>
+suicide_dat$LOCATION &lt;-<span class="st"> </span>plyr::<span class="kw">revalue</span>(suicide_dat$LOCATION, <span class="kw">c</span>(<span class="st">&quot;DEU&quot;</span> =<span class="st">&quot;독일&quot;</span>,
+                                                          <span class="st">&quot;KOR&quot;</span> =<span class="st"> &quot;한국&quot;</span>,
+                                                          <span class="st">&quot;ESP&quot;</span> =<span class="st"> &quot;스페인&quot;</span>,
+                                                          <span class="st">&quot;USA&quot;</span> =<span class="st"> &quot;미국&quot;</span>,
+                                                          <span class="st">&quot;JPN&quot;</span> =<span class="st"> &quot;일본&quot;</span>,
+                                                          <span class="st">&quot;FRA&quot;</span> =<span class="st"> &quot;프랑스&quot;</span>))
+
+suicide_df &lt;-<span class="st"> </span>suicide_dat %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(LOCATION %in%<span class="st"> </span>korea_friends &amp;<span class="st"> </span>SUBJECT ==<span class="st">&quot;TOT&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span>dplyr::<span class="kw">select</span>(<span class="dt">country=</span>LOCATION, TIME, <span class="dt">suicide=</span>Value) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(TIME,<span class="st">&quot;-01-01&quot;</span>))) %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(-TIME)
+
+dlist &lt;-<span class="st"> </span><span class="kw">unique</span>(suicide_df$date)</code></pre></div>
+<h3 id="한국을-포함한-6개국-십만명당-자살자수-시각화">2.3. 한국을 포함한 6개국 십만명당 자살자수 시각화</h3>
+<p>“한국”, “독일”, “스페인”, “프랑스”, “일본”, “미국”, 6개국에 대해 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3. 십만명당 자살자수 시각화  --------------------------------------------------------------------------</span>
+<span class="co"># 3.1. 십만명당 자살자수 국제 비교 ------------------------------------------------------------------</span>
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span>suicide_df,
+       <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>country, <span class="dt">color=</span>country, <span class="dt">label=</span>country))+
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>) +
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;5 year&quot;</span>),
+               <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">1</span>)))+
+<span class="st">  </span><span class="kw">facet_wrap</span>(~country)+
+<span class="st">  </span><span class="kw">theme_tufte</span>() +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;자살자수 국제 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;십만명당 자살자수(남녀 총합)&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/oecd-suicide-facet-1.png" title="plot of chunk oecd-suicide-facet" alt="plot of chunk oecd-suicide-facet" style="display: block; margin: auto;" /></p>
+<h3 id="한국-일본-미국-독일-프랑스-스페인-일괄비교">2.4. 한국, 일본, 미국, 독일, 프랑스, 스페인 일괄비교</h3>
+<p>facet 그래프가 아니라 한국, 일본, 미국, 독일, 프랑스, 스페인, 십만명당 자살자수를 일괄비교하는 시각화 그래프를 생성한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>suicide_df,
+       <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>country, <span class="dt">color=</span>country, <span class="dt">label=</span>country))+
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>) +
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;5 year&quot;</span>),
+               <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">5</span>)))+
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>suicide_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date==dlist[<span class="dv">54</span>]), <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">500</span>) +
+<span class="st">  </span><span class="kw">theme_tufte</span>() +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;자살자수 국제 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;십만명당 자살자수(남녀 총합)&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/oecd-suicide-major-country-1.png" title="plot of chunk oecd-suicide-major-country" alt="plot of chunk oecd-suicide-major-country" style="display: block; margin: auto;" /></p>
+<h3 id="한국을-포함한-6개국-십만명당-자살자수-변화-애니메이션">2.5. 한국을 포함한 6개국 십만명당 자살자수 변화 애니메이션</h3>
+<p>한국을 포함한 6개국 십만명당 자살자수 변화를 애니메이션으로 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">suicide_plot&lt;-function(i){
+  <span class="kw">ggplot</span>(<span class="dt">data=</span>suicide_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date&lt;=dlist[i] &amp;<span class="st"> </span>country %in%<span class="st"> </span>korea_friends),
+         <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>country, <span class="dt">color=</span>country, <span class="dt">label=</span>country))+
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>) +
+<span class="st">    </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;5 year&quot;</span>),
+                 <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">5</span>)))+
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="dt">data=</span>suicide_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date==dlist[i]), <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">500</span>) +
+<span class="st">    </span><span class="kw">theme_tufte</span>() +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;자살자수 국제 비교&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;십만명당 자살자수(남녀 총합)&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))
+}
+
+
+oopt =<span class="st"> </span><span class="kw">ani.options</span>(<span class="dt">interval =</span> <span class="fl">0.5</span>)
+<span class="kw">saveGIF</span>({for (i in <span class="dv">1</span>:(<span class="kw">length</span>(dlist)-<span class="dv">1</span>)) {
+  g &lt;-<span class="st"> </span><span class="kw">suicide_plot</span>(i)
+  
+  <span class="kw">print</span>(g)
+  <span class="kw">print</span>(i)
+  <span class="kw">ani.pause</span>()
+}
+  
+  for (i2 in <span class="dv">1</span>:<span class="dv">20</span>) {
+    <span class="kw">print</span>(g)
+    <span class="kw">ani.pause</span>()
+  }
+}, <span class="dt">movie.name=</span><span class="st">&quot;suicide_compare_international.gif&quot;</span>,<span class="dt">ani.width =</span> <span class="dv">750</span>, <span class="dt">ani.height =</span> <span class="dv">400</span>)</code></pre></div>
+<p><img src="fig/kr_suicide_.gif" alt="대한민국 십만명당 남녀별 자살자수 추이" width="100%" /></p>
+<h2 id="대한민국-남녀별-십만명당-자살자수-비교">3. 대한민국 남녀별 십만명당 자살자수 비교</h2>
+<p>OECD 자살율 데이터에서 2013년까지만 대한민국 자살율 정보가 포함되어 있어, 통계청에서 발간하는 <a href="http://www.index.go.kr/potal/stts/idxMain/selectPoSttsIdxMainPrint.do?idx_cd=2992&amp;board_cd=INDX_001">데이터</a>를 2014, 2015년 붙여 인구 십만명당 자살자수 데이터를 준비한다.</p>
+<p>김영삼 대통령 문민정부 이래 5년 단위 각 정권별 구간을 각 정권 대표 색상으로 표식하기 위한 데이터를 준비한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 가져오기 --------------------------------------------------------------------------</span>
+<span class="co"># https://data.oecd.org/healthstat/suicide-rates.htm</span>
+suicide_dat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/DP_LIVE_19012017113839293.csv&quot;</span>, <span class="dt">col_names=</span><span class="ot">TRUE</span>)
+
+<span class="co"># 2. 데이터 정제 --------------------------------------------------------------------------</span>
+suicide_dat$LOCATION &lt;-<span class="st"> </span>plyr::<span class="kw">revalue</span>(suicide_dat$LOCATION, <span class="kw">c</span>(<span class="st">&quot;KOR&quot;</span> =<span class="st"> &quot;한국&quot;</span>))
+suicide_dat$SUBJECT &lt;-<span class="st"> </span>plyr::<span class="kw">revalue</span>(suicide_dat$SUBJECT, <span class="kw">c</span>(<span class="st">&quot;MEN&quot;</span> =<span class="st"> &quot;남자&quot;</span>,
+                                                             <span class="st">&quot;WOMEN&quot;</span> =<span class="st"> &quot;여자&quot;</span>,
+                                                             <span class="st">&quot;TOT&quot;</span> =<span class="st"> &quot;전체&quot;</span>))
+
+<span class="co"># 2014년 남녀 자살자수 추가</span>
+<span class="co"># http://www.index.go.kr/potal/stts/idxMain/selectPoSttsIdxMainPrint.do?idx_cd=2992&amp;board_cd=INDX_001</span>
+
+kr_suicide_df &lt;-<span class="st"> </span>suicide_dat %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(LOCATION %in%<span class="st"> &quot;한국&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span>dplyr::<span class="kw">select</span>(<span class="dt">country=</span>LOCATION, TIME, <span class="dt">suicide=</span>Value, <span class="dt">subject=</span>SUBJECT) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(TIME,<span class="st">&quot;-01-01&quot;</span>))) %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(-TIME) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">country=</span><span class="st">&quot;한국&quot;</span>, <span class="dt">suicide=</span><span class="fl">27.3</span>, <span class="dt">subject=</span><span class="st">&quot;전체&quot;</span>, <span class="dt">date=</span><span class="st">&quot;2014-01-01&quot;</span>) %&gt;%
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">country=</span><span class="st">&quot;한국&quot;</span>, <span class="dt">suicide=</span><span class="fl">38.4</span>, <span class="dt">subject=</span><span class="st">&quot;남자&quot;</span>, <span class="dt">date=</span><span class="st">&quot;2014-01-01&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">country=</span><span class="st">&quot;한국&quot;</span>, <span class="dt">suicide=</span><span class="fl">16.1</span>, <span class="dt">subject=</span><span class="st">&quot;여자&quot;</span>, <span class="dt">date=</span><span class="st">&quot;2014-01-01&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">country=</span><span class="st">&quot;한국&quot;</span>, <span class="dt">suicide=</span><span class="fl">26.5</span>, <span class="dt">subject=</span><span class="st">&quot;전체&quot;</span>, <span class="dt">date=</span><span class="st">&quot;2015-01-01&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">country=</span><span class="st">&quot;한국&quot;</span>, <span class="dt">suicide=</span><span class="fl">37.5</span>, <span class="dt">subject=</span><span class="st">&quot;남자&quot;</span>, <span class="dt">date=</span><span class="st">&quot;2015-01-01&quot;</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">country=</span><span class="st">&quot;한국&quot;</span>, <span class="dt">suicide=</span><span class="fl">15.5</span>, <span class="dt">subject=</span><span class="st">&quot;여자&quot;</span>, <span class="dt">date=</span><span class="st">&quot;2015-01-01&quot;</span>)
+
+dlist &lt;-<span class="st"> </span><span class="kw">unique</span>(kr_suicide_df$date)
+
+<span class="co"># 대한민국 정권</span>
+regime_1993 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x1=</span><span class="kw">c</span>(<span class="dv">1993</span>), <span class="dt">x2=</span><span class="kw">c</span>(<span class="dv">1998</span>), <span class="dt">y1=</span><span class="kw">c</span>(<span class="dv">0</span>), <span class="dt">y2=</span><span class="kw">c</span>(<span class="dv">50</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x1 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x1, <span class="st">&quot;-01-01&quot;</span>)), <span class="dt">x2 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x2, <span class="st">&quot;-01-01&quot;</span>)))
+regime_1998 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x1=</span><span class="kw">c</span>(<span class="dv">1998</span>), <span class="dt">x2=</span><span class="kw">c</span>(<span class="dv">2003</span>), <span class="dt">y1=</span><span class="kw">c</span>(<span class="dv">0</span>), <span class="dt">y2=</span><span class="kw">c</span>(<span class="dv">50</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x1 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x1, <span class="st">&quot;-01-01&quot;</span>)), <span class="dt">x2 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x2, <span class="st">&quot;-01-01&quot;</span>)))
+regime_2003 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x1=</span><span class="kw">c</span>(<span class="dv">2003</span>), <span class="dt">x2=</span><span class="kw">c</span>(<span class="dv">2008</span>), <span class="dt">y1=</span><span class="kw">c</span>(<span class="dv">0</span>), <span class="dt">y2=</span><span class="kw">c</span>(<span class="dv">50</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x1 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x1, <span class="st">&quot;-01-01&quot;</span>)), <span class="dt">x2 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x2, <span class="st">&quot;-01-01&quot;</span>)))
+regime_2008 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x1=</span><span class="kw">c</span>(<span class="dv">2008</span>), <span class="dt">x2=</span><span class="kw">c</span>(<span class="dv">2013</span>), <span class="dt">y1=</span><span class="kw">c</span>(<span class="dv">0</span>), <span class="dt">y2=</span><span class="kw">c</span>(<span class="dv">50</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x1 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x1, <span class="st">&quot;-01-01&quot;</span>)), <span class="dt">x2 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x2, <span class="st">&quot;-01-01&quot;</span>)))
+regime_2013 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x1=</span><span class="kw">c</span>(<span class="dv">2013</span>), <span class="dt">x2=</span><span class="kw">c</span>(<span class="dv">2015</span>), <span class="dt">y1=</span><span class="kw">c</span>(<span class="dv">0</span>), <span class="dt">y2=</span><span class="kw">c</span>(<span class="dv">50</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x1 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x1, <span class="st">&quot;-01-01&quot;</span>)), <span class="dt">x2 =</span> <span class="kw">ymd</span>(<span class="kw">paste0</span>(x2, <span class="st">&quot;-01-01&quot;</span>)))</code></pre></div>
+<h3 id="대한한국-십만명당-남녀별-자살자수-시각화">3.1. 대한한국 십만명당 남녀별 자살자수 시각화</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3. 십만명당 자살자수 시각화  --------------------------------------------------------------------------</span>
+<span class="co"># 3.1. 대한민국 십만명당 자살자수 남녀 비교 ------------------------------------------------------------------</span>
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span>kr_suicide_df,
+       <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>subject, <span class="dt">color=</span>subject, <span class="dt">label=</span>subject))+
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.0</span>) +
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;5 year&quot;</span>),
+               <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">1</span>)))+
+<span class="st">  </span><span class="kw">facet_wrap</span>(~subject, <span class="dt">ncol=</span><span class="dv">3</span>)+
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.numeric</span>(<span class="kw">ymd</span>(<span class="st">&quot;2012-01-01&quot;</span>)), <span class="dt">linetype=</span><span class="dv">3</span>) +
+<span class="st">  </span><span class="kw">theme_tufte</span>() +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;대한민국 자살자수 남녀 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;대한민국 십만명당 남녀 자살자수(남녀 총합), 저녁이 있는 삶(2012년) 참조선&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<p><img src="fig/kr-suicide-facet-1.png" title="plot of chunk kr-suicide-facet" alt="plot of chunk kr-suicide-facet" style="display: block; margin: auto;" /></p>
+<h3 id="대한한국-십만명당-남녀별-자살자수-일괄비교-시각화">3.2. 대한한국 십만명당 남녀별 자살자수 일괄비교 시각화</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.2. 대한민국 십만명당 자살자수 남녀 비교 ------------------------------------------------------------------</span>
+<span class="kw">ggplot</span>() +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">data=</span>kr_suicide_df, <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>subject, <span class="dt">color=</span>subject, <span class="dt">label=</span>subject), <span class="dt">size=</span><span class="fl">1.0</span>) +
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;5 year&quot;</span>),
+               <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">5</span>)))+
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>kr_suicide_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date==<span class="kw">tail</span>(dlist,<span class="dv">1</span>)), 
+            <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>subject, <span class="dt">color=</span>subject, <span class="dt">label=</span>subject), <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">500</span>) +
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.numeric</span>(<span class="kw">ymd</span>(<span class="st">&quot;2012-01-01&quot;</span>)), <span class="dt">linetype=</span><span class="dv">3</span>) +<span class="st">  </span>
+<span class="st">  </span><span class="kw">theme_tufte</span>() +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;대한민국 자살자수 남녀 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;대한민국 십만명당 남녀 자살자수(남녀 총합), 저녁이 있는 삶(2012년) 참조선&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>)) +
+<span class="st">  </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_1993, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;blue&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">  </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_1998, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;green&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">  </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_2003, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;yellow&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">  </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_2008, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;#BB0000&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">  </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_2013, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;#FF0000&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.1</span>)</code></pre></div>
+<pre class="output"><code>Warning: Ignoring unknown aesthetics: label
+</code></pre>
+<p><img src="fig/kr-suicide-viz-1.png" title="plot of chunk kr-suicide-viz" alt="plot of chunk kr-suicide-viz" style="display: block; margin: auto;" /></p>
+<h3 id="대한한국-십만명당-남녀별-자살자수-변화-애니메이션">3.3. 대한한국 십만명당 남녀별 자살자수 변화 애니메이션</h3>
+<p>대한한국 십만명당 남녀별 자살자수 변화를 애니메이션으로 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3.3. OECD 십만명당 자살자수 변동 애니메이션----------------------------------------------------</span>
+
+kr_suicide_plot&lt;-function(i){
+  <span class="kw">ggplot</span>() +
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">data=</span>kr_suicide_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date&lt;=dlist[i]), <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>subject, <span class="dt">color=</span>subject, <span class="dt">label=</span>subject), <span class="dt">size=</span><span class="fl">1.0</span>) +
+<span class="st">    </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;5 year&quot;</span>),
+                 <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">5</span>)))+
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="dt">data=</span>kr_suicide_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(date==dlist[i]), 
+              <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>suicide, <span class="dt">group=</span>subject, <span class="dt">color=</span>subject, <span class="dt">label=</span>subject), <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">500</span>) +
+<span class="st">    </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.numeric</span>(<span class="kw">ymd</span>(<span class="st">&quot;2012-01-01&quot;</span>)), <span class="dt">linetype=</span><span class="dv">3</span>) +<span class="st">    </span>
+<span class="st">    </span><span class="kw">theme_tufte</span>() +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;대한민국 자살자수 남녀 비교&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;대한민국 십만명당 남녀 자살자수(남녀 총합), 저녁이 있는 삶(2012년) 참조선&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>)) +
+<span class="st">    </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_1993, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;blue&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">    </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_1998, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;green&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">    </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_2003, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;yellow&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">    </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_2008, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;#BB0000&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.05</span>) +
+<span class="st">    </span><span class="kw">geom_rect</span>(<span class="dt">data=</span>regime_2013, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">xmin=</span>x1, <span class="dt">xmax=</span>x2, <span class="dt">ymin=</span>y1, <span class="dt">ymax=</span>y2), <span class="dt">fill=</span><span class="st">&quot;#FF0000&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.1</span>)
+}
+
+
+oopt =<span class="st"> </span><span class="kw">ani.options</span>(<span class="dt">interval =</span> <span class="fl">0.5</span>)
+<span class="kw">saveGIF</span>({for (i in <span class="dv">1</span>:(<span class="kw">length</span>(dlist)-<span class="dv">1</span>)) {
+  g &lt;-<span class="st"> </span><span class="kw">kr_suicide_plot</span>(i)
+  
+  <span class="kw">print</span>(g)
+  <span class="kw">print</span>(i)
+  <span class="kw">ani.pause</span>()
+}
+  
+  for (i2 in <span class="dv">1</span>:<span class="dv">20</span>) {
+    <span class="kw">print</span>(g)
+    <span class="kw">ani.pause</span>()
+  }
+}, <span class="dt">movie.name=</span><span class="st">&quot;kr_suicide_.gif&quot;</span>,<span class="dt">ani.width =</span> <span class="dv">750</span>, <span class="dt">ani.height =</span> <span class="dv">400</span>)</code></pre></div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://stats.oecd.org/Index.aspx?DataSetCode=ANHRS">Average annual hours actually worked per worker</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="http://www.yonhapnews.co.kr/bulletin/2016/08/13/0200000000AKR20160813053100009.HTML">연합뉴스, yulsid@yna.co.kr, 韓 노동시간 OECD 2위…日보다 두달 더 일하고 임금은 4분의3</a><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p><a href="http://news.donga.com/3/all/20161025/80982194/1">동아일보, 1인소득 2배로… 삶의 질은 27위, 2016년 10월</a><a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p><a href="http://www.yonhapnews.co.kr/bulletin/2015/08/28/0200000000AKR20150828108400017.HTML">연합뉴스(2015), 한국 자살률 29.1명…OECD ‘최고’</a><a href="#fnref4">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

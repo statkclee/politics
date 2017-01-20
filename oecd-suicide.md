@@ -10,15 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(tidyverse)
-library(lubridate)
-library(ggthemes)
-library(animation)
-library(extrafont)
-loadfonts()
-```
+
 
 ## 1. OECD 주요국가 자살자수 [^oecd-annual-labor-hour] [^yonhapnews-oecd-labor-hours]
 
@@ -44,7 +36,8 @@ OECD 공개 데이터를 구글에서 검색하면 쉽게 OECD [Suicide rates](h
 
 ### 2.1. 환경설정
 
-``` {r oecd-suicide-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 --------------------------------------------------------------------------
 library(tidyverse)
 library(lubridate)
@@ -52,14 +45,15 @@ library(ggthemes)
 library(animation)
 library(extrafont)
 loadfonts()
-```
+~~~
 
 ### 2.2. OECD 십만명당 자살자수 데이터
 
 데이터를 불러와서 시계열 데이터형태로 변형한 후에,
 한국을 비롯한 주요 국가를 선택하고, 한글화 작업을 한다.
 
-``` {r oecd-suicide-import, warn=FALSE, message=FALSE}
+
+~~~{.r}
 # 1. 데이터 가져오기 --------------------------------------------------------------------------
 # https://data.oecd.org/healthstat/suicide-rates.htm
 suicide_dat <- read_csv("data/DP_LIVE_19012017113839293.csv", col_names=TRUE)
@@ -82,14 +76,15 @@ suicide_df <- suicide_dat %>% dplyr::filter(LOCATION %in% korea_friends & SUBJEC
   mutate(date = ymd(paste0(TIME,"-01-01"))) %>% dplyr::select(-TIME)
 
 dlist <- unique(suicide_df$date)
-```
+~~~
 
 ### 2.3. 한국을 포함한 6개국 십만명당 자살자수 시각화
 
 "한국", "독일", "스페인", "프랑스", "일본", "미국", 6개국에 대해 
 시각화한다.
 
-``` {r oecd-suicide-facet}
+
+~~~{.r}
 # 3. 십만명당 자살자수 시각화  --------------------------------------------------------------------------
 # 3.1. 십만명당 자살자수 국제 비교 ------------------------------------------------------------------
 
@@ -106,15 +101,17 @@ ggplot(data=suicide_df,
        caption="\n 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm",
        subtitle="십만명당 자살자수(남녀 총합)") +
   theme(text=element_text(family="NanumGothic"))
+~~~
 
-```
+<img src="fig/oecd-suicide-facet-1.png" title="plot of chunk oecd-suicide-facet" alt="plot of chunk oecd-suicide-facet" style="display: block; margin: auto;" />
 
 ### 2.4. 한국, 일본, 미국, 독일, 프랑스, 스페인 일괄비교
 
 facet 그래프가 아니라 한국, 일본, 미국, 독일, 프랑스, 스페인, 십만명당 자살자수를 일괄비교하는 시각화 그래프를 생성한다.
 
 
-``` {r oecd-suicide-major-country}
+
+~~~{.r}
 ggplot(data=suicide_df,
        aes(x=date, y=suicide, group=country, color=country, label=country))+
   geom_line(size=1.1) +
@@ -128,13 +125,16 @@ ggplot(data=suicide_df,
        caption="\n 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm",
        subtitle="십만명당 자살자수(남녀 총합)") +
   theme(text=element_text(family="NanumGothic"))
-```
+~~~
+
+<img src="fig/oecd-suicide-major-country-1.png" title="plot of chunk oecd-suicide-major-country" alt="plot of chunk oecd-suicide-major-country" style="display: block; margin: auto;" />
 
 ### 2.5. 한국을 포함한 6개국 십만명당 자살자수 변화 애니메이션
 
 한국을 포함한 6개국 십만명당 자살자수 변화를 애니메이션으로 시각화한다.
 
-``` {r oecd-suicide-animation, eval=FALSE}
+
+~~~{.r}
 suicide_plot<-function(i){
   ggplot(data=suicide_df %>% dplyr::filter(date<=dlist[i] & country %in% korea_friends),
          aes(x=date, y=suicide, group=country, color=country, label=country))+
@@ -166,7 +166,7 @@ saveGIF({for (i in 1:(length(dlist)-1)) {
     ani.pause()
   }
 }, movie.name="suicide_compare_international.gif",ani.width = 750, ani.height = 400)
-```
+~~~
 
 <img src="fig/kr_suicide_.gif" alt="대한민국 십만명당 남녀별 자살자수 추이" width="100%" />
 
@@ -180,7 +180,8 @@ OECD 자살율 데이터에서 2013년까지만 대한민국 자살율 정보가
 김영삼 대통령 문민정부 이래 5년 단위 각 정권별 구간을 각 정권 대표 색상으로 표식하기 위한
 데이터를 준비한다.
 
-``` {r kr-suicide-import, warn=FALSE, message=FALSE}
+
+~~~{.r}
 # 1. 데이터 가져오기 --------------------------------------------------------------------------
 # https://data.oecd.org/healthstat/suicide-rates.htm
 suicide_dat <- read_csv("data/DP_LIVE_19012017113839293.csv", col_names=TRUE)
@@ -217,11 +218,12 @@ regime_2008 <- data.frame(x1=c(2008), x2=c(2013), y1=c(0), y2=c(50)) %>%
   mutate(x1 = ymd(paste0(x1, "-01-01")), x2 = ymd(paste0(x2, "-01-01")))
 regime_2013 <- data.frame(x1=c(2013), x2=c(2015), y1=c(0), y2=c(50)) %>% 
   mutate(x1 = ymd(paste0(x1, "-01-01")), x2 = ymd(paste0(x2, "-01-01")))
-```
+~~~
 
 ### 3.1. 대한한국 십만명당 남녀별 자살자수 시각화
 
-``` {r kr-suicide-facet, warn=FALSE, message=FALSE}
+
+~~~{.r}
 # 3. 십만명당 자살자수 시각화  --------------------------------------------------------------------------
 # 3.1. 대한민국 십만명당 자살자수 남녀 비교 ------------------------------------------------------------------
 
@@ -239,12 +241,15 @@ ggplot(data=kr_suicide_df,
        caption="\n 자료출처: 십만명당 자살자수 OECD 데이터, https://data.oecd.org/healthstat/suicide-rates.htm",
        subtitle="대한민국 십만명당 남녀 자살자수(남녀 총합), 저녁이 있는 삶(2012년) 참조선") +
   theme(text=element_text(family="NanumGothic"))
-```
+~~~
+
+<img src="fig/kr-suicide-facet-1.png" title="plot of chunk kr-suicide-facet" alt="plot of chunk kr-suicide-facet" style="display: block; margin: auto;" />
 
 ### 3.2. 대한한국 십만명당 남녀별 자살자수 일괄비교 시각화
 
 
-``` {r kr-suicide-viz, warn=FALSE, message=FALSE}
+
+~~~{.r}
 # 3.2. 대한민국 십만명당 자살자수 남녀 비교 ------------------------------------------------------------------
 ggplot() +
   geom_line(data=kr_suicide_df, aes(x=date, y=suicide, group=subject, color=subject, label=subject), size=1.0) +
@@ -265,13 +270,23 @@ ggplot() +
   geom_rect(data=regime_2003, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), fill="yellow", alpha=0.05) +
   geom_rect(data=regime_2008, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), fill="#BB0000", alpha=0.05) +
   geom_rect(data=regime_2013, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), fill="#FF0000", alpha=0.1)
-```
+~~~
+
+
+
+~~~{.output}
+Warning: Ignoring unknown aesthetics: label
+
+~~~
+
+<img src="fig/kr-suicide-viz-1.png" title="plot of chunk kr-suicide-viz" alt="plot of chunk kr-suicide-viz" style="display: block; margin: auto;" />
 
 ### 3.3. 대한한국 십만명당 남녀별 자살자수 변화 애니메이션
 
 대한한국 십만명당 남녀별 자살자수 변화를 애니메이션으로 시각화한다.
 
-``` {r kr-suicide-animation, warn=FALSE, message=FALSE, eval=FALSE}
+
+~~~{.r}
 # 3.3. OECD 십만명당 자살자수 변동 애니메이션----------------------------------------------------
 
 kr_suicide_plot<-function(i){
@@ -311,4 +326,4 @@ saveGIF({for (i in 1:(length(dlist)-1)) {
     ani.pause()
   }
 }, movie.name="kr_suicide_.gif",ani.width = 750, ani.height = 400)
-```
+~~~
