@@ -71,6 +71,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [주택가격 변동 국가 비교: 한국, 독일, 스페인, 프랑스, 일본, 미국](dallas-house-price.html) 
     1. [OECD 주요국가 연간 노동시간](oecd-annual-labor-hour.html) 
     1. [연간 실질 임금 국제비교](oecd-annual-wage-usd.html) 
+    1. [자살률 국제비교 (10만명당 자살자수)](oecd-suicide.html) 
 
 
 > ### xwMOOC 오픈 교재
