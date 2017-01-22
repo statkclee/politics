@@ -68,6 +68,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [회귀분석 - 부모님 신장과 자식 신장](pe-regression.html)
     1. [회귀분석 - MLB 투수 유전자는 유전이 될까?](pe-baseball-era.html)
 1. 저녁이 없던 삶
+    1. [OECD 데이터 읽어오기](read-oecd-dataset.html)
     1. [주택가격 변동 국가 비교: 한국, 독일, 스페인, 프랑스, 일본, 미국](dallas-house-price.html) 
     1. [OECD 주요국가 연간 노동시간](oecd-annual-labor-hour.html) 
     1. [연간 실질 임금 국제비교](oecd-annual-wage-usd.html) 
