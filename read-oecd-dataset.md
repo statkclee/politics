@@ -1,4 +1,14 @@
-# 데이터 과학자와 함께 하는 제19대 대통령 선거
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: OECD를 포함한 국제기구 데이터 읽어오기
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
 
 
 
@@ -53,7 +63,7 @@ SDMX을 활용하여 데이터를 불러올 경우 다음 세가지 정보가 �
 - [rsdmx: Tools for Reading SDMX Data and Metadata](https://cran.r-project.org/web/packages/rsdmx/): 2016-11-15 개발 최종일
 
 `rsdmx` 팩키지는 SDMX-ML 형태로 데이터와 메타데이터를 읽어들일 수 있는 저수준 도구 모음이다.
-
+  
 
 ### 3.1. OECD 데이터 목록 확인
 
