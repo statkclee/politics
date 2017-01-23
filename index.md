@@ -73,6 +73,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [OECD 주요국가 연간 노동시간](oecd-annual-labor-hour.html) 
     1. [연간 실질 임금 국제비교](oecd-annual-wage-usd.html) 
     1. [자살률 국제비교 (10만명당 자살자수)](oecd-suicide.html) 
+    1. [실업률](oecd-unemployment.html) 
 
 
 > ### xwMOOC 오픈 교재
