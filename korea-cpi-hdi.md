@@ -1,34 +1,6 @@
----
-layout: page
-title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 대한민국 부패지수와 인간개발지수
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
----
+# 데이터 과학자와 함께 하는 제19대 대통령 선거
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(tidyverse)
-library(countrycode) # ISO 코드에 국가명 붙이기
-library(stringr)
-library(hdr) # devtools::install_github("expersso/hdr")
-library(ggrepel)
-library(showtext)
-library(rvest)
 
-url <- "https://ko.wikipedia.org/wiki/ISO_3166-1" 
-
-kor_iso <- url %>%
-  read_html() %>%
-  html_nodes(xpath='//*[@id="mw-content-text"]/table[1]') %>%
-  html_table(fill = TRUE) %>% 
-  .[[1]]
-
-```
 
 ## 1. 대한민국 부패인식지수와 인간개발지수 [^hdi-news] [^cpi-news]
 
@@ -56,7 +28,8 @@ kor_iso <- url %>%
 
 `hdr` 팩키지를 통해 인간개발지수 데이터를 받아올 수 있으나 2013년이 가장 최신이라 직접 인간개발계획 웹사이트를 통해 데이터를 받아온다.
 
-``` {r cpi-hdi-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 --------------------------------------------------------------------------
 library(countrycode) # ISO 코드에 국가명 붙이기
 library(stringr)
@@ -65,13 +38,14 @@ library(ggrepel)
 library(showtext)
 library(rvest)
 library(tidyverse)
-```
+~~~
 
 ### 2.2. 데이터 가져오기
 
 데이터를 불러와서 한국을 비롯한 주요 국가를 선택하고, 한글화 작업을 한다.
 
-``` {r cpi-hdi-data-import, warn=FALSE, message=FALSE}
+
+~~~{.r}
 # 1. 데이터 불러오기 ----------------------------------------------
 ## 1.1. HDI 데이터-------------------------------------------------
 # "http://hdr.undp.org/en/data"
@@ -134,7 +108,7 @@ cpi_hdi_14_df <- cpi_hdi_14_df %>% mutate(continent = plyr::revalue(continent,
                                                           "Asia" = "아시아",
                                                           "Europe" = "유럽",
                                                           "Oceania" = "오세아니아")))
-```
+~~~
 
 
 ### 2.3. 분패인식지수와 인간개발지수 데이터 시각화
@@ -142,7 +116,8 @@ cpi_hdi_14_df <- cpi_hdi_14_df %>% mutate(continent = plyr::revalue(continent,
 인간개발지수는 0.7 까지 부패지수가 낮은 상태에서 완만히 증가하지만, 이후 인간개발지수와 부패인식지수는 급격히 높아져 최고 투명도 10을 행해 강한 
 선형관계를 띄고 나아간다.
 
-``` {r cpi-hdi-ggplot}
+
+~~~{.r}
 points_to_label <- c("러시아", "이라크", "미얀마", "수단",
                    "아프카니스탄", "그리스", "아르헨티나", "브라질",
                    "인도", "이탈리아", "중화인민공화국", "남아프리카 공화국", "스페인",
@@ -174,4 +149,6 @@ ggplot(cpi_hdi_14_df, aes(x = hdi_14, y = cpi_14, color=continent)) +
   ggtitle("부패인식지수와 인간개발지수(2014년)") +
   theme(text=element_text(family="NanumGothic")) +
   geom_point(data=cpi_hdi_14_df %>% dplyr::filter(country_knm=="대한민국"), aes(x=hdi_14, y=cpi_14), colour="darkgreen", size=5)
-```
+~~~
+
+<img src="fig/cpi-hdi-ggplot-1.png" style="display: block; margin: auto;" />
