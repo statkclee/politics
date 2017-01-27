@@ -86,13 +86,12 @@ gh_text &lt;-<span class="st"> </span><span class="kw">clean_text</span>(gh)
 <pre class="output"><code>Backup was just finished!
 983012 words dictionary was built.
 </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">user_dictionary &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">term=</span><span class="kw">c</span>(<span class="st">&quot;노사정&quot;</span>, <span class="st">&quot;핵실험&quot;</span>, <span class="st">&quot;친서민&quot;</span>, <span class="st">&quot;취업률&quot;</span>, <span class="st">&quot;박근혜&quot;</span>,<span class="st">&quot;중국&quot;</span>, <span class="st">&quot;한국&quot;</span>, <span class="st">&quot;마이스터고&quot;</span>,
-                       <span class="st">&quot;재정&quot;</span>, <span class="st">&quot;이광춘&quot;</span>),
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">user_dictionary &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">term=</span><span class="kw">c</span>(<span class="st">&quot;노사정&quot;</span>, <span class="st">&quot;핵실험&quot;</span>, <span class="st">&quot;친서민&quot;</span>, <span class="st">&quot;취업률&quot;</span>, <span class="st">&quot;박근혜&quot;</span>,<span class="st">&quot;중국&quot;</span>, <span class="st">&quot;한국&quot;</span>, <span class="st">&quot;마이스터고&quot;</span>, <span class="st">&quot;재정&quot;</span>),
                        <span class="dt">tag=</span><span class="st">&#39;ncn&#39;</span>)
 
 <span class="kw">buildDictionary</span>(<span class="dt">ext_dic =</span> <span class="kw">c</span>(<span class="st">&#39;sejong&#39;</span>, <span class="st">&#39;woorimalsam&#39;</span>),
                 <span class="dt">user_dic =</span> user_dictionary, <span class="dt">category_dic_nms=</span><span class="kw">c</span>(<span class="st">&#39;political&#39;</span>))</code></pre></div>
-<pre class="output"><code>718253 words dictionary was built.
+<pre class="output"><code>718262 words dictionary was built.
 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mb_noun &lt;-<span class="st"> </span><span class="kw">map</span>(mb_text, extractNoun) %&gt;%<span class="st"> </span><span class="kw">map</span>(function(x) x[<span class="kw">nchar</span>(x) &gt;=<span class="st"> </span><span class="dv">2</span>])
 gh_noun &lt;-<span class="st"> </span><span class="kw">map</span>(gh_text, extractNoun) %&gt;%<span class="st"> </span><span class="kw">map</span>(function(x) x[<span class="kw">nchar</span>(x) &gt;=<span class="st"> </span><span class="dv">2</span>])

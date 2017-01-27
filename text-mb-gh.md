@@ -95,8 +95,7 @@ Backup was just finished!
 
 
 ~~~{.r}
-user_dictionary <- data.frame(term=c("노사정", "핵실험", "친서민", "취업률", "박근혜","중국", "한국", "마이스터고",
-                       "재정", "이광춘"),
+user_dictionary <- data.frame(term=c("노사정", "핵실험", "친서민", "취업률", "박근혜","중국", "한국", "마이스터고", "재정"),
                        tag='ncn')
 
 buildDictionary(ext_dic = c('sejong', 'woorimalsam'),
@@ -106,7 +105,7 @@ buildDictionary(ext_dic = c('sejong', 'woorimalsam'),
 
 
 ~~~{.output}
-718253 words dictionary was built.
+718262 words dictionary was built.
 
 ~~~
 
