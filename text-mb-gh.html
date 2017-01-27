@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자가 바라본 20대 총선</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
+          <h2 class="subtitle">대한민국 - 이명박 퇴임사 vs. 박근혜 취임사</h2>
+<h2 id="대한민국-이명박-대통령-퇴임사와-박근혜-취임사">1. 대한민국 이명박 대통령 퇴임사와 박근혜 취임사</h2>
+<p>최근에 있었던 미국 오바마 전임 대통령 퇴임사와 함께 트럼프 신임 대통령 취임사를 분석했으니 동일한 방식으로 2012년도 있었던 이명박 대통령 퇴임사와 박근혜 대통령 취임사를 텍스트 분석해 보자.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 -------------------------------------------------------</span>
+<span class="kw">library</span>(KoNLP)
+<span class="kw">library</span>(Rtextrankr)
+
+<span class="kw">library</span>(tm)
+<span class="kw">library</span>(qdap)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(wordcloud)
+<span class="kw">library</span>(tibble)
+<span class="kw">library</span>(plotrix)
+<span class="kw">library</span>(stringr)
+<span class="kw">library</span>(purrr)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(gridExtra)
+<span class="kw">library</span>(extrafont)
+<span class="kw">par</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>)</code></pre></div>
+<h2 id="퇴임사와-취임사-텍스트-마이닝">2. 퇴임사와 취임사 텍스트 마이닝</h2>
+<h3 id="취임사와-퇴임사-연설문-데이터-입수-mb-farewell-gh-inauguration">2.1. 취임사와 퇴임사 연설문 데이터 입수 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h3>
+<p>전임 이명박 대통령 퇴임 연설문과 박근혜 대통령 취임 연설문은 여러 언론사와 블로그 등에 올라가 있다. 연설문 전문을 다운로드 받아 분석을 시작한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 불러오기 -------------------------------------------------------</span>
+<span class="co"># http://www.skyedaily.com/news/news_view.html?ID=8552&amp;keyWord=%B8%B6%C0%CC%BD%BA%C5%CD%B0%ED</span>
+mb &lt;-<span class="st"> </span><span class="kw">readLines</span>(<span class="st">&quot;data/mb_farewell.txt&quot;</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)
+<span class="co"># http://news.khan.co.kr/kh_news/khan_art_view.html?artid=201302251134391&amp;code=910100</span>
+gh &lt;-<span class="st"> </span><span class="kw">readLines</span>(<span class="st">&quot;data/gh_inauguration.txt&quot;</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</code></pre></div>
+<h3 id="연설문-텍스트-정제">2.2. 연설문 텍스트 정제</h3>
+<p>연설문 데이터를 받아 <code>qdap</code> 팩키지 전처리 기능을 활용하여 데이터를 정제한다. 그리고 나서 <code>KoNLP</code> 팩키지의 <code>extractNoun()</code> 함수를 호출하여 명사를 추출한다. 두 글자 이상되는 명사를 대상으로 말뭉치를 생성시킨다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2. 데이터 전처리 -------------------------------------------------------</span>
+## 2.1. 문장단위 정리
+clean_text &lt;-<span class="st"> </span>function(text){
+  text &lt;-<span class="st"> </span><span class="kw">bracketX</span>(text)
+  text &lt;-<span class="st"> </span><span class="kw">removePunctuation</span>(text)
+  text &lt;-<span class="st"> </span><span class="kw">stripWhitespace</span>(text)
+  text &lt;-<span class="st"> </span><span class="kw">xplit</span>(text)
+  text &lt;-<span class="st"> </span><span class="kw">get_sentences</span>(text)
+  <span class="kw">return</span>(text)
+}
+
+mb_text &lt;-<span class="st"> </span><span class="kw">clean_text</span>(mb)
+gh_text &lt;-<span class="st"> </span><span class="kw">clean_text</span>(gh)
+
+## 2.2. 명사 추출
+
+<span class="kw">useNIADic</span>()</code></pre></div>
+<pre class="output"><code>Backup was just finished!
+983012 words dictionary was built.
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">user_dictionary &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">term=</span><span class="kw">c</span>(<span class="st">&quot;노사정&quot;</span>, <span class="st">&quot;핵실험&quot;</span>, <span class="st">&quot;친서민&quot;</span>, <span class="st">&quot;취업률&quot;</span>, <span class="st">&quot;박근혜&quot;</span>,<span class="st">&quot;중국&quot;</span>, <span class="st">&quot;한국&quot;</span>, <span class="st">&quot;마이스터고&quot;</span>,
+                       <span class="st">&quot;재정&quot;</span>, <span class="st">&quot;이광춘&quot;</span>),
+                       <span class="dt">tag=</span><span class="st">&#39;ncn&#39;</span>)
+
+<span class="kw">buildDictionary</span>(<span class="dt">ext_dic =</span> <span class="kw">c</span>(<span class="st">&#39;sejong&#39;</span>, <span class="st">&#39;woorimalsam&#39;</span>),
+                <span class="dt">user_dic =</span> user_dictionary, <span class="dt">category_dic_nms=</span><span class="kw">c</span>(<span class="st">&#39;political&#39;</span>))</code></pre></div>
+<pre class="output"><code>718253 words dictionary was built.
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mb_noun &lt;-<span class="st"> </span><span class="kw">map</span>(mb_text, extractNoun) %&gt;%<span class="st"> </span><span class="kw">map</span>(function(x) x[<span class="kw">nchar</span>(x) &gt;=<span class="st"> </span><span class="dv">2</span>])
+gh_noun &lt;-<span class="st"> </span><span class="kw">map</span>(gh_text, extractNoun) %&gt;%<span class="st"> </span><span class="kw">map</span>(function(x) x[<span class="kw">nchar</span>(x) &gt;=<span class="st"> </span><span class="dv">2</span>])
+
+mb_noun_lst &lt;-<span class="st"> </span><span class="kw">unlist</span>(mb_noun)
+gh_noun_lst &lt;-<span class="st"> </span><span class="kw">unlist</span>(gh_noun)
+
+
+make_corpus &lt;-<span class="st"> </span>function(text) {
+  text_source &lt;-<span class="st"> </span><span class="kw">VectorSource</span>(text)
+  text_corpus &lt;-<span class="st"> </span><span class="kw">VCorpus</span>(text_source)
+  <span class="co"># corpus &lt;- clean_corpus(text_corpus)</span>
+  <span class="kw">return</span>(text_corpus)
+}
+
+mb_corpus &lt;-<span class="st"> </span><span class="kw">make_corpus</span>(mb_noun_lst)
+gh_corpus &lt;-<span class="st"> </span><span class="kw">make_corpus</span>(gh_noun_lst)</code></pre></div>
+<h3 id="연설문-텍스트-정제-1">2.3. 연설문 텍스트 정제</h3>
+<p>말뭉치가 생성되면 <code>TermDocumentMatrix()</code> 함수를 통해 단어문서행렬을 생성시키고 나서, <code>as.matrix</code> 명령어로 강제로 행렬변환하고 나서 데이터프레임으로 자료형을 정리시키고 나서 통계분석과 시각화를 수행한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3. 말뭉치를 데이터프레임으로 변환 --------------------------------------</span>
+
+word_freq &lt;-<span class="st"> </span>function(corpus) {
+    doc_tdm &lt;-<span class="st"> </span><span class="kw">TermDocumentMatrix</span>(corpus)
+    doc_m &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(doc_tdm)
+    doc_term_freq &lt;-<span class="st"> </span><span class="kw">rowSums</span>(doc_m)
+    doc_word_freqs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">term =</span> <span class="kw">names</span>(doc_term_freq),
+                             <span class="dt">num =</span> doc_term_freq) %&gt;%<span class="st"> </span><span class="kw">arrange</span>(<span class="kw">desc</span>(num))
+    doc_word_freqs$term &lt;-<span class="st"> </span><span class="kw">str_replace_all</span>(doc_word_freqs$term, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="st">&quot;&quot;</span>)
+    <span class="kw">return</span>(doc_word_freqs)
+}
+
+mb_word_freqs &lt;-<span class="st"> </span><span class="kw">word_freq</span>(mb_corpus)
+gh_word_freqs &lt;-<span class="st"> </span><span class="kw">word_freq</span>(gh_corpus)</code></pre></div>
+<h3 id="연설문-시각화">2.4. 연설문 시각화</h3>
+<h4 id="최다-빈도-단어-시각화">2.4.1. 최다 빈도 단어 시각화</h4>
+<p>막대그래프를 통해 가장 많이 퇴임사와 취임사에 등장하는 단어를 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 4. 시각화 --------------------------------------------------------------</span>
+## 4.1. 단어빈도----------------------------------------------------------
+<span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_family=</span><span class="st">&quot;NanumGothic&quot;</span>))
+
+mb_p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(mb_word_freqs %&gt;%<span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>:<span class="dv">20</span>), <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">reorder</span>(term,num), <span class="dt">y=</span>num)) +
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +<span class="st"> </span><span class="kw">coord_flip</span>() +<span class="kw">labs</span>(<span class="dt">y=</span><span class="st">&quot;단어빈도수&quot;</span>, <span class="dt">x=</span><span class="st">&quot;&quot;</span>)
+gh_p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(gh_word_freqs %&gt;%<span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>:<span class="dv">20</span>), <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">reorder</span>(term,num), <span class="dt">y=</span>num)) +
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +<span class="st"> </span><span class="kw">coord_flip</span>() +<span class="kw">labs</span>(<span class="dt">y=</span><span class="st">&quot;단어빈도수&quot;</span>, <span class="dt">x=</span><span class="st">&quot;&quot;</span>)
+
+<span class="kw">grid.arrange</span>(mb_p, gh_p, <span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
+<p><img src="fig/korea-speech-barplot-1.png" title="plot of chunk korea-speech-barplot" alt="plot of chunk korea-speech-barplot" style="display: block; margin: auto;" /></p>
+<h4 id="퇴임사와-취임사-단어구름">2.4.2. 퇴임사와 취임사 단어구름</h4>
+<p>이명박 대통령 퇴임사와 박근혜 대통령 취임사 각각 등장하는 단어를 단어구름을 사용하여 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 4.2. 단어구름----------------------------------------------------------
+<span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+pal &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;Dark2&quot;</span>)[-(<span class="dv">1</span>:<span class="dv">2</span>)]
+
+<span class="kw">wordcloud</span>(mb_word_freqs$term, mb_word_freqs$num,  <span class="dt">min.freq =</span> <span class="dv">1</span>, <span class="dt">scale=</span><span class="kw">c</span>(<span class="dv">4</span>,.<span class="dv">5</span>),
+          <span class="dt">rot.per =</span> <span class="fl">0.1</span>, <span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>, <span class="dt">colors=</span>pal)
+<span class="kw">wordcloud</span>(gh_word_freqs$term, gh_word_freqs$num,  <span class="dt">min.freq =</span> <span class="dv">1</span>, <span class="dt">scale=</span><span class="kw">c</span>(<span class="dv">4</span>,.<span class="dv">5</span>),
+          <span class="dt">rot.per =</span> <span class="fl">0.1</span>, <span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>, <span class="dt">colors=</span>pal)</code></pre></div>
+<p><img src="fig/korea-speech-wordcloud-1.png" title="plot of chunk korea-speech-wordcloud" alt="plot of chunk korea-speech-wordcloud" style="display: block; margin: auto;" /></p>
+<h4 id="퇴임사와-취임사-공통-단어구름">2.4.3. 퇴임사와 취임사 공통 단어구름</h4>
+<p>이명박 대통령 퇴임사와 박근혜 대통령 취임사 공통으로 등장하는 단어를 사용하여 단어구름을 사용하여 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 4.3. 공통 단어구름
+
+mb_tdm &lt;-<span class="st"> </span><span class="kw">TermDocumentMatrix</span>(mb_corpus)
+mb_m &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(mb_tdm)
+<span class="kw">row.names</span>(mb_m) &lt;-<span class="st"> </span><span class="kw">str_replace_all</span>(<span class="kw">row.names</span>(mb_m), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="st">&quot;&quot;</span>)
+mb_m &lt;-<span class="st"> </span><span class="kw">rowSums</span>(mb_m)
+
+gh_tdm &lt;-<span class="st"> </span><span class="kw">TermDocumentMatrix</span>(gh_corpus)
+gh_m &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(gh_tdm)
+<span class="kw">row.names</span>(gh_m) &lt;-<span class="st"> </span><span class="kw">str_replace_all</span>(<span class="kw">row.names</span>(gh_m), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="st">&quot;&quot;</span>)
+gh_m &lt;-<span class="st"> </span><span class="kw">rowSums</span>(gh_m)
+
+mb_gh_m &lt;-<span class="st"> </span><span class="kw">merge</span>(mb_m, gh_m, <span class="dt">by =</span> <span class="st">&quot;row.names&quot;</span>, <span class="dt">all =</span> <span class="ot">TRUE</span>)
+<span class="kw">row.names</span>(mb_gh_m) &lt;-<span class="st"> </span>mb_gh_m[,<span class="dv">1</span>]
+mb_gh_m &lt;-<span class="st"> </span>mb_gh_m[,-<span class="dv">1</span>]
+
+mb_gh_m$x &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(mb_gh_m$x), <span class="dv">0</span>, mb_gh_m$x)
+mb_gh_m$y &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(mb_gh_m$y), <span class="dv">0</span>, mb_gh_m$y)
+
+<span class="kw">commonality.cloud</span>(mb_gh_m, <span class="dt">max.words=</span><span class="dv">30</span>, <span class="dt">scale=</span><span class="kw">c</span>(<span class="dv">4</span>,.<span class="dv">5</span>),  <span class="dt">rot.per =</span> <span class="fl">0.1</span>, <span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>, <span class="dt">colors=</span>pal)</code></pre></div>
+<p><img src="fig/korea-speech-common-wordcloud-1.png" title="plot of chunk korea-speech-common-wordcloud" alt="plot of chunk korea-speech-common-wordcloud" style="display: block; margin: auto;" /></p>
+<h4 id="퇴임사와-취임사-비교-단어구름">2.4.4. 퇴임사와 취임사 비교 단어구름</h4>
+<p>이명박 대통령 퇴임사와 박근혜 대통령 취임사의 공통되는 단어보다 차이가 나는 단어에 초점을 두고 활용하는 비교 단어구름(comparison wordcloud)를 사용하여 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 4.3. 비교 단어구름
+<span class="kw">par</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>)
+<span class="kw">colnames</span>(mb_gh_m) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;이명박&quot;</span>, <span class="st">&quot;박근혜&quot;</span>)
+<span class="kw">comparison.cloud</span>(mb_gh_m, <span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">max.words =</span> <span class="dv">50</span>)</code></pre></div>
+<p><img src="fig/korea-speech-comparison-wordcloud-1.png" title="plot of chunk korea-speech-comparison-wordcloud" alt="plot of chunk korea-speech-comparison-wordcloud" style="display: block; margin: auto;" /></p>
+<h4 id="퇴임사와-취임사-공통-단어-피라미드-시각화">2.4.5. 퇴임사와 취임사 공통 단어 피라미드 시각화</h4>
+<p>이명박 대통령 퇴임사와 박근혜 대통령 취임사의 공통 단어를 추출하여 각 단어별 빈도를 통해 동일한 단어의 강조점을 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 4.4. 피라미드 그래프
+<span class="kw">par</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>)
+
+mb_gh_m$label &lt;-<span class="st"> </span><span class="kw">row.names</span>(mb_gh_m)
+mb_gh_df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(mb_gh_m)
+<span class="kw">colnames</span>(mb_gh_df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;MB&quot;</span>, <span class="st">&quot;GH&quot;</span>, <span class="st">&quot;label&quot;</span>)
+
+<span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))
+common_words_25 &lt;-<span class="st"> </span>mb_gh_df %&gt;%
+<span class="st">  </span>dplyr::<span class="kw">filter</span>(MB &gt;<span class="st"> </span><span class="dv">0</span> &amp;<span class="st"> </span>GH &gt;<span class="dv">0</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">diff =</span> <span class="kw">abs</span>(MB -<span class="st"> </span>GH)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(diff)) %&gt;%<span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>:<span class="dv">25</span>)
+
+plotrix::<span class="kw">pyramid.plot</span>(common_words_25$MB, common_words_25$GH,
+                      <span class="dt">labels =</span> common_words_25$label, <span class="dt">gap =</span> <span class="dv">8</span>,
+                      <span class="dt">top.labels =</span> <span class="kw">c</span>(<span class="st">&quot;이명박&quot;</span>, <span class="st">&quot;단어&quot;</span>, <span class="st">&quot;박근혜&quot;</span>),
+                      <span class="dt">main =</span> <span class="st">&quot;이명박근혜 이취임사 공통 단어&quot;</span>, <span class="dt">laxlab =</span> <span class="ot">NULL</span>, 
+                      <span class="dt">raxlab =</span> <span class="ot">NULL</span>, <span class="dt">unit =</span> <span class="ot">NULL</span>)</code></pre></div>
+<p><img src="fig/korea-speech-pyramid-1.png" title="plot of chunk korea-speech-pyramid" alt="plot of chunk korea-speech-pyramid" style="display: block; margin: auto;" /></p>
+<pre class="output"><code>[1] 5.1 4.1 4.1 2.1
+</code></pre>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="http://www.skyedaily.com/news/news_view.html?ID=8552&amp;keyWord=%B8%B6%C0%CC%BD%BA%C5%CD%B0%ED">전문 -이명박 대통령 퇴임 연설</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="http://news.khan.co.kr/kh_news/khan_art_view.html?artid=201302251134391&amp;code=910100">속보 - 박근혜 대통령 취임사 ‘전문’ 훑어보니…</a><a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
