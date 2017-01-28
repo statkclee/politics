@@ -137,7 +137,7 @@ c_eng_df <- left_join(c_df, eng_df, by="video_id") %>% dplyr::filter(candidate !
 
 선호도(preference) 반영 공식은 다음과 같다.
 
-$$\text{선호도(preference) = \frac{\text{좋아요(likes)}}{\text{좋아요(likes)} + \text{싫어요(dislikes)}}}$$ 
+$$\text{선호도(preference)} = \frac{\text{좋아요(likes)}}{\text{좋아요(likes)} + \text{싫어요(dislikes)}}$$ 
 
 ### 3.1. 후보별 유튜브 사용자 관여 통계
 
@@ -183,9 +183,10 @@ datatable(channel_summary) %>%
 yt_top5 <- c_eng_df %>% group_by(candidate) %>% 
   arrange(desc(viewCount)) %>% slice(1:10) %>% 
   mutate(preference = likeCount/(likeCount+dislikeCount)) %>% 
-  dplyr::select(candidate, pdate, channelTitle, viewCount, likeCount, dislikeCount, commentCount, preference, video_id, title)
+  dplyr::select(whobo=candidate, pdate, channelTitle, view=viewCount, like=likeCount, dislike=dislikeCount, comment = commentCount, pref=preference, video_id, title)
 
-datatable(yt_top5) %>% 
-  formatCurrency(c('viewCount', 'likeCount', 'dislikeCount', 'commentCount'),' ', interval = 3, mark = ",", digits = 0) %>% 
-  formatPercentage('preference', digits = 0) 
+datatable(yt_top5, options = list(autoWidth = TRUE,
+  columnDefs = list(list(width = '10px', targets = c(1,3,4,5,6,7,8,9))))) %>% 
+  formatCurrency(c('view', 'like', 'dislike', 'comment'),' ', interval = 3, mark = ",", digits = 0) %>% 
+  formatPercentage('pref', digits = 0) 
 ```  
