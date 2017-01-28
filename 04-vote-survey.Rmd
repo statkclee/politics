@@ -66,8 +66,8 @@ op <- options(gvis.plot.tag='chart')
 작업처리오차(Processing Error)도 응답된 설문결과를 특정 후보자에게 유리하도록 의도적으로 결측값을 처리하거나 전산 수작업 실수 등 자료분석과정에서 
 예기치 않는 실수가 발생할 수 있어 통계분석실무자에 대한 윤리 교육과 함께 재현가능한 데이터분석에 대한 관심이 높아지고 있다.
 
-관측을 하지 못하기 때문에 발생되는 오차를 비관측오차(Error of Nonobservation)라고 하고 관측을 하여도 발생되는 오차를 
-관측오차(Error of Observation)라고 한다.
+관측을 하지 못하기 때문에 발생되는 오차를 **비관측오차(Error of Nonobservation)**라고 하고 관측을 하여도 발생되는 오차를 
+**관측오차(Error of Observation)**라고 한다.
 
 - 비관측오차
     - 포함오차: 표본추출틀이 목표모집단과 같지 않기 때문에 생기는 오차
@@ -81,7 +81,7 @@ op <- options(gvis.plot.tag='chart')
         - 면접 방법: 대면조사, 우편조사, 유선전화조사, 무선전화조사, 전자우편조사, 인터넷 설문조사 등
     - 처리오차: 정확하게 측정된 값을 컴퓨터로 옮기는 과정에서 발생하는 오차
 
-<img src="fig/survey-errors.png" alt="여론조사 오차" width="77%" />
+<img src="fig/survey-errors.png" alt="여론조사 오차" width="87%" />
 
 
 ### 2.2. 여론조사 사례

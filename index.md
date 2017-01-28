@@ -39,7 +39,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [선거 데이터: 전장(battle field) ...](03-vote-data.html)
         - [제19대 대통령선거 일정](pe-schedule.html)
         - [대한민국 인구 피라미드](pe-population-pyramid.html)
-    1. [여론조사: 제20대 국회의원 선거](04-vote-survey.html)
+    1. [여론조사 개요](04-vote-survey.html)
         - [인구통계 분석](05-vote-demographic.html)
         - [여론조사 지지율](07-vote-approval-rating.html)
         - [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)

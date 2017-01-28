@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="generator" content="pandoc">
-    <title>Software Carpentry: 데이터 과학자가 바라본 20대 총선</title>
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
@@ -36,11 +36,11 @@
       <article>
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
-          <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
           <h2 class="subtitle">선거 여론조사</h2>
-<h2 id="제20대-국회의원-선거-쟁점-survey-fail01-survey-fail02">제20대 국회의원 선거 쟁점 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h2>
+<h2 id="제20대-국회의원-선거가-남긴-숙제-survey-fail01-survey-fail02">1. 제20대 국회의원 선거가 남긴 숙제 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h2>
 <p>갤럽 및 이와 유사한 여론조사 방법론을 동원한 여론조사 전문기관들이 대통령 선거를 비롯한 다양한 선거에서 점쟁이(?), 쪽집게(?) 노릇을 톡톡히 했다. 하지만, 이번 제20대 총선에서 새누리 압승으로 예상한 것이 틀렸고, 제1당의 위치도 내려놓게 되었다.</p>
-<h2 id="여론조사">여론조사</h2>
+<h2 id="여론조사">2. 여론조사</h2>
 <p>여론조사(輿論調査)는 특정 사회집단의 구성원에 대해 여론동향을 파악하려는 목적으로 실시하는 통계적 사회조사로, 무작위로 추출된 일정수 사람들(표본)에게 설문하여, 응답을 수집하는 통계조사로, 통계이론에 근거한 표본 조사이며, 표본 오차가 뒤따른다.<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></p>
 <p>19세기 미국에서 대통령 선거 결과를 사전에 예상하는 목적으로 발달했으며, 20세기 초에는 언론기관들이 여론조사를 실시하면서 보편화되었다.</p>
 <aside class="callout panel panel-info">
@@ -48,14 +48,38 @@
 <h3 id="여론조사-공표-및-인용보도-금지-공직선거법108조1항"><span class="glyphicon glyphicon-pushpin"></span>여론조사 공표 및 인용보도 금지 (공직선거법,108조1항)</h3>
 </div>
 <div class="panel-body">
-<p>누구든지 __선거일전 6일__부터 선거일의 투표마감시각까지 선거에 관하여 정당에 대한 지지도나 당선인을 예상하게 하는 여론조사(모의투표나 인기투표에 의한 경우를 포함)의 경위와 그 결과를 공표하거나 인용하여 보도할 수 없습니다. <a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a> 단, 다만 공표만 하지않고, 내부 자료로 활용하기 위한 여론조사는 수행할 수 있다.</p>
+<p>누구든지 <strong>선거일전 6일</strong>부터 선거일의 투표마감시각까지 선거에 관하여 정당에 대한 지지도나 당선인을 예상하게 하는 여론조사(모의투표나 인기투표에 의한 경우를 포함)의 경위와 그 결과를 공표하거나 인용하여 보도할 수 없습니다. <a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a> 단, 다만 공표만 하지않고, 내부 자료로 활용하기 위한 여론조사는 수행할 수 있다.</p>
 </div>
 </aside>
-<h3 id="여론조사-개요">여론조사 개요</h3>
+<h3 id="여론조사-개요">2.1. 여론조사 개요</h3>
 <p>여론조사결과는 <a href="https://www.nesdc.go.kr/">중앙선거관리위원회 - 중앙선거 여론조사 공정심의위원회</a> 웹사이트에서 확인할 수 있다. <code>여론조사결과 등록</code> &gt; <code>여론조사결과 등록현황</code> 메뉴에서 여론조사 기관에서 조하한 여론조사 결과를 확인할 수 있다.</p>
 <p><img src="fig/survey-overview.png" alt="여론조사 개요" width="50%" /></p>
-<p>여론조사는 표본 및 설문문항을 설계한 후에 설정한 모집단에서 표본을 임의로 추출하여 추출된 유권자에게 준비된 설문문항을 조사하는 방식으로 진행된다. 특히, 표본을 뽑을 표본틀(Sampling Frame)을 잘 설계해야지만 표본이 조사하고자하는 모집단의 대표성을 잘 나타내게 된다.</p>
-<h4 id="여론조사-사례">여론조사 사례</h4>
+<p>여론조사는 표본 및 설문문항을 설계한 후에 설정한 모집단에서 표본을 임의로 추출하여 추출된 유권자에게 준비된 설문문항을 조사하는 방식으로 진행된다. 특히, 표본을 뽑을 표본추출틀(Sampling Frame)을 잘 설계해야하고, 설문 문항도 잘 설계하여야 하며, 표본도 잘 추출해야만 조사하고자하는 모집단의 대표성과 함께 적절한 설문문항을 통해 여론조사의 정확성을 높일 수 있다.</p>
+<h3 id="여론조사-오차-jk-sampling">2.2. 여론조사 오차 <a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a></h3>
+<p>민심을 정확히 파악하기 위해 여론조사를 수행할 경우 표본에서 얻어진 추정치와 민심의 참값 차이를 오차라고 정의한다. 오차는 시간과 비용 등의 사유로 전체 모수를 대상으로 수행하는 대신에 일부 표본을 활용하기 때문에 발생하는 <strong>표본오차(Sampling Error)</strong>와 전수조사를 하더라도 꼭 발생하는 <strong>비표본 오차(Nonsampling Error)</strong>로 구분된다.</p>
+<p>대표적인 비표본오차가 포함오차, 무응답오차, 측정오차, 작업처리오차 등이 망라된다. 여론조사에서 많이 부각되는 무응답 오차는 공표기준에 맞추기 위해 처음에 표본추출틀을 통해 선정된 설문대상자 중 일부가 응답하지 않음으로 발생하는 오차로 <strong>샤이 트럼프</strong> 지지자라는 이름으로 요즘 회자된다. 작업처리오차(Processing Error)도 응답된 설문결과를 특정 후보자에게 유리하도록 의도적으로 결측값을 처리하거나 전산 수작업 실수 등 자료분석과정에서 예기치 않는 실수가 발생할 수 있어 통계분석실무자에 대한 윤리 교육과 함께 재현가능한 데이터분석에 대한 관심이 높아지고 있다.</p>
+<p>관측을 하지 못하기 때문에 발생되는 오차를 <strong>비관측오차(Error of Nonobservation)</strong>라고 하고 관측을 하여도 발생되는 오차를 <strong>관측오차(Error of Observation)</strong>라고 한다.</p>
+<ul>
+<li>비관측오차
+<ul>
+<li>포함오차: 표본추출틀이 목표모집단과 같지 않기 때문에 생기는 오차</li>
+<li>표본오차: 표본추출틀에서 전부를 관측하지 않고 일부를 관측하기 때문에 발생하는 오차</li>
+<li>무응답오차: 추출된 표본으로부터 여론조사 응답자가 응답을 하지 않아 발생하는 오차</li>
+</ul></li>
+<li>관측오차
+<ul>
+<li>측정오차: 참값을 정확하게 측정하지 못해 발생하는 오차
+<ul>
+<li>면접원: 면접원의 면접 기술, 성별, 나이, 정치/종교적 신념 등</li>
+<li>응답자: 응답자 거짓 진술 등</li>
+<li>도구: 설문 문항이나 측정 도구의 부실</li>
+<li>면접 방법: 대면조사, 우편조사, 유선전화조사, 무선전화조사, 전자우편조사, 인터넷 설문조사 등</li>
+</ul></li>
+<li>처리오차: 정확하게 측정된 값을 컴퓨터로 옮기는 과정에서 발생하는 오차</li>
+</ul></li>
+</ul>
+<p><img src="fig/survey-errors.png" alt="여론조사 오차" width="87%" /></p>
+<h3 id="여론조사-사례">2.2. 여론조사 사례</h3>
 <p>선거법에 따라 일정 표본크기 이상을 뽑아야만 여론조사를 공표할 수 있다는 규정에 따라 500개 이상(?) 표본을 뽑아야하고, 특정지역이라는 제약조건을 만족시켜야 되고, 무작위라는 속성도 만족시켜야 되고, 비용도 줄여야 되는 여러 조건과 법규정을 준수해야 하기 때문에 KT 유선 집전화를 사용하여 여론조사에 사용되는 표본이 추출되고 이를 기반으로 하여 통상 여론조사를 실시한다.</p>
 <table>
 <thead>
@@ -120,7 +144,7 @@
 </tbody>
 </table>
 <p>ARS: 전화자동응답전화, RDD: Random Digit Dialing</p>
-<h4 id="여론조사-설문-사례">여론조사 설문 사례</h4>
+<h3 id="여론조사-설문-사례">2.3. 여론조사 설문 사례</h3>
 <p>표본틀에서 나온 표본 유권자에게 조사할 설문지는 다음과 같은 형태를 띈다. 우선 SQ1,2,3를 통해서 인구통계학적 설문을 한다. 직업이나 기타 관심있는 인구통계학적 요소를 추가하기도 한다.</p>
 <p>다음으로 본격적으로 여론조사 본론으로 들어가서, 정당, 인물, 정책에 대한 항목을 순차적으로 질문을 한다.</p>
 <section class="getready panel panel-warning">
@@ -172,7 +196,7 @@
 </ul>
 </div>
 </section>
-<h2 id="여론조사-공표">여론조사 공표</h2>
+<h2 id="여론조사-공표">3. 여론조사 공표</h2>
 <p>여론조사에서 정당, 인물, 정책에 대한 사항 결과를 통계이론에 맞춰 정리하여 결과를 제시한다.</p>
 <p><img src="fig/lawmaker-overview.png" alt="제20대 총선 개요" width="70%" /></p>
 <div class="footnotes">
@@ -182,6 +206,7 @@
 <li id="fn2"><p><a href="http://www.mediatoday.co.kr/?mod=news&amp;act=articleView&amp;idxno=129414">4‧13 총선, 여론조사가 빗나간 세 가지 이유</a><a href="#fnref2">↩</a></p></li>
 <li id="fn3"><p><a href="https://ko.wikipedia.org/wiki/여론_조사">여론 조사</a><a href="#fnref3">↩</a></p></li>
 <li id="fn4"><p><a href="http://m.1390.go.kr/lawmobile/laws.letter.do?cont_id=201202150190&amp;cont_sid=0001">선거에 관한 여론조사</a><a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p><a href="https://books.google.co.uk/books/about/표본조사론.html?id=VV_dNAAACAAJ&amp;hl=ko">김재광 (2008), “표본조사론”, 자유아카데미</a><a href="#fnref5">↩</a></p></li>
 </ol>
 </div>
         </div>
