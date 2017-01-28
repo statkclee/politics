@@ -1,0 +1,191 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 유튜브 동영상 사용자 관여도 분석
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+library(tidyverse)
+library(tuber)
+library(readr)
+library(stringr)
+library(lubridate)
+library(DT)
+
+
+```
+
+## 1. 국내 검색 시장 점유율 [^pitchone-google]
+
+[^pitchone-google]: [네이버 검색점유율 50%붕괴,구글 미친 600%성장∙37%점유돌풍,검색광고시장 요동](http://www.pitchone.co.kr/?p=7235)
+
+국내 검색 시장은 네이버가 독점적인 시장점유율을 확보하고 있었으나, 최근 스마트폰 등장이후 안드로이드에 기본 검색엔진으로 탐재된
+구글 검색의 영향으로 네이버와 구글이 2강을 형성하고 다음이 위치한 2강 1약 구조를 형성하고 있다.
+
+코리안 클릭 최근 검색 점유율(9월)을 추정할 수 있는 간접데이터인 PC 인기 검색어 순위는 다음과 같다.
+
+- 유튜브: 1,615만건 검색
+- 네이버: 1,105만건 검색
+- 구  글:   755만건 검색
+
+## 2. 유튜브 동영상 사용자 관여도 데이터 수집
+
+### 2.1. 검색어를 통한 연관 동영상 수집
+
+유튜브 API를 통해 데이터를 받아올 수 있는 [tuber: Client for the YouTube API](https://cran.r-project.org/web/packages/tuber/index.html) 팩키지를 설치하고 나서,
+구글 유튜브 API, [https://developers.google.com/youtube/v3/](https://developers.google.com/youtube/v3/) 웹사이트를 참조하여 필요한 보안설정을 완료한다.
+
+그리고 나서, `yt_oauth()` 함수를 통해 인증을 마치게 되면 `yt_search` 함수를 통해 유튜브 검색어를 던질 수 있고 연관된 동영상을 받아오게 된다.
+손학규, 문재인, 안철수, 유승민, 반기문, 이재명 총 6명 대권 후보에 대한 동영상 검색 작업을 수행한다. 그리고 나서 이를 데이터프레임 하나로 정리한다.
+
+``` {r youtube-api-search, eval=FALSE}
+# 0.환경설정 ------------------------------------------------------------
+# devtools::install_github("soodoku/tuber", build_vignettes = TRUE)
+library(tidyverse)
+library(tuber)
+library(readr)
+library(stringr)
+library(lubridate)
+yt_oauth("app_id", "app_pw")
+
+# 1.데이터 가져오기 ------------------------------------------------------------
+
+sohn <- yt_search("손학규")
+moon <- yt_search("문재인")
+ahn <- yt_search("안철수")
+yoo <- yt_search("유승민")
+ban <- yt_search("반기문")
+lee <- yt_search("이재명")
+
+# 2.데이터 전처리 ------------------------------------------------------------
+
+clean_dat <- function(df, cName) {
+  return_df <- df %>% mutate(pdate = ymd(str_sub(publishedAt, 1, 10))) %>% 
+    dplyr::select(pdate, video_id, channelId, title, channelTitle) %>% 
+    mutate(candidate = cName)
+  return(return_df)
+}
+
+ahn_df    <- clean_dat(ahn  , "안철수")
+sohn_df   <- clean_dat(sohn , "손학규")
+moon_df   <- clean_dat(moon , "문재인")
+yoo_df    <- clean_dat(yoo  , "유승민")
+ban_df    <- clean_dat(ban  , "반기문")
+lee_df    <- clean_dat(lee  , "이재명")
+
+c_df <- ahn_df %>% bind_rows(sohn_df) %>% 
+  bind_rows(moon_df) %>% bind_rows(yoo_df) %>% bind_rows(ban_df) %>% 
+  bind_rows(lee_df)
+```
+
+### 2.2. 유튜브 동영상 사용자 관여도 데이터 추출
+
+좋아요, 싫어요, 댓글 등 사용자 관여 데이터 추출을 위해 우선 손학규 의장이 정계복귀를 선언한 2016-10-01 시점 이후 동영상을 대상으로 하여
+사용자 관여 데이터를 추출한다. 그리고 나서 두 데이터프레임을 합친다.
+
+``` {r youtube-api-engagement, eval=FALSE}
+# 2. 사용자 관여도 데이터 가져오기 ------------------------------------------------------------
+
+yt_eng_df <- data.frame()
+
+c_df_2016 <- c_df %>% dplyr::filter(pdate >="2016-10-01")  
+
+for (i in c_df_2016$video_id) {
+  temp <- get_stats(i)
+  temp$vid_id <- i
+  cat("...", temp$vid_id)
+  yt_eng_df  <- bind_rows(yt_eng_df, temp)
+}
+
+c_df_2016_m <- left_join(c_df_2016, yt_eng_df, by=c("video_id"="vid_id"))
+```
+
+### 2.3. 유튜브를 통한 대권 후보 지지도 분석 
+
+후보별, 방송채널별 사용자 관여도를 통한 대권 후보 지지도 추론을 위해 데이터를 정제한다.
+
+``` {r youtube-api-eda}
+# 1.데이터 가져오기 ------------------------------------------------------------
+
+c_df <- read_csv("data/candidates.csv")
+eng_df <- read_csv("data/yt_engagement.csv")
+
+# 2.데이터 정제 ------------------------------------------------------------
+
+c_df <- c_df %>% dplyr::filter(pdate >= "2016-10-01") %>% arrange(pdate) %>% group_by(video_id) %>% 
+  summarise(pdate=first(pdate), channelId = first(channelId), title = first(title), 
+            channelTitle = first(channelTitle), candidate = first(candidate))
+
+eng_df <- eng_df %>% group_by(vid_id) %>% 
+  summarise(viewCount = mean(viewCount),
+            likeCount = mean(likeCount),
+            dislikeCount = mean(dislikeCount),
+            commentCount = mean(commentCount)) %>% 
+  dplyr::rename(video_id = vid_id)
+
+c_eng_df <- left_join(c_df, eng_df, by="video_id") %>% dplyr::filter(candidate != "황교안")
+```
+
+## 3. 대권 후보 6인 사용자 관여도 
+
+선호도(preference) 반영 공식은 다음과 같다.
+
+$$\text{선호도(preference) = \frac{\text{좋아요(likes)}}{\text{좋아요(likes)} + \text{싫어요(dislikes)}}}$$ 
+
+### 3.1. 후보별 유튜브 사용자 관여 통계
+
+``` {r youtube-api-eda-result01}
+# 3.데이터 분석 ------------------------------------------------------------  
+
+## 3.1. 후보별 유튜브 조회수
+yt_summary <- c_eng_df %>% group_by(candidate) %>% 
+  summarise(videos = n(),
+            views = sum(viewCount, na.rm=TRUE), 
+            likes = sum(likeCount, na.rm=TRUE), 
+            dislikes=sum(dislikeCount, na.rm=TRUE), 
+            comments = sum(commentCount, na.rm=TRUE)) %>% arrange(desc(views)) %>% 
+  mutate(preference = likes/(likes+dislikes))
+
+datatable(yt_summary) %>% 
+  formatCurrency(c('videos', 'views', 'likes', 'dislikes', 'comments'), ' ', interval = 3, mark = ",", digits = 0) %>% 
+  formatPercentage('preference', digits = 0)
+```
+
+### 3.2. 방송채널별 유튜브 사용자 관여 통계
+
+``` {r youtube-api-eda-result02}
+## 3.2. 방송채널별 유튜브 조회수
+channel_summary <- c_eng_df %>% group_by(channelTitle) %>% 
+  summarise(videos = n(),
+            views = sum(viewCount, na.rm=TRUE), 
+            likes = sum(likeCount, na.rm=TRUE), 
+            dislikes=sum(dislikeCount, na.rm=TRUE), 
+            comments = sum(commentCount, na.rm=TRUE)) %>% arrange(desc(views)) %>% 
+  mutate(preference = likes/(likes+dislikes))
+
+datatable(channel_summary) %>% 
+  formatCurrency(c('videos', 'views', 'likes', 'dislikes', 'comments'), ' ', interval = 3, mark = ",", digits = 0) %>% 
+  formatPercentage('preference', digits = 0)
+```
+
+### 3.3. 대권 후보별 사용자 관여가 높은 유튜브 동영상 10선
+
+``` {r youtube-api-eda-result03}
+
+## 3.3. 후보별 조회수 상위 10
+yt_top5 <- c_eng_df %>% group_by(candidate) %>% 
+  arrange(desc(viewCount)) %>% slice(1:10) %>% 
+  mutate(preference = likeCount/(likeCount+dislikeCount)) %>% 
+  dplyr::select(candidate, pdate, channelTitle, viewCount, likeCount, dislikeCount, commentCount, preference, video_id, title)
+
+datatable(yt_top5) %>% 
+  formatCurrency(c('viewCount', 'likeCount', 'dislikeCount', 'commentCount'),' ', interval = 3, mark = ",", digits = 0) %>% 
+  formatPercentage('preference', digits = 0) 
+```  
