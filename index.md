@@ -79,6 +79,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [자살률 국제비교 (10만명당 자살자수)](oecd-suicide.html) 
     1. [실업률](oecd-unemployment.html) 
     1. [부패지수와 인간개발지수](korea-cpi-hdi.html) 
+    1. [불안한 안보 - 군사비 지출](korea-military.html) 
 
 
 > ### xwMOOC 오픈 교재
