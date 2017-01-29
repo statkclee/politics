@@ -1,28 +1,6 @@
----
-layout: page
-title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 불안한 안보 - 군사비 지출
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
----
+# 데이터 과학자와 함께 하는 제19대 대통령 선거
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(rvest)
-library(tidyverse)
-library(stringr)
-library(lubridate)
-library(extrafont)
-library(ggthemes)
-library(animation)
-library(showtext)
-loadfonts()
-```
+
 
 ## 1. 한국을 둘러싼 주요국 군사비 지출 [^wiki-military-expenditure] [^chosun-sipri]
 
@@ -43,7 +21,8 @@ loadfonts()
 
 ### 2.1. 환경설정
 
-``` {r military-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 --------------------------------------------------------------------------
 library(rvest)
 library(tidyverse)
@@ -54,14 +33,15 @@ library(ggthemes)
 library(animation)
 loadfonts()
 theme_set(theme_tufte(base_family='NanumGothic'))
-```
+~~~
 
 ### 2.2. 한국을 둘러싼 주요국 군사비 지출 데이터
 
 데이터를 불러와서 시계열 데이터형태로 변형한 후에,
 한국을 비롯한 주요 국가를 선택하고, 한글화 작업을 한다.
 
-``` {r oecd-labor-hour-import, warn=FALSE, message=FALSE}
+
+~~~{.r}
 ## 1. 국방비 데이터 긁어오기-------------------------------------------------
 url <- "https://en.wikipedia.org/wiki/List_of_countries_by_past_military_expenditure"
 
@@ -160,13 +140,14 @@ mil_df <- mil_df %>% mutate(year = ymd(paste0(year, "-01-01"))) %>%
                           "People's Republic of China" = "중국",
                           Russia = "러시아",
                           Germany = "독일")) 
-```
+~~~
 
 ### 2.3. 한국을 둘러싼 주요국 군사비 지출 시각화
 
 "미국", "한국", "일본", "중국", "러시아", "독일" 총 6개국에 대해 시각화한다.
 
-``` {r military-facet}
+
+~~~{.r}
 ## 3. 국방비 지출 시각화-------------------------------------------------
 ### 3.1. 국가별 국방비지출 비교----------------------------------------------------
 dlist <- unique(mil_df$year)
@@ -186,13 +167,16 @@ mil_df %>% dplyr::filter(country %in% c("미국", "한국", "일본", "중국", 
   theme_tufte(base_family='AppleGothic') +
   theme(legend.position="none",plot.caption=element_text(hjust=0,size=7),plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=7.5))
-```
+~~~
+
+<img src="fig/military-facet-1.png" style="display: block; margin: auto;" />
 
 ### 2.4. 한국, 미국, 일본, 중국, 러시아 국방비지출 일괄비교
 
 facet 그래프가 아니라 한국, 일본, 미국, 중국, 러시아 5개국 군사비 지출 추이를 일괄비교하는 시각화 그래프를 생성한다.
 
-``` {r military-ggplot}
+
+~~~{.r}
 ### 3.2. 한국, 미국, 일본, 중국, 러시아 국방비지출 비교----------------------------------------------------
 dlist <- unique(mil_df$year)
 
@@ -211,13 +195,16 @@ mil_df %>% dplyr::filter(country %in% c("미국", "한국", "일본", "중국", 
   theme_tufte(base_family='AppleGothic') +
   theme(legend.position="none",plot.caption=element_text(hjust=0,size=7),plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=7.5))
-```
+~~~
+
+<img src="fig/military-ggplot-1.png" style="display: block; margin: auto;" />
 
 ### 2.5. 한국을 포함한 주요국가 군사비 지출 애니메이션
 
 1990년 이래 한국을 포함한 5개국 군사비 지출 변화를 애니메이션으로 시각화한다.
 
-``` {r military-animation, eval=FALSE}
+
+~~~{.r}
 mil_plot <- function(i){
   mil_df %>% dplyr::filter(year<=dlist[i] & country %in% c("미국", "한국", "일본", "중국", "러시아")) %>% 
     ggplot(. , aes(year, log10(mil_exp), color=country, label=country)) +
@@ -250,5 +237,5 @@ saveGIF({for (i in 1:length(dlist)) {
     ani.pause()
   }
 }, movie.name="military_expenditure_compare_international.gif", ani.width = 750, ani.height = 400)
-```
+~~~
 
