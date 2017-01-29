@@ -1,45 +1,6 @@
----
-layout: page
-title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 일자리 잡스(Jobs)
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
----
+# 데이터 과학자와 함께 하는 제19대 대통령 선거
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(tidyverse)
-library(readxl)
-library(lubridate)
-# 1. 데이터 가져오기 ------------------------------------------------
-## 안희정
-kjobs_11 <- read_excel("data/ssec1112.xls", sheet="12.시도별", skip=11, col_names = FALSE)
-kjobs_11 <- kjobs_11 %>% dplyr::select(X1, X3, X6) %>% dplyr::filter(X1 == "충  남") %>% 
-  rename(sido=X1, jobs=X3, nojobs=X6) %>% mutate(year=ymd("2011-01-01"))
 
-kjobs_12 <- read_excel("data/ssec1212.xls", sheet="12.시도별", skip=11, col_names = FALSE)
-kjobs_12 <- kjobs_12 %>% dplyr::select(X1, X3, X6) %>% dplyr::filter(X1 == "충  남") %>% 
-  rename(sido=X1, jobs=X3, nojobs=X6) %>% mutate(year=ymd("2012-01-01"))
-
-kjobs_13 <- read_excel("data/ssec1312.xls", sheet="13.시도별", skip=11, col_names = FALSE)
-kjobs_13 <- kjobs_13 %>% dplyr::select(X1, X3, X6) %>% dplyr::filter(X1 == "충  남") %>% 
-  rename(sido=X1, jobs=X3, nojobs=X6) %>% mutate(year=ymd("2013-01-01"))
-
-kjobs_14 <- read_excel("data/ssec1412.xls", sheet="13.시도별", skip=11, col_names = FALSE)
-kjobs_14 <- kjobs_14 %>% dplyr::select(X1, X3, X6) %>% dplyr::filter(X1 == "충  남") %>% 
-  rename(sido=X1, jobs=X3, nojobs=X6) %>% mutate(year=ymd("2014-01-01"))
-
-kjobs_15 <- read_excel("data/ssec1512.xls", sheet="13.시도별", skip=11, col_names = FALSE)
-kjobs_15 <- kjobs_15 %>% dplyr::select(X1, X3, X6) %>% dplyr::filter(X1 == "충  남") %>% 
-  rename(sido=X1, jobs=X3, nojobs=X6) %>% mutate(year=ymd("2015-01-01"))
-
-kjobs <- kjobs_11 %>% bind_rows(kjobs_12) %>% bind_rows(kjobs_13) %>% bind_rows(kjobs_14) %>% bind_rows(kjobs_15)
-```
 
 ## 1. 주요 대선 주자 일자리
 
@@ -128,7 +89,8 @@ kjobs <- kjobs_11 %>% bind_rows(kjobs_12) %>% bind_rows(kjobs_13) %>% bind_rows(
 | 2014  | 충  남 | 1131  |    741  | 
 | 2015  | 충  남 | 1204  |    744  | 
 
-``` {r jobs-choongnam, message=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
+
+~~~{.r}
 library(tidyverse)
 library(readxl)
 library(lubridate)
@@ -155,11 +117,26 @@ kjobs_15 <- kjobs_15 %>% dplyr::select(X1, X3, X6) %>% dplyr::filter(X1 == "충 
   rename(sido=X1, jobs=X3, nojobs=X6) %>% mutate(year=ymd("2015-01-01"))
 
 kjobs <- kjobs_11 %>% bind_rows(kjobs_12) %>% bind_rows(kjobs_13) %>% bind_rows(kjobs_14) %>% bind_rows(kjobs_15)
-```
+~~~
 
-``` {r jobs-choongnam-print}
+
+~~~{.r}
 kjobs
-```
+~~~
+
+
+
+~~~{.output}
+# A tibble: 5 × 4
+    sido  jobs nojobs       year
+   <chr> <dbl>  <dbl>     <date>
+1 충  남   985    676 2011-01-01
+2 충  남  1054    705 2012-01-01
+3 충  남  1137    702 2013-01-01
+4 충  남  1131    741 2014-01-01
+5 충  남  1204    744 2015-01-01
+
+~~~
 
 ### 1.3. 이재명 
 
@@ -187,7 +164,8 @@ kjobs
 `ggplot`의 `annotation_custom()` 함수를 활용하여 사진을 그래프에 함께 겹쳐 넣는다.
 
 
-``` {r korea-jobs-ggplot, fig.width=12}
+
+~~~{.r}
 library(png)
 library(grid)
 library(ggplot2)
@@ -226,5 +204,7 @@ ggplot(jobs_df, aes(x=candidate, y=jobs_created)) +
   labs(x="",y="",title="주요 대선주자 일자리 창출 실적(단위:천명)",
        caption="자료출처: 통계청 경제활동인구조사 : http://kostat.go.kr/portal/korea/kor_nw/2/3/3/index.board",
        subtitle="문재인, 유승민, 반기문 후보는 국내 일자리 창출 통계를 산출할 수 없어 `0` 으로 처리")
-```
+~~~
+
+<img src="fig/korea-jobs-ggplot-1.png" style="display: block; margin: auto;" />
 
