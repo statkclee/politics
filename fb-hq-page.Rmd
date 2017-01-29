@@ -12,6 +12,14 @@ mainfont: NanumGothic
 
 ```{r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
+options(warn=-1)
+library(Rfacebook)
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(DT)
+theme_set(theme_gray(base_family='NanumGothic'))
+load("code/fb_oauth")
 ```
 
 ## 1. 대권후보 페이스북 페이지
@@ -34,10 +42,10 @@ source("tools/chunk-options.R")
 
 가장 먼저 페북 분석을 위한 환경설정을 한다. 특히 `fbOAuth()` 함수를 통해 인증키 관리에 신경을 많이 쓴다.
 
-``` {r fb-hq-setup}
+``` {r fb-hq-setup, eval=FALSE}
 # 1. 환경설정 ---------------------------------------------------
 ## 1.1. 팩키지 불러오기
-# devtools::install_github("pablobarbera/Rfacebook")
+# devtools::install_github("pablobarbera/Rfacebook/Rfacebook")
 library(Rfacebook)
 library(tidyverse)
 library(lubridate)
@@ -117,7 +125,7 @@ datatable(sohn_stat, options = list(autoWidth = TRUE,
 
 페북 페이지 활동성을 통해 "2016-10-01" 이후 가장 활동성이 좋은 게시물을 파악한다.
 
-``` {r fb-hq-viz}
+``` {r fb-hq-pages}
 
 ## 4.2. HQ 페북 페이지 상세
 sohn_tbl <- sohn_pg %>% mutate(fb_date = ymd(substr(created_time, 1,10))) %>% 
