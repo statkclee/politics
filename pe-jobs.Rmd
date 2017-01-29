@@ -208,7 +208,7 @@ yoo <- readPNG("fig/yoo.png")
 yoo_g <- rasterGrob(yoo, interpolate=TRUE)
 
 jobs_df <- data.frame(candidate=c("손학규", "안희정", "이재명", "안철수", "문재인", "유승민", "반기문"),
-                      jobs_created = c(808, 236, 34, 0.1, 0, 0, 0))
+                      jobs_created = c(808, 236, 34, 1, 0, 0, 0))
 
 jobs_df <- jobs_df %>% mutate(candidate = factor(candidate, levels=c("손학규", "안희정", "이재명", "안철수", "문재인", "유승민", "반기문")))
 
@@ -224,7 +224,8 @@ ggplot(jobs_df, aes(x=candidate, y=jobs_created)) +
   annotation_custom(yoo_g,  xmin=6-0.7, xmax=6+0.7,  ymin=70, ymax=250) +
   annotation_custom(ban_g,  xmin=7-0.7, xmax=7+0.7,  ymin=70, ymax=250) +
   labs(x="",y="",title="주요 대선주자 일자리 창출 실적(단위:천명)",
-       caption="자료출처: 통계청 경제활동인구조사 : http://kostat.go.kr/portal/korea/kor_nw/2/3/3/index.board",
+       caption="자료출처: 통계청 경제활동인구조사 : http://kostat.go.kr/portal/korea/kor_nw/2/3/3/index.board, \n
+       금융감독원 안랩 공시보고서 http://dart.fss.or.kr/dsaf001/main.do?rcpNo=20161114000624",
        subtitle="문재인, 유승민, 반기문 후보는 국내 일자리 창출 통계를 산출할 수 없어 `0` 으로 처리")
 ```
 
