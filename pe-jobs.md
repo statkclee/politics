@@ -1,4 +1,14 @@
-# 데이터 과학자와 함께 하는 제19대 대통령 선거
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 일자리 잡스(Jobs)
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
 
 
 
@@ -146,14 +156,14 @@ kjobs
 
 기준년도 2010년 경제활동인구가 473천명, 2015년 경제활동인구 507천명으로 이재명 성남시장 재임기간 중 **34천명** 으로 추정된다.
 
-|  년도  | 시군구 |경제활동인구 |비경제활동인구 |
-|--------|--------|-------|-------|
-| 2010   | 성남시 |  473  |  363  |
-| 2011   | 성남시 |  499  |  348  |
-| 2012   | 성남시 |  507  |  316  |
-| 2013   | 성남시 |  497  |  327  |
-| 2014   | 성남시 |  503  |  323  |
-| 2015   | 성남시 |  507  |  321  |
+|  년도  | 시군구 |경제활동인구 |비경제활동인구 | 취업자수 |
+|--------|--------|-------|-------|-------|
+| 2010   | 성남시 |  465  |  372  | 452 |
+| 2011   | 성남시 |  499  |  348  | 485 |
+| 2012   | 성남시 |  507  |  316  | 491 |
+| 2013   | 성남시 |  497  |  327  | 480 |
+| 2014   | 성남시 |  503  |  323  | 483 |
+| 2015   | 성남시 |  507  |  321  | 490 |
 
 
 ## 2. 주요 대선주자 일자리 창출실적
@@ -206,5 +216,5 @@ ggplot(jobs_df, aes(x=candidate, y=jobs_created)) +
        subtitle="문재인, 유승민, 반기문 후보는 국내 일자리 창출 통계를 산출할 수 없어 `0` 으로 처리")
 ~~~
 
-<img src="fig/korea-jobs-ggplot-1.png" style="display: block; margin: auto;" />
+<img src="fig/korea-jobs-ggplot-1.png" title="plot of chunk korea-jobs-ggplot" alt="plot of chunk korea-jobs-ggplot" style="display: block; margin: auto;" />
 

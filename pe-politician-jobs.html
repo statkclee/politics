@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">광역지방자치 단체장 창출 일자리</h2>
+<h2 id="광역지방자치-단체장">1. 광역지방자치 단체장</h2>
+<p><a href="https://ko.wikipedia.org/wiki/광역지방자치단체장">위키백과 광역지방자치단체장</a>에 따르면 서울시장부터 세종특별시장까지 총 17 명의 광역지방자치단체장이 현재 재직하고 있다. 이중에서 이번 대선에서 직간접적인 영향을 갖는 정치인을 뽑아 일자리 창출 실적을 팩트체크 해보자.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">광역지방자치단체장</th>
+<th align="left">정당</th>
+<th align="left">이름</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">서울특별시장</td>
+<td align="left">더불어민주당</td>
+<td align="left">박원순</td>
+</tr>
+<tr class="even">
+<td align="left">부산광역시장</td>
+<td align="left">새누리당</td>
+<td align="left">서병수</td>
+</tr>
+<tr class="odd">
+<td align="left">인천광역시장</td>
+<td align="left">새누리당</td>
+<td align="left">유정복</td>
+</tr>
+<tr class="even">
+<td align="left">대구광역시장</td>
+<td align="left">새누리당</td>
+<td align="left">권영진</td>
+</tr>
+<tr class="odd">
+<td align="left">광주광역시장</td>
+<td align="left">더불어민주당</td>
+<td align="left">윤장현</td>
+</tr>
+<tr class="even">
+<td align="left">대전광역시장</td>
+<td align="left">더불어민주당</td>
+<td align="left">권선택</td>
+</tr>
+<tr class="odd">
+<td align="left">울산광역시장</td>
+<td align="left">새누리당</td>
+<td align="left">김기현</td>
+</tr>
+<tr class="even">
+<td align="left">경기도지사</td>
+<td align="left">바른정당</td>
+<td align="left">남경필</td>
+</tr>
+<tr class="odd">
+<td align="left">강원도지사</td>
+<td align="left">더불어민주당</td>
+<td align="left">최문순</td>
+</tr>
+<tr class="even">
+<td align="left">충청북도지사</td>
+<td align="left">더불어민주당</td>
+<td align="left">이시종</td>
+</tr>
+<tr class="odd">
+<td align="left">충청남도지사</td>
+<td align="left">더불어민주당</td>
+<td align="left">안희정</td>
+</tr>
+<tr class="even">
+<td align="left">전라북도지사</td>
+<td align="left">더불어민주당</td>
+<td align="left">송하진</td>
+</tr>
+<tr class="odd">
+<td align="left">전라남도지사</td>
+<td align="left">더불어민주당</td>
+<td align="left">이낙연</td>
+</tr>
+<tr class="even">
+<td align="left">경상북도지사</td>
+<td align="left">새누리당</td>
+<td align="left">김관용</td>
+</tr>
+<tr class="odd">
+<td align="left">경상남도지사</td>
+<td align="left">새누리당</td>
+<td align="left">홍준표</td>
+</tr>
+<tr class="even">
+<td align="left">제주특별자치도지사</td>
+<td align="left">바른정당</td>
+<td align="left">원희룡</td>
+</tr>
+<tr class="odd">
+<td align="left">세종특별자치시장</td>
+<td align="left">더불어민주당</td>
+<td align="left">이춘희</td>
+</tr>
+</tbody>
+</table>
+<h2 id="일자리-창출-팩트-체크용-데이터">2. 일자리 창출 팩트 체크용 데이터</h2>
+<p>일자리 창출 팩트체크 데이터는 생각보다 쉽게 인터넷에서 찾을 수 있다. <a href="http://kosis.kr/statisticsList/statisticsList_02List.jsp?vwcd=MT_ATITLE01&amp;parmTabId=M_02_01_01#SubCont">국가통계포털(KOSIS), 지역통계, 주제별, 고용노동임금, 경제활동인구조사, 행정구역(시도)별 경제활동인구</a>를 통해 일자리 창출 실적자료를 뽑을 수 있다. 동일한 자료를 바탕으로 정부에서 공식적으로 산출하는 실업률 데이터도 바로 산출이 가능하다.</p>
+<h2 id="지자체장-출신-정치인">3. 지자체장 출신 정치인</h2>
+<h3 id="손학규-kyunggi-sohn">3.1. 손학규 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></h3>
+<ul>
+<li>경기도 지사(2002 - 2006): 2002년 6월13일 민선 31대 경기도 지사로 당선
+<ul>
+<li>재임기간: 2002년 7월 1일 ~ 2006년 6월 30일</li>
+<li>일자리 창출 산정 기간(4년): 2003년, 2004년, 2005년, 2006년</li>
+</ul></li>
+</ul>
+<h3 id="안희정-choongnam-ahn">3.2. 안희정 <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h3>
+<ul>
+<li>충청남도 지사(2010 - 현재): 민선 36대, 37대 충청남도 지사로 당선
+<ul>
+<li>재임기간: 2010년 7월 1일 ~ 2014년 6월 30일(36대), 2014년 7월 1일 ~ 현재 (37대)</li>
+<li>일자리 창출 산정 기간(6년): 2011년, 2012년, 2013년, 2014년, 2015년, 2016년</li>
+</ul></li>
+</ul>
+<h3 id="이명박-seoul-lee">3.3. 이명박 <a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></h3>
+<ul>
+<li>서울시장(2002 - 2006): 민선 32대 서울특별시장으로 당선
+<ul>
+<li>재임기간: 2002년 7월 1일 ~ 2006년 6월 30일</li>
+<li>일자리 창출 산정 기간(4년): 2003년, 2004년, 2005년, 2006년</li>
+</ul></li>
+</ul>
+<h3 id="오세훈">3.4. 오세훈</h3>
+<ul>
+<li>서울시장(2006 - 2011): 민선 33대, 민선 34대 서울특별시장으로 당선
+<ul>
+<li>재임기간: 2006년 7월 1일 ~ 2011년 8월 26일</li>
+<li>일자리 창출 산정 기간(5년): 2007년, 2008년, 2009년, 2010년, 2011년</li>
+</ul></li>
+</ul>
+<h3 id="김문수">3.5. 김문수</h3>
+<ul>
+<li>경기도 지사(2006 - 2014): 민선 32대, 33대 경기도 지사로 당선
+<ul>
+<li>재임기간: 2006년 7월 1일 ~ 2014년 6월 30일</li>
+<li>일자리 창출 산정 기간(8년): 2007년, 2008년, 2009년, 2010년, 2011년, 2012년, 2013년, 2014년</li>
+</ul></li>
+</ul>
+<h2 id="일자리-창출-데이터">4. 일자리 창출 데이터</h2>
+<p><a href="http://kosis.kr/statisticsList/statisticsList_02List.jsp?vwcd=MT_ATITLE01&amp;parmTabId=M_02_01_01#SubCont">국가통계포털(KOSIS), 지역통계, 주제별, 고용노동임금, 경제활동인구조사, 행정구역(시도)별 경제활동인구</a>를 통해 일자리 창출 실적자료를 뽑아 지자체장을 역임한 정치인들이 창출한 일자리 통계를 다운로드 받아 정리한다.</p>
+<p>일자리 창출 계산 공식 = 임기 최종연도 취업자수 - 취임 년도 취업자수</p>
+<p>예) 손학규 경기지사 취임연도 2002년 취업자수 4,485천명 임기 최종연도 취업자수 5,229천명 따라서, 5,229천명 - 4,485천명 = 7,440천명</p>
+<h3 id="손학규">4.1. 손학규</h3>
+<p>기준년도 2002년 경제활동인구 중 취업자수가 4,485천명, 2006년 경제활동인구 중 취업자수 5,229천명으로 경기지사 재임기간 중 <strong>744천명</strong> 일자리가 증가된 것으로 추정된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">연도</th>
+<th align="left">시도</th>
+<th align="left">경제활동인구</th>
+<th align="left">취업자수</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2002</td>
+<td align="left">경기도</td>
+<td align="left">4,614</td>
+<td align="left">4,485</td>
+</tr>
+<tr class="even">
+<td align="left">2003</td>
+<td align="left">경기도</td>
+<td align="left">4,784</td>
+<td align="left">4,622</td>
+</tr>
+<tr class="odd">
+<td align="left">2004</td>
+<td align="left">경기도</td>
+<td align="left">5,060</td>
+<td align="left">4,874</td>
+</tr>
+<tr class="even">
+<td align="left">2005</td>
+<td align="left">경기도</td>
+<td align="left">5,250</td>
+<td align="left">5,045</td>
+</tr>
+<tr class="odd">
+<td align="left">2006</td>
+<td align="left">경기도</td>
+<td align="left">5,411</td>
+<td align="left">5,229</td>
+</tr>
+</tbody>
+</table>
+<h3 id="안희정">4.2. 안희정</h3>
+<p>2010년 경제활동인구 중 취업자수가 974천명, 2015년 경제활동인구 1,170 천명으로 안희정 충남지사 재임기간 중 <strong>196천명</strong> 으로 추정된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">연도</th>
+<th align="left">시도</th>
+<th align="left">경제활동인구</th>
+<th align="left">취업자수</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2010</td>
+<td align="left">충 남</td>
+<td align="left">999</td>
+<td align="left">974</td>
+</tr>
+<tr class="even">
+<td align="left">2011</td>
+<td align="left">충 남</td>
+<td align="left">1,022</td>
+<td align="left">1,001</td>
+</tr>
+<tr class="odd">
+<td align="left">2012</td>
+<td align="left">충 남</td>
+<td align="left">1,077</td>
+<td align="left">1,056</td>
+</tr>
+<tr class="even">
+<td align="left">2013</td>
+<td align="left">충 남</td>
+<td align="left">1,165</td>
+<td align="left">1,137</td>
+</tr>
+<tr class="odd">
+<td align="left">2014</td>
+<td align="left">충 남</td>
+<td align="left">1,191</td>
+<td align="left">1,158</td>
+</tr>
+<tr class="even">
+<td align="left">2015</td>
+<td align="left">충 남</td>
+<td align="left">1,204</td>
+<td align="left">1,170</td>
+</tr>
+</tbody>
+</table>
+<h3 id="이명박">4.3. 이명박</h3>
+<p>기준년도 2002년 경제활동인구 중 취업자수가 4,783천명, 2006년 경제활동인구 중 취업자수 4,906천명으로 경기지사 재임기간 중 <strong>123천명</strong> 일자리가 증가된 것으로 추정된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">연도</th>
+<th align="left">시도</th>
+<th align="left">경제활동인구</th>
+<th align="left">취업자수</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2002</td>
+<td align="left">서 울</td>
+<td align="left">4,992</td>
+<td align="left">4,783</td>
+</tr>
+<tr class="even">
+<td align="left">2003</td>
+<td align="left">서 울</td>
+<td align="left">4,977</td>
+<td align="left">4,753</td>
+</tr>
+<tr class="odd">
+<td align="left">2004</td>
+<td align="left">서 울</td>
+<td align="left">5,062</td>
+<td align="left">4,831</td>
+</tr>
+<tr class="even">
+<td align="left">2005</td>
+<td align="left">서 울</td>
+<td align="left">5,129</td>
+<td align="left">4,890</td>
+</tr>
+<tr class="odd">
+<td align="left">2006</td>
+<td align="left">서 울</td>
+<td align="left">5,132</td>
+<td align="left">4,906</td>
+</tr>
+</tbody>
+</table>
+<h3 id="오세훈-1">4.4. 오세훈</h3>
+<p>기준년도 2002년 경제활동인구 중 취업자수가 4,906천명, 2006년 경제활동인구 중 취업자수 4,940천명으로 경기지사 재임기간 중 <strong>34천명</strong> 일자리가 증가된 것으로 추정된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">연도</th>
+<th align="left">시도</th>
+<th align="left">경제활동인구</th>
+<th align="left">취업자수</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2006</td>
+<td align="left">서 울</td>
+<td align="left">5,132</td>
+<td align="left">4,906</td>
+</tr>
+<tr class="even">
+<td align="left">2007</td>
+<td align="left">서 울</td>
+<td align="left">5,236</td>
+<td align="left">5,012</td>
+</tr>
+<tr class="odd">
+<td align="left">2008</td>
+<td align="left">서 울</td>
+<td align="left">5,170</td>
+<td align="left">4,936</td>
+</tr>
+<tr class="even">
+<td align="left">2009</td>
+<td align="left">서 울</td>
+<td align="left">5,058</td>
+<td align="left">4,835</td>
+</tr>
+<tr class="odd">
+<td align="left">2010</td>
+<td align="left">서 울</td>
+<td align="left">5,120</td>
+<td align="left">4,922</td>
+</tr>
+<tr class="even">
+<td align="left">2011</td>
+<td align="left">서 울</td>
+<td align="left">5,144</td>
+<td align="left">4,940</td>
+</tr>
+</tbody>
+</table>
+<h3 id="김문수-1">4.5. 김문수</h3>
+<p>기준년도 2006년 경제활동인구 중 취업자수가 5,229천명, 2006년 경제활동인구 중 취업자수 6,226천명으로 경기지사 재임기간 중 <strong>997천명</strong> 일자리가 증가된 것으로 추정된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">연도</th>
+<th align="left">시도</th>
+<th align="left">경제활동인구</th>
+<th align="left">취업자수</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2006</td>
+<td align="left">경기도</td>
+<td align="left">5,411</td>
+<td align="left">5,229</td>
+</tr>
+<tr class="even">
+<td align="left">2007</td>
+<td align="left">경 기</td>
+<td align="left">5,571</td>
+<td align="left">5,398</td>
+</tr>
+<tr class="odd">
+<td align="left">2008</td>
+<td align="left">경 기</td>
+<td align="left">5,697</td>
+<td align="left">5,529</td>
+</tr>
+<tr class="even">
+<td align="left">2009</td>
+<td align="left">경 기</td>
+<td align="left">5,746</td>
+<td align="left">5,539</td>
+</tr>
+<tr class="odd">
+<td align="left">2010</td>
+<td align="left">경 기</td>
+<td align="left">5,890</td>
+<td align="left">5,673</td>
+</tr>
+<tr class="even">
+<td align="left">2011</td>
+<td align="left">경 기</td>
+<td align="left">6,022</td>
+<td align="left">5,833</td>
+</tr>
+<tr class="odd">
+<td align="left">2012</td>
+<td align="left">경 기</td>
+<td align="left">6,098</td>
+<td align="left">5,923</td>
+</tr>
+<tr class="even">
+<td align="left">2013</td>
+<td align="left">경 기</td>
+<td align="left">6,147</td>
+<td align="left">5,988</td>
+</tr>
+<tr class="odd">
+<td align="left">2014</td>
+<td align="left">경 기</td>
+<td align="left">6,413</td>
+<td align="left">6,226</td>
+</tr>
+</tbody>
+</table>
+<h2 id="지자체장을-역임한-주요-정치인-일자리-창출실적-시각화">5. 지자체장을 역임한 주요 정치인 일자리 창출실적 시각화</h2>
+<p>앞에서 산출한 일자리 창출실적을 바탕으로 주요 대선주자 일자리 창출 실적을 시각화 해보자. <code>png</code> 팩키지 <code>raterGrob</code> 함수를 활용하여 이미지 객체로 저장하고 나서, <code>ggplot</code>의 <code>annotation_custom()</code> 함수를 활용하여 사진을 그래프에 함께 겹쳐 넣는다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(png)
+<span class="kw">library</span>(grid)
+<span class="kw">library</span>(ggplot2)
+
+kim &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/kim.png&quot;</span>)
+kim_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(kim, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+sohn &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/sohn.png&quot;</span>)
+sohn_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(sohn, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+hj &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/hj.png&quot;</span>)
+hj_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(hj, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+mb &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/mb.png&quot;</span>)
+mb_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(mb, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+oh &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/oh.png&quot;</span>)
+oh_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(oh, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+
+jobs_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">candidate=</span><span class="kw">c</span>(<span class="st">&quot;김문수(8년)&quot;</span>, <span class="st">&quot;손학규(4년)&quot;</span>, <span class="st">&quot;안희정(6년)&quot;</span>, <span class="st">&quot;이명박(4년)&quot;</span>, <span class="st">&quot;오세훈(5년)&quot;</span>),
+                      <span class="dt">jobs_created =</span> <span class="kw">c</span>(<span class="dv">997</span>, <span class="dv">774</span>, <span class="dv">196</span>, <span class="dv">123</span>, <span class="dv">34</span>))
+
+jobs_df &lt;-<span class="st"> </span>jobs_df %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">candidate =</span> <span class="kw">factor</span>(candidate, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;김문수(8년)&quot;</span>, <span class="st">&quot;손학규(4년)&quot;</span>, <span class="st">&quot;안희정(6년)&quot;</span>, <span class="st">&quot;이명박(4년)&quot;</span>, <span class="st">&quot;오세훈(5년)&quot;</span>)))
+
+<span class="kw">ggplot</span>(jobs_df, <span class="kw">aes</span>(<span class="dt">x=</span>candidate, <span class="dt">y=</span>jobs_created)) +
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;lightblue&quot;</span>, <span class="dt">width=</span>.<span class="dv">3</span>) +<span class="st"> </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&#39;AppleGothic&#39;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1250</span>)) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> jobs_created), <span class="dt">size =</span> <span class="fl">7.5</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">vjust =</span> -<span class="fl">0.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(kim_g, <span class="dt">xmin=</span><span class="dv">1</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">1</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">1100</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(sohn_g,   <span class="dt">xmin=</span><span class="dv">2</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">2</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">850</span>, <span class="dt">ymax=</span><span class="dv">1050</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(hj_g,  <span class="dt">xmin=</span><span class="dv">3</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">3</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">300</span>, <span class="dt">ymax=</span><span class="dv">500</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(mb_g,  <span class="dt">xmin=</span><span class="dv">4</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">4</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">200</span>, <span class="dt">ymax=</span><span class="dv">400</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(oh_g, <span class="dt">xmin=</span><span class="dv">5</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">5</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">100</span>, <span class="dt">ymax=</span><span class="dv">300</span>) +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;지자체장을 역임한 정치인 일자리 창출 실적&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;자료출처: 통계청 경제활동인구조사 : http://kostat.go.kr/portal/korea/kor_nw/2/3/3/index.board&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;[단위: 천명], 정치인 괄호 년도는 지자체장 재임기간&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">18</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>), <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">22</span>))</code></pre></div>
+<p><img src="fig/korea-jobs-politician-ggplot-1.png" title="plot of chunk korea-jobs-politician-ggplot" alt="plot of chunk korea-jobs-politician-ggplot" style="display: block; margin: auto;" /></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://ko.wikipedia.org/wiki/%EA%B2%BD%EA%B8%B0%EB%8F%84%EC%A7%80%EC%82%AC">위키백과 경기도지사</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="https://ko.wikipedia.org/wiki/%EC%B6%A9%EC%B2%AD%EB%82%A8%EB%8F%84%EC%A7%80%EC%82%AC">위키백과 충청남도지사</a><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p><a href="https://ko.wikipedia.org/wiki/%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%EC%9E%A5">위키백과 서울특별시장</a><a href="#fnref3">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

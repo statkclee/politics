@@ -10,13 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(tidyverse)
-library(readxl)
-library(lubridate)
-```
+
 
 ## 1. 광역지방자치 단체장
 
@@ -184,7 +178,8 @@ library(lubridate)
 `ggplot`의 `annotation_custom()` 함수를 활용하여 사진을 그래프에 함께 겹쳐 넣는다.
 
 
-``` {r korea-jobs-politician-ggplot, fig.width=12}
+
+~~~{.r}
 library(png)
 library(grid)
 library(ggplot2)
@@ -218,5 +213,7 @@ ggplot(jobs_df, aes(x=candidate, y=jobs_created)) +
        caption="자료출처: 통계청 경제활동인구조사 : http://kostat.go.kr/portal/korea/kor_nw/2/3/3/index.board",
        subtitle="[단위: 천명], 정치인 괄호 년도는 지자체장 재임기간") +
   theme(axis.text=element_text(size=18, color="black"), plot.title = element_text(size=22))
-```
+~~~
+
+<img src="fig/korea-jobs-politician-ggplot-1.png" title="plot of chunk korea-jobs-politician-ggplot" alt="plot of chunk korea-jobs-politician-ggplot" style="display: block; margin: auto;" />
 
