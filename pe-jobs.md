@@ -1,7 +1,7 @@
 ---
 layout: page
-title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 일자리 잡스(Jobs)
+title: 빅 데이터로 짚어본 주요 대선주자의 일자리 창출 실적
+subtitle: 
 output:
   html_document: 
     keep_md: yes
@@ -202,7 +202,7 @@ jobs_df <- jobs_df %>% mutate(candidate = factor(candidate, levels=c("손학규"
 ggplot(jobs_df, aes(x=candidate, y=jobs_created)) +
   geom_bar(stat = "identity", fill="lightblue") + theme_tufte(base_family='AppleGothic') + 
   scale_y_continuous(limits=c(0,1050)) +
-  geom_text(aes(label = jobs_created), size = 3.5, hjust = 0.5, vjust = -0.5, color="blue") +
+  geom_text(aes(label = jobs_created), size = 5.5, hjust = 0.5, vjust = -0.5, color="blue") +
   annotation_custom(sohn_g, xmin=1-0.7, xmax=1+0.7,  ymin=870) +
   annotation_custom(hj_g,   xmin=2-0.7, xmax=2+0.7,  ymin=300, ymax=500) +
   annotation_custom(lee_g,  xmin=3-0.7, xmax=3+0.7,  ymin=100, ymax=300) +

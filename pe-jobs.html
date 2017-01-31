@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="generator" content="pandoc">
-    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <title>Software Carpentry: 빅 데이터로 짚어본 주요 대선주자의 일자리 창출 실적</title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
@@ -36,8 +36,8 @@
       <article>
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
-          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
-          <h2 class="subtitle">일자리 잡스(Jobs)</h2>
+          <h1 class="title">빅 데이터로 짚어본 주요 대선주자의 일자리 창출 실적</h1>
+          
 <h2 id="주요-대선-주자-일자리">1. 주요 대선 주자 일자리</h2>
 <h3 id="손학규-kyunggi-sohn">1.1. 손학규 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></h3>
 <ul>
@@ -304,7 +304,7 @@ jobs_df &lt;-<span class="st"> </span>jobs_df %&gt;%<span class="st"> </span><sp
 <span class="kw">ggplot</span>(jobs_df, <span class="kw">aes</span>(<span class="dt">x=</span>candidate, <span class="dt">y=</span>jobs_created)) +
 <span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;lightblue&quot;</span>) +<span class="st"> </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&#39;AppleGothic&#39;</span>) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1050</span>)) +
-<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> jobs_created), <span class="dt">size =</span> <span class="fl">3.5</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">vjust =</span> -<span class="fl">0.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> jobs_created), <span class="dt">size =</span> <span class="fl">5.5</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">vjust =</span> -<span class="fl">0.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>) +
 <span class="st">  </span><span class="kw">annotation_custom</span>(sohn_g, <span class="dt">xmin=</span><span class="dv">1</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">1</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">870</span>) +
 <span class="st">  </span><span class="kw">annotation_custom</span>(hj_g,   <span class="dt">xmin=</span><span class="dv">2</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">2</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">300</span>, <span class="dt">ymax=</span><span class="dv">500</span>) +
 <span class="st">  </span><span class="kw">annotation_custom</span>(lee_g,  <span class="dt">xmin=</span><span class="dv">3</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">3</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">100</span>, <span class="dt">ymax=</span><span class="dv">300</span>) +

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">컴퓨팅 사고력 SW 교육</h2>
+<h2 id="컴퓨팅-사고력-교육-ct-teachers-2012-ct-moe-2016">1. 컴퓨팅 사고력 교육 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h2>
+<p>정보, 컴퓨터 교사 선발인원은 2002년 이후 급격히 감소하기 시작하여, 2014년 09월 발표된 “문·이과 통합형 교육과정 개편안”에 초중등 SW교육 강화 포함된 이후 초중등생을 대상으로 컴퓨팅 사고력을 교육할 수 있는 교원을 충원하기 시작했다.</p>
+<p>미래부와 교육부가 공동으로 준비하여 발표한 “SW교육 활성화 기본 계획”에 따라 SW정규 교육 기반을 구축하여 체계적인 SW교육 환경을 준비하고 있다.</p>
+<ul>
+<li>초등 교원: 초등학교는 담임교사를 통해 소프트웨어 교육이 실과 과목 내에서 실시되어 별도의 신규채용이 불필요. 단, 초등실과 과목에 소프트웨어 관련 내용을 포함, 초등컴퓨터 과목은 SW기초소양, 프로그래밍, 알고리즘 관련 단원을 포함하여 운영</li>
+<li>중등 교원: 시·도 교육청과 협력하여 ‘정보·컴퓨터’ 교사 수요를 파악하고 신규채용, 복수전공연수 등을 통해 연차적으로 확보.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th align="left">연도</th>
+<th align="left">선발인원</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2002</td>
+<td align="left">365</td>
+</tr>
+<tr class="even">
+<td align="left">2003</td>
+<td align="left">311</td>
+</tr>
+<tr class="odd">
+<td align="left">2004</td>
+<td align="left">113</td>
+</tr>
+<tr class="even">
+<td align="left">2005</td>
+<td align="left">43</td>
+</tr>
+<tr class="odd">
+<td align="left">2006</td>
+<td align="left">60</td>
+</tr>
+<tr class="even">
+<td align="left">2007</td>
+<td align="left">24</td>
+</tr>
+<tr class="odd">
+<td align="left">2008</td>
+<td align="left">13</td>
+</tr>
+<tr class="even">
+<td align="left">2009</td>
+<td align="left">14</td>
+</tr>
+<tr class="odd">
+<td align="left">2010</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">2011</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">2012</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left">2013</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left">2014</td>
+<td align="left">10</td>
+</tr>
+<tr class="even">
+<td align="left">2015</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left">2016</td>
+<td align="left">31</td>
+</tr>
+</tbody>
+</table>
+<h2 id="정보-컴퓨터-교사-선발인원-시각화">2. 정보, 컴퓨터 교사 선발인원 시각화</h2>
+<p><img src="fig/ct_teachers_trend.gif" alt="정보, 컴퓨터 교원 시각화" width="100%" /></p>
+<h3 id="정적-그래프">2.1. 정적 그래프</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 --------------------------------------------------------------------------</span>
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(animation)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()
+
+<span class="co"># 1. 데이터 가져오기 --------------------------------------------------------------------------</span>
+df &lt;-<span class="st"> </span><span class="kw">structure</span>(<span class="kw">list</span>(<span class="dt">year =</span> <span class="kw">c</span>(<span class="dv">2002</span>,<span class="dv">2003</span>,<span class="dv">2004</span>,<span class="dv">2005</span>,<span class="dv">2006</span>,<span class="dv">2007</span>,<span class="dv">2008</span>,<span class="dv">2009</span>,<span class="dv">2010</span>,<span class="dv">2011</span>,<span class="dv">2012</span>,<span class="dv">2013</span>,<span class="dv">2014</span>,<span class="dv">2015</span>,<span class="dv">2016</span>), 
+                     <span class="dt">teacher =</span> <span class="kw">c</span>(<span class="dv">365</span>,<span class="dv">311</span>,<span class="dv">113</span>,<span class="dv">43</span>,<span class="dv">60</span>,<span class="dv">24</span>,<span class="dv">13</span>,<span class="dv">14</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">10</span>,<span class="dv">0</span>,<span class="dv">31</span>)), <span class="dt">.Names =</span> <span class="kw">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;teacher&quot;</span>), <span class="dt">row.names =</span> <span class="kw">c</span>(<span class="ot">NA</span>, -15L), <span class="dt">class =</span> <span class="st">&quot;data.frame&quot;</span>)
+
+df$year &lt;-<span class="st"> </span><span class="kw">as.Date</span>(<span class="kw">paste0</span>(df$year,<span class="st">&quot;-01-01&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;%Y-%m-%d&quot;</span>))
+
+<span class="co"># 2.1. 정보 컴퓨터 교사 정적 시각화 ------------------------------------------------------------------</span>
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span>df, <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span>teacher, <span class="dt">group=</span><span class="dv">1</span>))+
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">1.1</span>) +
+<span class="st">  </span><span class="kw">theme_minimal</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.numeric</span>(<span class="kw">ymd</span>(<span class="st">&quot;2012-01-01&quot;</span>)), <span class="dt">linetype=</span><span class="dv">4</span>, <span class="dt">color=</span><span class="st">&quot;green&quot;</span>, <span class="dt">size=</span><span class="fl">0.9</span>) +<span class="st">    </span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;정보, 컴퓨터 교사 선발인원&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 미래부 리포트, 임용고시 공고(2015) 및 김경훈 外 (2012), “미래 한국인의 핵심 역량 증진을 위한 창의적 문제 해결력 기반의 정보 교육 정책 방향 탐색”, 한국교육과정평가원, 107쪽&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;[단위: 명] 초등교원 실과 과목 내 실시되어 신규채용 불필요, 2012년 저녁이 있는 삶(참조선)&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))</code></pre></div>
+<h3 id="애니메이션-그래프">2.2. 애니메이션 그래프</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2.2. 정보 컴퓨터 교사 시각화----------------------------------------------------</span>
+dlist &lt;-<span class="st"> </span><span class="kw">unique</span>(df$year)
+
+ct_plot &lt;-<span class="st"> </span>function(i){
+  <span class="kw">ggplot</span>(<span class="dt">data=</span>df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(year&lt;=dlist[i]), <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span>teacher, <span class="dt">group=</span><span class="dv">1</span>, <span class="dt">label=</span>teacher))+
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group=</span><span class="dv">1</span>), <span class="dt">size=</span><span class="fl">1.1</span>) +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">400</span>))+
+<span class="st">    </span><span class="kw">scale_x_date</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>) +<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>), <span class="st">&quot;2 year&quot;</span>),
+                 <span class="dt">date_labels=</span><span class="st">&quot;%y&quot;</span>,<span class="dt">limits=</span><span class="kw">c</span>(dlist[<span class="dv">1</span>], <span class="kw">tail</span>(dlist,<span class="dv">1</span>)+<span class="kw">years</span>(<span class="dv">2</span>)))+
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="dt">data=</span>df %&gt;%<span class="st"> </span>dplyr::<span class="kw">filter</span>(year==dlist[i]), 
+               <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span>teacher, <span class="dt">group=</span><span class="dv">1</span>), <span class="dt">size=</span><span class="fl">5.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>, <span class="dt">hjust=</span><span class="dv">0</span>, <span class="dt">nudge_x=</span><span class="dv">100</span>) +
+<span class="st">    </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.numeric</span>(<span class="kw">ymd</span>(<span class="st">&quot;2012-01-01&quot;</span>)), <span class="dt">linetype=</span><span class="dv">4</span>, <span class="dt">color=</span><span class="st">&quot;green&quot;</span>, <span class="dt">size=</span><span class="fl">0.9</span>) +<span class="st">    </span>
+<span class="st">    </span><span class="kw">theme_minimal</span>() +<span class="st"> </span>
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">8</span>),<span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;정보, 컴퓨터 교사 선발인원&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 자료출처: 미래부 리포트, 임용고시 공고(2015) 및 김경훈 外 (2012), “미래 한국인의 핵심 역량 증진을 위한 창의적 문제 해결력 기반의 정보 교육 정책 방향 탐색”, 한국교육과정평가원, 107쪽&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;[단위: 명] 초등교원 실과 과목 내 실시되어 신규채용 불필요, 2012년 저녁이 있는 삶(참조선)&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>))
+}
+
+oopt &lt;-<span class="st"> </span><span class="kw">ani.options</span>(<span class="dt">interval =</span> <span class="fl">0.5</span>)
+<span class="kw">saveGIF</span>({for (i in <span class="dv">1</span>:(<span class="kw">length</span>(dlist))) {
+  g &lt;-<span class="st"> </span><span class="kw">ct_plot</span>(i)
+  
+  <span class="kw">print</span>(g)
+  <span class="kw">print</span>(i)
+  <span class="kw">ani.pause</span>()
+}
+  
+  for (i2 in <span class="dv">1</span>:<span class="dv">20</span>) {
+    <span class="kw">print</span>(g)
+    <span class="kw">ani.pause</span>()
+  }
+}, <span class="dt">movie.name=</span><span class="st">&quot;ct_teachers_trend.gif&quot;</span>, <span class="dt">ani.width =</span> <span class="dv">750</span>, <span class="dt">ani.height =</span> <span class="dv">400</span>)</code></pre></div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://www.nkis.re.kr:4445/researchReport_view.do?otpId=KICE00019118">김경훈 外 (2012), “미래 한국인의 핵심 역량 증진을 위한 창의적 문제 해결력 기반의 정보 교육 정책 방향 탐색”, 한국교육과정평가원, 107쪽</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="http://www.moe.go.kr/boardCnts/view.do?boardID=294&amp;boardSeq=65033&amp;lev=0&amp;searchType=null&amp;statusYN=W&amp;page=4&amp;s=moe&amp;m=0503&amp;opType=N">미래부·교육부 (2016.12.), 소프트웨어교육 활성화 기본 계획</a><a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

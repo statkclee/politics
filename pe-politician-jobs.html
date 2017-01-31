@@ -457,7 +457,7 @@ oh &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st
 oh_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(oh, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
 
 jobs_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">candidate=</span><span class="kw">c</span>(<span class="st">&quot;김문수(8년)&quot;</span>, <span class="st">&quot;손학규(4년)&quot;</span>, <span class="st">&quot;안희정(6년)&quot;</span>, <span class="st">&quot;이명박(4년)&quot;</span>, <span class="st">&quot;오세훈(5년)&quot;</span>),
-                      <span class="dt">jobs_created =</span> <span class="kw">c</span>(<span class="dv">997</span>, <span class="dv">774</span>, <span class="dv">196</span>, <span class="dv">123</span>, <span class="dv">34</span>))
+                      <span class="dt">jobs_created =</span> <span class="kw">c</span>(<span class="dv">997</span>, <span class="dv">744</span>, <span class="dv">196</span>, <span class="dv">123</span>, <span class="dv">34</span>))
 
 jobs_df &lt;-<span class="st"> </span>jobs_df %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">candidate =</span> <span class="kw">factor</span>(candidate, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;김문수(8년)&quot;</span>, <span class="st">&quot;손학규(4년)&quot;</span>, <span class="st">&quot;안희정(6년)&quot;</span>, <span class="st">&quot;이명박(4년)&quot;</span>, <span class="st">&quot;오세훈(5년)&quot;</span>)))
 

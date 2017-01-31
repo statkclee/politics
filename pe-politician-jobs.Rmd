@@ -201,7 +201,7 @@ oh <- readPNG("fig/oh.png")
 oh_g <- rasterGrob(oh, interpolate=TRUE)
 
 jobs_df <- data.frame(candidate=c("김문수(8년)", "손학규(4년)", "안희정(6년)", "이명박(4년)", "오세훈(5년)"),
-                      jobs_created = c(997, 774, 196, 123, 34))
+                      jobs_created = c(997, 744, 196, 123, 34))
 
 jobs_df <- jobs_df %>% mutate(candidate = factor(candidate, levels=c("김문수(8년)", "손학규(4년)", "안희정(6년)", "이명박(4년)", "오세훈(5년)")))
 
