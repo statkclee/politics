@@ -60,6 +60,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [페이스북 페이지(대권후보)](fb-hq-page.html)        
         - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
         - [유튜브 동영상 사용자 관여도 분석](youtube-activity.html)
+        - [여론조사에 반영되지 않은 팩트](twitter-activity.html)
     1. **텍스트 데이터**
         - [저녁이 있는 삶 – 손학규](http://statkclee.github.io/ml/ml-book.html)
         - [연설문 판별 - 오바마 vs. 롬니](text-classify-speeches.html)
