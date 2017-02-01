@@ -18,8 +18,8 @@ library(readr)
 library(stringr)
 library(lubridate)
 library(DT)
-
-
+par(family="AppleGothic")
+theme_set(theme_gray(base_family='NanumGothic'))
 ```
 
 ## JTBC 여론조사에 반영하지 못한 것
@@ -63,7 +63,7 @@ JTBC 여론조사 대선후보를 중심으로 트위터 계정은 네이버 인
 
 트위터 활동을 하지 않는 후보는 거의 활동이 미미하고 **손학규** 후보의 경우도 상당히 뒤쳐지는 것으로 나타난다.
 
-``` {r simple-twitter-table, echo=FALSE}
+``` {r simple-twitter-table, echo=FALSE, warning=FALSE, message=FALSE}
 # 01. 트위터 환경설정 ----------------------------------------------------------
 
 rm(list=ls())
@@ -135,15 +135,16 @@ p1 <- ggplot(twit_stat_lng, aes(x=twit_stat, y=value)) +
     facet_wrap(~kname) + theme_tufte() +
     labs(x="", y="") +
     scale_y_continuous(labels = comma) +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    theme(text=element_text(family="NanumGothic"))
 
 p2 <- ggplot(twit_stat_lng, aes(x=kname, y=value)) + 
     geom_bar(stat="identity") +
     facet_wrap(~twit_stat) + theme_tufte() +
     labs(x="", y="") +
     scale_y_continuous(labels = comma) +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    theme(text=element_text(family="NanumGothic"))
 grid.arrange(p1, p2, ncol=2)
 ```
 
@@ -187,7 +188,7 @@ ggplot(twit_stat_lng, aes(x=kname, y=value, fill=kname)) +
     labs(x="", y="") +
     scale_y_continuous(labels = comma) + 
     scale_fill_manual("legend", values = c("문재인"="gray", "안철수"="gray", "이재명"="gray", "안희정"="gray", "손학규+\n박지원" = "green")) +
-    theme(legend.position="none")
+    theme(legend.position="none") + theme(text=element_text(family="NanumGothic"))
 
 ggplot(twit_stat_lng, aes(x=twit_stat, y=value, fill=kname)) + 
     geom_bar(stat="identity") +
@@ -195,6 +196,6 @@ ggplot(twit_stat_lng, aes(x=twit_stat, y=value, fill=kname)) +
     labs(x="", y="") +
     scale_y_continuous(labels = comma) +
     scale_fill_manual("legend", values = c("문재인"="gray", "안철수"="gray", "이재명"="gray", "안희정"="gray", "손학규+\n박지원" = "green")) +
-    theme(legend.position="none")
+    theme(legend.position="none") + theme(text=element_text(family="NanumGothic"))
 ```
 
