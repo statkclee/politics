@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 저평가 우량주 - 손학규</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">저평가 우량주 - 손학규</h1>
+          
+<h2 id="저평가-우량주-팩트체크-siminilbo-hq">1. 저평가 우량주 팩트체크 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></h2>
+<p>김은혜 앵커가 언급한 <strong>저평가 우량주</strong>라는 표현에 대해 팩트체크를 해 보겠습니다.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VjViKJHo-uM?start=391" frameborder="0" allowfullscreen>
+</iframe>
+<h2 id="이명박-서울시장-vs.손학규-경기지사">2. 이명박 서울시장 vs. 손학규 경기지사</h2>
+<p>김은혜 앵커가 언급한 <strong>저평가 우량주</strong>라는 팩트체크 데이터는 생각보다 쉽게 인터넷에서 찾을 수 있다. <a href="http://kosis.kr/statisticsList/statisticsList_02List.jsp?vwcd=MT_ATITLE01&amp;parmTabId=M_02_01_01#SubCont">국가통계포털(KOSIS), 지역통계, 주제별, 고용노동임금, 경제활동인구조사, 행정구역(시도)별 경제활동인구</a>를 통해 일자리 창출 실적자료를 추출한다.</p>
+<h3 id="환경설정-및-사전-준비">2.1. 환경설정 및 사전 준비</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 환경설정 ------------------------------------------------</span>
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(png)
+<span class="kw">library</span>(grid)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(extrafont)
+<span class="kw">library</span>(scales)
+<span class="kw">library</span>(gridExtra)
+<span class="kw">loadfonts</span>()</code></pre></div>
+<h3 id="데이터-가져오기사진과-평가-데이터">2.2. 데이터 가져오기(사진과 평가 데이터)</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 가져오기 ------------------------------------------------</span>
+## 대선 후보 일자리 창출 실적
+
+hq &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/sohn.png&quot;</span>)
+hq_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(hq, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+mb &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;fig/mb.png&quot;</span>)
+mb_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(mb, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+
+hq_mb_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">candidate=</span><span class="kw">c</span>(<span class="st">&quot;손학규&quot;</span>, <span class="st">&quot;이명박&quot;</span>),
+                      <span class="dt">jobs_created =</span> <span class="kw">c</span>(<span class="dv">744</span>, <span class="dv">123</span>),
+                      <span class="dt">eco_growth =</span><span class="kw">c</span>(<span class="fl">0.075</span>, <span class="fl">0.028</span>))
+
+jobs_df &lt;-<span class="st"> </span>hq_mb_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(candidate, jobs_created)
+eco_df &lt;-<span class="st"> </span>hq_mb_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(candidate, eco_growth)</code></pre></div>
+<h3 id="저평가-우량주-비교-시각화">2.3. 저평가 우량주 비교 시각화</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">jobs_p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(jobs_df, <span class="kw">aes</span>(<span class="dt">x=</span>candidate, <span class="dt">y=</span>jobs_created, <span class="dt">label=</span>jobs_created)) +
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;lightblue&quot;</span>, <span class="dt">width=</span>.<span class="dv">3</span>) +<span class="st"> </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&#39;NanumGothic&#39;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1100</span>)) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> jobs_created), <span class="dt">size =</span> <span class="fl">7.5</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">vjust =</span> -<span class="fl">0.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(hq_g,  <span class="dt">xmin=</span><span class="dv">1</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">1</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">900</span>, <span class="dt">ymax=</span><span class="dv">1100</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(mb_g,  <span class="dt">xmin=</span><span class="dv">2</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">2</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">250</span>, <span class="dt">ymax=</span><span class="dv">500</span>) +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;일자리 창출 실적 비교&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;자료출처: 통계청 경제활동인구조사 : http://kostat.go.kr/portal/korea/kor_nw/2/3/3/index.board&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;[단위: 천명] 2002~2006년 경기지사 및 서울시장 재임기간&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">17</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>), <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">22</span>))
+
+eco_p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(eco_df, <span class="kw">aes</span>(<span class="dt">x=</span>candidate, <span class="dt">y=</span>eco_growth, <span class="dt">label=</span>eco_growth)) +
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;lightblue&quot;</span>, <span class="dt">width=</span>.<span class="dv">3</span>) +<span class="st"> </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&#39;NanumGothic&#39;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> percent, <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.12</span>)) +
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> scales::<span class="kw">percent</span>(eco_growth)), <span class="dt">size =</span> <span class="fl">7.5</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">vjust =</span> -<span class="fl">0.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(hq_g,  <span class="dt">xmin=</span><span class="dv">1</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">1</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="fl">0.09</span>, <span class="dt">ymax=</span><span class="fl">0.115</span>) +
+<span class="st">  </span><span class="kw">annotation_custom</span>(mb_g,  <span class="dt">xmin=</span><span class="dv">2</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">2</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="fl">0.045</span>, <span class="dt">ymax=</span><span class="fl">0.070</span>) +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;경제성장률 비교&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;[단위: 퍼센트(%)] 2002~2006년 경기지사 및 서울시장 재임기간&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">17</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>), <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">22</span>))
+
+<span class="kw">grid.arrange</span>(jobs_p, eco_p, <span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
+<p><img src="fig/hq-mb-viz-1.png" title="plot of chunk hq-mb-viz" alt="plot of chunk hq-mb-viz" style="display: block; margin: auto;" /></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="http://www.siminilbo.co.kr/news/articleView.html?idxno=496985">시민일보 편집국장 고하승, 경제마법사 ‘해리포터’ 손학규</a><a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

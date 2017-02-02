@@ -10,20 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(tidyverse)
-library(lubridate)
-library(ggthemes)
-library(png)
-library(grid)
-library(ggplot2)
-library(extrafont)
-library(scales)
-library(gridExtra)
-loadfonts()
-```
+
 
 ## 1. 저평가 우량주 팩트체크 [^siminilbo-hq]
  
@@ -41,7 +28,8 @@ loadfonts()
 
 ### 2.1. 환경설정 및 사전 준비
 
-``` {r hq-mb-setup, eval=FALSE}
+
+~~~{.r}
 # 1. 환경설정 ------------------------------------------------
 library(tidyverse)
 library(lubridate)
@@ -53,11 +41,12 @@ library(extrafont)
 library(scales)
 library(gridExtra)
 loadfonts()
-```
+~~~
 
 ### 2.2. 데이터 가져오기(사진과 평가 데이터)
 
-``` {r hq-mb-import}
+
+~~~{.r}
 # 1. 데이터 가져오기 ------------------------------------------------
 ## 대선 후보 일자리 창출 실적
 
@@ -72,11 +61,12 @@ hq_mb_df <- data.frame(candidate=c("손학규", "이명박"),
 
 jobs_df <- hq_mb_df %>% dplyr::select(candidate, jobs_created)
 eco_df <- hq_mb_df %>% dplyr::select(candidate, eco_growth)
-```
+~~~
 
 ### 2.3. 저평가 우량주 비교 시각화
 
-``` {r hq-mb-viz, fig.width=14}
+
+~~~{.r}
 jobs_p <- ggplot(jobs_df, aes(x=candidate, y=jobs_created, label=jobs_created)) +
   geom_bar(stat = "identity", fill="lightblue", width=.3) + theme_tufte(base_family='NanumGothic') + 
   scale_y_continuous(limits=c(0,1100)) +
@@ -99,4 +89,6 @@ eco_p <- ggplot(eco_df, aes(x=candidate, y=eco_growth, label=eco_growth)) +
   theme(axis.text=element_text(size=17, color="black"), plot.title = element_text(size=22))
 
 grid.arrange(jobs_p, eco_p, ncol=2)
-```
+~~~
+
+<img src="fig/hq-mb-viz-1.png" title="plot of chunk hq-mb-viz" alt="plot of chunk hq-mb-viz" style="display: block; margin: auto;" />
