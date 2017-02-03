@@ -17,7 +17,7 @@ library(Rfacebook)
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
-library(ggthems)
+library(ggthemes)
 library(scales)
 library(DT)
 theme_set(theme_gray(base_family='NanumGothic'))
@@ -40,12 +40,13 @@ load("code/fb_oauth")
 
 가장 먼저 페북 분석을 위한 환경설정을 한다. 특히 `fbOAuth()` 함수를 통해 인증키 관리에 신경을 많이 쓴다.
 
-``` {r fb-hwang-setup, eval=FALSE}
+``` {r fb-hwang-setup, message=FALSE, warning=FALSE}
 # 0. 참고문헌 ---------------------------------------------------------------------
 
 # 1. 환경설정 ---------------------------------------------------
 ## 1.1. 팩키지 불러오기
 # devtools::install_github("pablobarbera/Rfacebook")
+options(warn=-1)
 library(Rfacebook)
 library(tidyverse)
 library(lubridate)
