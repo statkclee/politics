@@ -10,8 +10,6 @@ subtitle: 디지털 미디어와 SNS 그리고 데이터 과학
 > * 디지털 미디어 배포 채널을 이해한다.
 > * 인터넷 SNS에 대해 이해한다.
 
-<img src="fig/distribution-channel.png" alt="디지털 콘텐츠 채널" width="50%">
-
 ## 1. 대한민국 컴퓨터 하드웨어 인트라 [^kisa-report-2017]
 
 [^kisa-report-2017]: [2016년 인터넷이용실태조사 요약보고서](http://isis.kisa.or.kr/board/?pageId=060100&bbsId=7&itemId=817&pageIndex=1)
@@ -31,7 +29,7 @@ subtitle: 디지털 미디어와 SNS 그리고 데이터 과학
 
 30대 이하 가구주는 이동전화와 유선 인터넷 사용을 많이 하고, 60세 이상은 케이블TV, 일반집전화, 그리고 이동전화를 주된 인터넷 커뮤니케이션으로 사용한다.
 
-<img src="fig/kisa-media-by-ages.png" alt="세대별 커뮤니케이션 활용" width="77%">
+<img src="fig/kisa-media-by-ages.png" alt="세대별 커뮤니케이션 활용" width="97%">
 
 ### 1.2. 왜 인터넷을 사용하는가?
 
@@ -43,7 +41,7 @@ subtitle: 디지털 미디어와 SNS 그리고 데이터 과학
 
 카카오 스토리, 페이스북이 양강을 이루고 있다.
 
-<img src="fig/kisa-sns-apps.png" alt="SNS 우선순위가 높은 앱" width="77%">
+<img src="fig/kisa-sns-apps.png" alt="SNS 우선순위가 높은 앱" width="97%">
 
 ## 2. 디지털 미디어 배포 채널
 
