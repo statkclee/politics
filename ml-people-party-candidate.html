@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">국민의당 대권주자 사진 속 나이와 감정</h2>
+<h2 id="국민의당-대선-후보">1. 국민의당 대선 후보</h2>
+<p>네이버 인물검색 속 사진을 대상으로 인공지능 기계가 판단하는 사진속 국민의당 대선후보 나이와 감정을 분석해 본다.</p>
+<ul>
+<li><a href="https://search.naver.com/search.naver?where=nexearch&amp;query=%EC%86%90%ED%95%99%EA%B7%9C&amp;sm=top_hty&amp;fbm=0&amp;ie=utf8">손학규</a></li>
+<li><a href="https://search.naver.com/search.naver?where=nexearch&amp;query=%EC%95%88%EC%B2%A0%EC%88%98&amp;sm=top_hty&amp;fbm=1&amp;ie=utf8">안철수</a></li>
+<li><a href="https://search.naver.com/search.naver?where=nexearch&amp;query=%EC%B2%9C%EC%A0%95%EB%B0%B0&amp;sm=top_hty&amp;fbm=1&amp;ie=utf8">천정배</a></li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th align="left">손학규</th>
+<th align="left">안철수</th>
+<th align="left">천정배</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><img src="data/fig/sohn.jpg" alt="손학규" width="77%" /></td>
+<td align="left"><img src="data/fig/ahn.jpg" alt="안철수" width="77%" /></td>
+<td align="left"><img src="data/fig/chun.jpg" alt="천정배" width="27%" /></td>
+</tr>
+</tbody>
+</table>
+<h2 id="국민의당-대선후보-프로필-사진-나이">2. 국민의당 대선후보 프로필 사진 나이</h2>
+<p>정보과학교육연합회-R을 이용한 <a href="http://statkclee.github.io/deep-learning/ms-oxford-kcode-tutorial.html">인공지능 튜토리얼</a>에 나와 있는 코드를 기반으로 국민의당 대선후보 프로필 사진을 분석했다.</p>
+<h3 id="환경설정">2.1. 환경설정</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정--------------------------------------------------</span>
+<span class="kw">library</span>(httr)
+<span class="kw">library</span>(XML)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(png)
+<span class="kw">library</span>(grid)
+<span class="kw">library</span>(jsonlite)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(magick)
+<span class="kw">library</span>(dygraphs)
+<span class="kw">library</span>(purrr)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()</code></pre></div>
+<h3 id="프로필-사진-속-나이-추정">2.2. 프로필 사진 속 나이 추정</h3>
+<p>손학규, 안철수, 천정배 사진 데이터를 불러와서 이를 인공지능 API에 던져 사진속 사람의 나이를 추정한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 불러오기 ----------------------------------------------</span>
+
+img_list &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="st">&quot;data/fig/&quot;</span>)
+
+hq &lt;-<span class="st"> </span><span class="kw">image_read</span>(<span class="st">&quot;data/fig/sohn.jpg&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">image_convert</span>(., <span class="st">&quot;png&quot;</span>)
+ahn &lt;-<span class="st"> </span><span class="kw">image_read</span>(<span class="st">&quot;data/fig/ahn.jpg&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">image_convert</span>(., <span class="st">&quot;png&quot;</span>)
+chun &lt;-<span class="st"> </span><span class="kw">image_read</span>(<span class="st">&quot;data/fig/chun.jpg&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">image_convert</span>(., <span class="st">&quot;png&quot;</span>)
+
+hq_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(hq, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+ahn_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(ahn, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+chun_g &lt;-<span class="st"> </span><span class="kw">rasterGrob</span>(chun, <span class="dt">interpolate=</span><span class="ot">TRUE</span>)
+
+<span class="co"># 2. 얼굴인식 API 호출 ------------------------------------------------</span>
+
+face_api_url &lt;-<span class="st"> &quot;https://api.projectoxford.ai/face/v1.0/detect?returnFaceAttributes=age,gender&quot;</span>
+
+<span class="kw">source</span>(<span class="st">&quot;code/secret_key_from_api.R&quot;</span>)
+
+img_age_bucket &lt;-<span class="st"> </span><span class="kw">list</span>()
+
+for(lst in <span class="kw">seq_along</span>(img_list)){
+    img_name &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;data/fig/&quot;</span>, img_list[lst])
+    img &lt;-<span class="st"> </span>httr::<span class="kw">upload_file</span>(img_name)
+    
+    result &lt;-<span class="st"> </span><span class="kw">POST</span>(<span class="dt">url =</span> face_api_url,
+                   <span class="dt">body =</span> img,
+                   <span class="kw">add_headers</span>(<span class="dt">.headers =</span> <span class="kw">c</span>(<span class="st">&#39;Content-Type&#39;</span> =<span class="st"> &#39;application/octet-stream&#39;</span>,
+                                            <span class="st">&#39;Ocp-Apim-Subscription-Key&#39;</span> =<span class="st"> </span>face_key))
+    )
+    
+    img_age_bucket[[lst]] &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">content</span>(result))[,<span class="kw">c</span>(<span class="st">&quot;faceAttributes.gender&quot;</span>, <span class="st">&quot;faceAttributes.age&quot;</span>)]
+}
+
+<span class="co"># 3. 데이터 정리-------------------------------------</span>
+
+img_age_buckets &lt;-<span class="st"> </span><span class="kw">map</span>(img_age_bucket, rbind) %&gt;%<span class="st"> </span><span class="kw">tibble</span>() %&gt;%<span class="st"> </span><span class="kw">unnest</span>() %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">c</span>(<span class="st">&quot;안철수&quot;</span>, <span class="st">&quot;천정배&quot;</span>, <span class="st">&quot;손학규&quot;</span>)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw">select</span>(name, <span class="dt">gener=</span> faceAttributes.gender, <span class="dt">age=</span>faceAttributes.age)</code></pre></div>
+<h3 id="프로필-사진-속-나이-시각화">2.3. 프로필 사진 속 나이 시각화</h3>
+<p>인공지능 기계가 사진 속 나이는 다음과 같이 추정했다.</p>
+<ul>
+<li>손학규: 42</li>
+<li>안철수: 43.5</li>
+<li>천정배: 52.1</li>
+</ul>
+<p>보기 좋게 <code>ggplot</code> <code>ggthemes</code> 팩키지를 통해 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 4. 시각화-------------------------------------</span>
+
+<span class="kw">ggplot</span>(img_age_buckets, <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>age, <span class="dt">label=</span>age)) +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;lightblue&quot;</span>, <span class="dt">width=</span>.<span class="dv">3</span>) +<span class="st"> </span><span class="kw">theme_pander</span>(<span class="dt">base_family=</span><span class="st">&#39;NanumGothic&#39;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">80</span>)) +
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> age), <span class="dt">size =</span> <span class="fl">7.5</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">vjust =</span> -<span class="fl">0.5</span>, <span class="dt">color=</span><span class="st">&quot;blue&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;top&quot;</span>, 
+          <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">10</span>),
+          <span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">22</span>),
+          <span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>), 
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">17</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>),
+          <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">00</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">size=</span><span class="dv">15</span>),
+          <span class="dt">strip.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>))+
+<span class="st">    </span><span class="kw">annotation_custom</span>(hq_g,  <span class="dt">xmin=</span><span class="dv">1</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">1</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">50</span>, <span class="dt">ymax=</span><span class="dv">70</span>) +
+<span class="st">    </span><span class="kw">annotation_custom</span>(ahn_g,  <span class="dt">xmin=</span><span class="dv">2</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">2</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">55</span>, <span class="dt">ymax=</span><span class="dv">75</span>) +
+<span class="st">    </span><span class="kw">annotation_custom</span>(chun_g,  <span class="dt">xmin=</span><span class="dv">3</span><span class="fl">-0.7</span>, <span class="dt">xmax=</span><span class="dv">3</span><span class="fl">+0.7</span>,  <span class="dt">ymin=</span><span class="dv">65</span>, <span class="dt">ymax=</span><span class="dv">85</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;인공지능이 바라본 국민의당 대권주자 사진속 나이&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 사진자료출처: 네이버 인물검색 대표사진&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;&quot;</span>,
+         <span class="dt">fill=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
+<p><img src="fig/ml-people-age-viz-1.png" title="plot of chunk ml-people-age-viz" alt="plot of chunk ml-people-age-viz" style="display: block; margin: auto;" /></p>
+<h2 id="국민의당-대선후보-프로필-사진-속-감정">3. 국민의당 대선후보 프로필 사진 속 감정</h2>
+<p>프로필 사진 속 나이를 추정했으면 이번에는 얼굴에 나타난 감정을 분석해보자.</p>
+<h3 id="얼굴에-나타난-감정">3.1. 얼굴에 나타난 감정</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 데이터 불러오기 ----------------------------------------------</span>
+
+img_list &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="st">&quot;data/fig/&quot;</span>)
+
+<span class="co"># 2. 얼굴인식 API 호출 ------------------------------------------------</span>
+
+emoface_url &lt;-<span class="st"> &#39;https://api.projectoxford.ai/emotion/v1.0/recognize&#39;</span>
+
+<span class="kw">source</span>(<span class="st">&quot;code/secret_key_from_api.R&quot;</span>)
+
+img_emo_bucket &lt;-<span class="st"> </span><span class="kw">list</span>()
+
+for(lst in <span class="kw">seq_along</span>(img_list)){
+    img_name &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;data/fig/&quot;</span>, img_list[lst])
+    img &lt;-<span class="st"> </span>httr::<span class="kw">upload_file</span>(img_name)
+    
+    result &lt;-<span class="st"> </span><span class="kw">POST</span>(<span class="dt">url =</span> emoface_url,
+                   <span class="dt">body =</span> img,
+                   <span class="kw">add_headers</span>(<span class="dt">.headers =</span> <span class="kw">c</span>(<span class="st">&#39;Content-Type&#39;</span> =<span class="st"> &#39;application/octet-stream&#39;</span>,
+                                            <span class="st">&#39;Ocp-Apim-Subscription-Key&#39;</span> =<span class="st"> </span>emotion_key))
+    )
+    
+    img_emo_bucket[[lst]] &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">content</span>(result)[[<span class="dv">1</span>]])
+}
+
+<span class="co"># 3. 데이터 정리 -------------------------------------</span>
+
+img_eom_buckets &lt;-<span class="st"> </span><span class="kw">map</span>(img_emo_bucket, rbind) %&gt;%<span class="st"> </span><span class="kw">tibble</span>() %&gt;%<span class="st"> </span><span class="kw">unnest</span>() %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">c</span>(<span class="st">&quot;안철수&quot;</span>, <span class="st">&quot;천정배&quot;</span>, <span class="st">&quot;손학규&quot;</span>)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw">select</span>(name, <span class="dt">height=</span>faceRectangle.height,
+                  <span class="dt">left=</span>faceRectangle.left,
+                  <span class="dt">top=</span>faceRectangle.top,
+                  <span class="dt">width=</span>faceRectangle.width,
+                  분노=scores.anger,
+                  경멸=scores.contempt,
+                  혐오감=scores.disgust,
+                  두려움=scores.fear,
+                  행복=scores.happiness,
+                  중립감정=scores.neutral,
+                  슬픔=scores.sadness,
+                  놀람=scores.surprise)
+
+img_emo_buckets_lng &lt;-<span class="st"> </span>img_eom_buckets %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(-height, -left, -top, -width) %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">gather</span>(emotion, value, -name)</code></pre></div>
+<h3 id="국민의당-후보별-얼굴에-나타난-감정">3.2. 국민의당 후보별 얼굴에 나타난 감정</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 4. 시각화 -------------------------------------</span>
+<span class="kw">ggplot</span>(img_emo_buckets_lng, <span class="kw">aes</span>(emotion, value, <span class="dt">fill=</span>name, <span class="dt">group=</span>name)) +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) +
+<span class="st">    </span><span class="kw">facet_wrap</span>(~name) +
+<span class="st">    </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&quot;NanumGothic&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, 
+          <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">10</span>),
+          <span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>), 
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>),
+          <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">size=</span><span class="dv">9</span>),
+          <span class="dt">strip.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;인공지능이 바라본 국민의당 대권주자 사진속 감정표현&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 사진자료출처: 네이버 인물검색 대표사진&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;&quot;</span>,
+         <span class="dt">fill=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
+<p><img src="fig/ml-people-emo-viz-facet-1.png" title="plot of chunk ml-people-emo-viz-facet" alt="plot of chunk ml-people-emo-viz-facet" style="display: block; margin: auto;" /></p>
+<h3 id="국민의당-후보별-얼굴에-나타난-감정-전체-후보-분석">3.3. 국민의당 후보별 얼굴에 나타난 감정 전체 후보 분석</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(img_emo_buckets_lng, <span class="kw">aes</span>(<span class="dt">x=</span>emotion, <span class="dt">y=</span>value, <span class="dt">fill=</span>name)) +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">position=</span><span class="kw">position_dodge</span>())  +
+<span class="st">    </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&quot;NanumGothic&quot;</span>) +
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;top&quot;</span>, 
+          <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">10</span>),
+          <span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+          <span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>), 
+          <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>),
+          <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">00</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">size=</span><span class="dv">9</span>),
+          <span class="dt">strip.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>))+
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;인공지능이 바라본 국민의당 대권주자 사진속 감정표현&quot;</span>,
+         <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 사진자료출처: 네이버 인물검색 대표사진&quot;</span>,
+         <span class="dt">subtitle=</span><span class="st">&quot;&quot;</span>,
+         <span class="dt">fill=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
+<p><img src="fig/ml-people-emo-viz-ggplot-1.png" title="plot of chunk ml-people-emo-viz-ggplot" alt="plot of chunk ml-people-emo-viz-ggplot" style="display: block; margin: auto;" /></p>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

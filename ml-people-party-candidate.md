@@ -10,23 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(httr)
-library(XML)
-library(ggplot2)
-library(png)
-library(grid)
-library(jsonlite)
-library(tidyverse)
-library(lubridate)
-library(magick)
-library(dygraphs)
-library(purrr)
-library(extrafont)
-loadfonts()
-options(warn=-1)
-```
+
 
 ## 1. 국민의당 대선 후보 
 
@@ -49,7 +33,8 @@ options(warn=-1)
 
 ### 2.1. 환경설정
 
-``` {r ml-people-age-emotion-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정--------------------------------------------------
 library(httr)
 library(XML)
@@ -64,14 +49,15 @@ library(dygraphs)
 library(purrr)
 library(extrafont)
 loadfonts()
-```
+~~~
 
 ### 2.2. 프로필 사진 속 나이 추정
 
 손학규, 안철수, 천정배 사진 데이터를 불러와서 이를 인공지능 API에 던져
 사진속 사람의 나이를 추정한다.
 
-``` {r ml-people-age-api}
+
+~~~{.r}
 # 1. 데이터 불러오기 ----------------------------------------------
 
 img_list <- list.files("data/fig/")
@@ -110,7 +96,7 @@ for(lst in seq_along(img_list)){
 img_age_buckets <- map(img_age_bucket, rbind) %>% tibble() %>% unnest() %>% 
     mutate(name = c("안철수", "천정배", "손학규")) %>% 
     dplyr::select(name, gener= faceAttributes.gender, age=faceAttributes.age)
-```
+~~~
 
 ### 2.3. 프로필 사진 속 나이 시각화
 
@@ -123,7 +109,8 @@ img_age_buckets <- map(img_age_bucket, rbind) %>% tibble() %>% unnest() %>%
 보기 좋게 `ggplot` `ggthemes` 팩키지를 통해 시각화한다.
 
 
-``` {r ml-people-age-viz}
+
+~~~{.r}
 # 4. 시각화-------------------------------------
 
 ggplot(img_age_buckets, aes(x=name, y=age, label=age)) +
@@ -145,7 +132,9 @@ ggplot(img_age_buckets, aes(x=name, y=age, label=age)) +
          caption="\n 사진자료출처: 네이버 인물검색 대표사진",
          subtitle="",
          fill="")
-```
+~~~
+
+<img src="fig/ml-people-age-viz-1.png" title="plot of chunk ml-people-age-viz" alt="plot of chunk ml-people-age-viz" style="display: block; margin: auto;" />
 
 
 ## 3. 국민의당 대선후보 프로필 사진 속 감정
@@ -154,7 +143,8 @@ ggplot(img_age_buckets, aes(x=name, y=age, label=age)) +
 
 ### 3.1. 얼굴에 나타난 감정
 
-``` {r ml-people-emo-api}
+
+~~~{.r}
 # 1. 데이터 불러오기 ----------------------------------------------
 
 img_list <- list.files("data/fig/")
@@ -199,11 +189,12 @@ img_eom_buckets <- map(img_emo_bucket, rbind) %>% tibble() %>% unnest() %>%
 
 img_emo_buckets_lng <- img_eom_buckets %>% dplyr::select(-height, -left, -top, -width) %>% 
     gather(emotion, value, -name)
-```
+~~~
 
 ### 3.2. 국민의당 후보별 얼굴에 나타난 감정
 
-``` {r ml-people-emo-viz-facet}
+
+~~~{.r}
 # 4. 시각화 -------------------------------------
 ggplot(img_emo_buckets_lng, aes(emotion, value, fill=name, group=name)) +
     geom_bar(stat="identity") +
@@ -220,11 +211,14 @@ ggplot(img_emo_buckets_lng, aes(emotion, value, fill=name, group=name)) +
          caption="\n 사진자료출처: 네이버 인물검색 대표사진",
          subtitle="",
          fill="")
-```
+~~~
+
+<img src="fig/ml-people-emo-viz-facet-1.png" title="plot of chunk ml-people-emo-viz-facet" alt="plot of chunk ml-people-emo-viz-facet" style="display: block; margin: auto;" />
 
 ### 3.3. 국민의당 후보별 얼굴에 나타난 감정 전체 후보 분석
 
-``` {r ml-people-emo-viz-ggplot}
+
+~~~{.r}
 ggplot(img_emo_buckets_lng, aes(x=emotion, y=value, fill=name)) +
     geom_bar(stat="identity", position=position_dodge())  +
     theme_tufte(base_family="NanumGothic") +
@@ -239,6 +233,8 @@ ggplot(img_emo_buckets_lng, aes(x=emotion, y=value, fill=name)) +
          caption="\n 사진자료출처: 네이버 인물검색 대표사진",
          subtitle="",
          fill="")
-```
+~~~
+
+<img src="fig/ml-people-emo-viz-ggplot-1.png" title="plot of chunk ml-people-emo-viz-ggplot" alt="plot of chunk ml-people-emo-viz-ggplot" style="display: block; margin: auto;" />
 
 
