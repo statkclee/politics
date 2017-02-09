@@ -58,6 +58,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [SNS 디지털 미디어](20-vote-digial-media.html)
         - [페이스북 페이지](21-vote-fb.html)
         - [페이스북 페이지(분당을 임태희 후보)](22-vote-fb-page.html)        
+        - [페이스북 페이지(황교안 대통령 권한대행)](fb-page-hwang.html)        
         - [페이스북 페이지(대권후보)](fb-hq-page.html)        
         - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
         - [유튜브 동영상 사용자 관여도 분석](youtube-activity.html)
