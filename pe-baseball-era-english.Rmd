@@ -28,9 +28,9 @@ theme_set(theme_gray(base_family='NanumGothic'))
 options(warn=-1)
 ```
 
-## 1. Verifying the hypothesis
+## 1. Hypothesis Test
 
-One weekend, as I was reading [‘Kang-jin diaries’](http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791195823086&orderClick=JAI) by [Sohn Hak-kyu](https://namu.wiki/w/손학규), 
+One weekend, as I was reading ['Kang-jin diaries'](http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791195823086&orderClick=JAI) by [Sohn Hak-kyu](https://namu.wiki/w/손학규), 
 which he wrote when he returned to politics as the executive director of the [East Asia Future Foundation](http://www.future21.or.kr) last year, 
 I got the inspiration to code this. This is the outcome of the R coding of the first weekend of 2017.
 
