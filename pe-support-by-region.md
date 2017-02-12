@@ -10,18 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(pdftools)
-library(tidyverse)
-library(stringr)
-library(lubridate)
-library(testthat)
-library(ggthemes)
-library(extrafont)
-loadfonts()
-```
+
 
 ## 1. 여론조사기관 PDF 파일
 
@@ -36,7 +25,8 @@ loadfonts()
 
 [리얼미터 주간 여론조사](http://www.realmeter.net/category/pdf/) 웹사이트에서 PDF 파일을 다운로드 받아 디렉토리에 저장한다.
 
-``` {r pdf-survey-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 -----------------------------------------------
 library(pdftools)
 library(tidyverse)
@@ -46,7 +36,7 @@ library(testthat)
 library(ggthemes)
 library(extrafont)
 loadfonts()
-```
+~~~
 
 ## 2. PDF 파일 內 표를 데이터프레임으로 변환
 
@@ -62,7 +52,8 @@ PDF 파일 內 표를 데이터프레임으로 변환하는 과정을 통해 데
 `testthat` 팩키지 단위 테스트 함수 `test_that()`을 사용해서 PDF 지역별 후보 지지율값이 제대로 추출되어 
 변환되었는지 검정한다. `write_csv()` 함수를 통해 결과값을 저장한다.
 
-``` {r pdf-survey-extract, eval=FALSE}
+
+~~~{.r}
 ## 리얼미터 1월 추출 함수 ------------------------------------------------------------------
 rm_jan_fun <- function(list_dat) {
   person <- unlist(strsplit(list_dat[6], split = "\\r\\n"))
@@ -106,7 +97,7 @@ test_that("리얼미터 1월 4주차",{
 
 ## 1.4. 데이터 내보내기---------------------------------------------------------------------------------
 write_csv(rm_01_w04_df, "rm_jan_w04.csv")
-```
+~~~
 
 ## 3. 지역별 지지율 데이터 시각화
 
@@ -114,13 +105,82 @@ write_csv(rm_01_w04_df, "rm_jan_w04.csv")
 불러들여 데이터 정제과정을 거쳐 시각화한다.
 
 
-``` {r pdf-survey-ggplot}
+
+~~~{.r}
 # 1. 지지도 데이터 불러오기 -----------------------------------------------
 
 rm_jan_w04_df <- read_csv("data/rm_jan_w04.csv") %>% mutate(sdate = ymd("2017-01-26"))
-rm_feb_w01_df <- read_csv("data/rm_feb_w01.csv") %>% mutate(sdate = ymd("2017-02-03"))
-rm_feb_w02_df <- read_csv("data/rm_feb_w02.csv") %>% mutate(sdate = ymd("2017-02-08"))
+~~~
 
+
+
+~~~{.output}
+Parsed with column specification:
+cols(
+  지역 = col_character(),
+  문재인 = col_double(),
+  손학규 = col_double(),
+  안철수 = col_double(),
+  안희정 = col_double(),
+  유승민 = col_double(),
+  이재명 = col_double(),
+  황교안 = col_double(),
+  무응답 = col_double()
+)
+
+~~~
+
+
+
+~~~{.r}
+rm_feb_w01_df <- read_csv("data/rm_feb_w01.csv") %>% mutate(sdate = ymd("2017-02-03"))
+~~~
+
+
+
+~~~{.output}
+Parsed with column specification:
+cols(
+  지역 = col_character(),
+  문재인 = col_double(),
+  손학규 = col_double(),
+  안철수 = col_double(),
+  안희정 = col_double(),
+  유승민 = col_double(),
+  이재명 = col_double(),
+  황교안 = col_double(),
+  무응답 = col_double()
+)
+
+~~~
+
+
+
+~~~{.r}
+rm_feb_w02_df <- read_csv("data/rm_feb_w02.csv") %>% mutate(sdate = ymd("2017-02-08"))
+~~~
+
+
+
+~~~{.output}
+Parsed with column specification:
+cols(
+  지역 = col_character(),
+  문재인 = col_double(),
+  손학규 = col_double(),
+  안철수 = col_double(),
+  안희정 = col_double(),
+  유승민 = col_double(),
+  이재명 = col_double(),
+  황교안 = col_double(),
+  무응답 = col_double()
+)
+
+~~~
+
+
+
+~~~{.r}
 # 2. 데이터 정제 -----------------------------------------------
 
 rm17_df <- rm_jan_w04_df %>% bind_rows(rm_feb_w01_df) %>% 
@@ -149,4 +209,6 @@ ggplot(rm17_df_lng, aes(x=sdate, y=지지율, group=후보, color=후보)) +
        caption="\n 지지율 여론조사 : 리얼미터 1월 4주, 2월1주, 2월2주",
        subtitle="",
        fill="")
-```
+~~~
+
+<img src="fig/pdf-survey-ggplot-1.png" title="plot of chunk pdf-survey-ggplot" alt="plot of chunk pdf-survey-ggplot" style="display: block; margin: auto;" />

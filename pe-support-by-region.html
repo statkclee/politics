@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-18', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://xwmooc.net" title="xwMOOC">
+          <img alt="xwMOOC banner" src="img/xwMOOC.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">대선후보 지역별 지지율 - PDF 파일</h2>
+<h2 id="여론조사기관-pdf-파일">1. 여론조사기관 PDF 파일</h2>
+<p><a href="http://www.realmeter.net/">리얼미터</a>에서 발간하는 PDF 파일을 파싱하여 대선후보 지지율을 시각화한다. 우리나라에서는 상당수 정보가 웹과 인터넷이 보급되었음에도 불구하고 여전히 PC 패러다임을 벗어나지 못해 PDF, HWP, ODCX 등 파일형태로 데이터를 제공하는 기관이 상당수 있다.</p>
+<p>따라서, 통계, 데이터과학, 기계학습에 필요한 데이터를 파일형태로 받아 파일에서 텍스트를 추출하고 이를 가공하여 데이터 분석에 사용하는 과정을 거친다.</p>
+<p><img src="fig/pdf_dataframe.png" alt="PDF 파일을 데이터프레임으로 변환" width="100%" /></p>
+<p><a href="http://www.realmeter.net/category/pdf/">리얼미터 주간 여론조사</a> 웹사이트에서 PDF 파일을 다운로드 받아 디렉토리에 저장한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 -----------------------------------------------</span>
+<span class="kw">library</span>(pdftools)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(stringr)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(testthat)
+<span class="kw">library</span>(ggthemes)
+<span class="kw">library</span>(extrafont)
+<span class="kw">loadfonts</span>()</code></pre></div>
+<h2 id="pdf-파일-內-표를-데이터프레임으로-변환">2. PDF 파일 內 표를 데이터프레임으로 변환</h2>
+<p>PDF 파일 內 표를 데이터프레임으로 변환하는 과정을 통해 데이터 분석을 위한 준비를 한다.</p>
+<ol style="list-style-type: decimal">
+<li>PDF 파일에서 텍스트 추출: <code>pdftools</code> 팩키지 사용</li>
+<li>추출된 텍스트 정제: SPSS 출력물 표를 R 데이터프레임으로 변환하기 위한 전처리 과정을 거쳐 데이터 정제</li>
+<li>리스트 자료형 표를 데이터프레임으로 변환</li>
+</ol>
+<p><code>pdf_text()</code> 함수를 사용해서 PDF 파일에서 테스트를 추출한다. 자체 개발한 <code>rm_jan_fun()</code>를 통해 해당주차 지지율 데이터프레임을 생성시킨다. <code>testthat</code> 팩키지 단위 테스트 함수 <code>test_that()</code>을 사용해서 PDF 지역별 후보 지지율값이 제대로 추출되어 변환되었는지 검정한다. <code>write_csv()</code> 함수를 통해 결과값을 저장한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 리얼미터 1월 추출 함수 ------------------------------------------------------------------
+rm_jan_fun &lt;-<span class="st"> </span>function(list_dat) {
+  person &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">strsplit</span>(list_dat[<span class="dv">6</span>], <span class="dt">split =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">r</span><span class="ch">\\</span><span class="st">n&quot;</span>))
+  person &lt;-<span class="st"> </span><span class="kw">str_replace_all</span>(person, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">s&quot;</span>, <span class="st">&quot;&quot;</span>)
+  support &lt;-<span class="st"> </span><span class="kw">strsplit</span>(person[<span class="kw">c</span>(<span class="dv">6</span>,<span class="dv">12</span>,<span class="dv">15</span>:<span class="dv">22</span>)], <span class="dt">split =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">|&quot;</span>)
+  
+  support[[<span class="dv">1</span>]] &lt;-<span class="st"> </span><span class="kw">append</span>(<span class="st">&quot;V1&quot;</span>, support[[<span class="dv">1</span>]])
+  support_df &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, support) %&gt;%<span class="st"> </span><span class="kw">as_tibble</span>()
+  support_df[<span class="dv">1</span>,<span class="dv">2</span>:<span class="dv">3</span>] &lt;-<span class="st">  </span><span class="kw">c</span>(<span class="st">&quot;V2&quot;</span>, <span class="st">&quot;V3&quot;</span>)
+  
+  <span class="kw">names</span>(support_df) &lt;-<span class="st"> </span>support_df[<span class="dv">1</span>,]
+  support_df &lt;-<span class="st"> </span>support_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(-V1) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw">filter</span>(V2 !=<span class="st"> &quot;V2&quot;</span>)
+  
+  support_df &lt;-<span class="st"> </span>support_df %&gt;%<span class="st"> </span>dplyr::<span class="kw">rename</span>(<span class="st">&quot;지역&quot;</span>=V2, <span class="st">&quot;조사완료&quot;</span>=V3, <span class="st">&quot;목표할당&quot;</span> =<span class="st"> </span>사례수) %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate</span>(조사완료 =<span class="st"> </span><span class="kw">str_replace_all</span>(조사완료, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">(|</span><span class="ch">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>),
+               목표할당 =<span class="st"> </span><span class="kw">str_replace_all</span>(목표할당, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">(|</span><span class="ch">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>),
+               지역 =<span class="st"> </span><span class="kw">str_replace_all</span>(지역, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">s|■&quot;</span>, <span class="st">&quot;&quot;</span>)) %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate_at</span>(<span class="kw">grep</span>(<span class="st">&quot;지역&quot;</span>,<span class="kw">colnames</span>(.), <span class="dt">invert=</span><span class="ot">TRUE</span>),<span class="kw">funs</span>(as.numeric)) %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate</span>(무응답=없음+잘) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw">select</span>(지역, 문재인, 손학규, 안철수, 안희정, 유승민, 이재명, 황교안, 무응답)
+  <span class="kw">return</span>(support_df)
+}
+
+<span class="co"># 1. 데이터 생성 ---------------------------------------------------------------------------------------</span>
+## 1.1. 1월 데이터 추출---------------------------------------------------------------------------------
+<span class="co"># realmeter_w170130212.pdf : 1월23~26, 발표: 1월 26일</span>
+rm1701_w4 &lt;-<span class="st"> </span><span class="kw">pdf_text</span>(<span class="st">&quot;03.data/realmeter_w170130212.pdf&quot;</span>)
+
+## 1.2. PDF파일을 데이터프레임 변환---------------------------------------------------------------------------------
+<span class="co"># realmeter_w170130212.pdf : 1월23~26, 발표: 1월 26일</span>
+rm_01_w04_df &lt;-<span class="st"> </span><span class="kw">rm_jan_fun</span>(rm1701_w4)
+
+## 1.3. 단위테스트를 통한 데이터변환 검증---------------------------------------------------------------------------------
+
+<span class="kw">test_that</span>(<span class="st">&quot;리얼미터 1월 4주차&quot;</span>,{
+  <span class="kw">expect_equivalent</span>(rm_01_w04_df %&gt;%<span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>) %&gt;%<span class="st"> </span>collect %&gt;%<span class="st"> </span>.[[<span class="st">&quot;문재인&quot;</span>]], <span class="fl">28.4</span>)
+  <span class="kw">expect_equivalent</span>(rm_01_w04_df %&gt;%<span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>) %&gt;%<span class="st"> </span>collect %&gt;%<span class="st"> </span>.[[<span class="st">&quot;안철수&quot;</span>]], <span class="fl">8.5</span>)
+  <span class="kw">expect_equivalent</span>(rm_01_w04_df %&gt;%<span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>) %&gt;%<span class="st"> </span>collect %&gt;%<span class="st"> </span>.[[<span class="st">&quot;손학규&quot;</span>]], <span class="fl">2.1</span>)
+})
+
+## 1.4. 데이터 내보내기---------------------------------------------------------------------------------
+<span class="kw">write_csv</span>(rm_01_w04_df, <span class="st">&quot;rm_jan_w04.csv&quot;</span>)</code></pre></div>
+<h2 id="지역별-지지율-데이터-시각화">3. 지역별 지지율 데이터 시각화</h2>
+<p>리얼미터 주차별 보고서 PDF 파일에서 지역별 후보 지지율을 추출한 데이터를 불러들여 데이터 정제과정을 거쳐 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. 지지도 데이터 불러오기 -----------------------------------------------</span>
+
+rm_jan_w04_df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/rm_jan_w04.csv&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">sdate =</span> <span class="kw">ymd</span>(<span class="st">&quot;2017-01-26&quot;</span>))</code></pre></div>
+<pre class="output"><code>Parsed with column specification:
+cols(
+  지역 = col_character(),
+  문재인 = col_double(),
+  손학규 = col_double(),
+  안철수 = col_double(),
+  안희정 = col_double(),
+  유승민 = col_double(),
+  이재명 = col_double(),
+  황교안 = col_double(),
+  무응답 = col_double()
+)
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rm_feb_w01_df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/rm_feb_w01.csv&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">sdate =</span> <span class="kw">ymd</span>(<span class="st">&quot;2017-02-03&quot;</span>))</code></pre></div>
+<pre class="output"><code>Parsed with column specification:
+cols(
+  지역 = col_character(),
+  문재인 = col_double(),
+  손학규 = col_double(),
+  안철수 = col_double(),
+  안희정 = col_double(),
+  유승민 = col_double(),
+  이재명 = col_double(),
+  황교안 = col_double(),
+  무응답 = col_double()
+)
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rm_feb_w02_df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/rm_feb_w02.csv&quot;</span>) %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">sdate =</span> <span class="kw">ymd</span>(<span class="st">&quot;2017-02-08&quot;</span>))</code></pre></div>
+<pre class="output"><code>Parsed with column specification:
+cols(
+  지역 = col_character(),
+  문재인 = col_double(),
+  손학규 = col_double(),
+  안철수 = col_double(),
+  안희정 = col_double(),
+  유승민 = col_double(),
+  이재명 = col_double(),
+  황교안 = col_double(),
+  무응답 = col_double()
+)
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2. 데이터 정제 -----------------------------------------------</span>
+
+rm17_df &lt;-<span class="st"> </span>rm_jan_w04_df %&gt;%<span class="st"> </span><span class="kw">bind_rows</span>(rm_feb_w01_df) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_rows</span>(rm_feb_w02_df) %&gt;%<span class="st"> </span>dplyr::<span class="kw">select</span>(-유승민, -<span class="st"> </span>무응답, -<span class="st"> </span>이재명) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(지역 =<span class="st"> </span><span class="kw">factor</span>(지역, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;전체&quot;</span>, <span class="st">&quot;서울&quot;</span>, <span class="st">&quot;경기/인천&quot;</span>, <span class="st">&quot;광주/전라&quot;</span>, <span class="st">&quot;대전/충청/세종&quot;</span>, <span class="st">&quot;대구/경북&quot;</span>, <span class="st">&quot;부산/경남/울산&quot;</span>,
+                                  <span class="st">&quot;강원&quot;</span>, <span class="st">&quot;제주&quot;</span>)))
+
+rm17_df_lng &lt;-<span class="st"> </span>rm17_df %&gt;%<span class="st"> </span><span class="kw">gather</span>(후보, 지지율, -지역, -sdate)
+
+<span class="co"># 3. 데이터 시각화 -----------------------------------------------</span>
+
+<span class="kw">ggplot</span>(rm17_df_lng, <span class="kw">aes</span>(<span class="dt">x=</span>sdate, <span class="dt">y=</span>지지율, <span class="dt">group=</span>후보, <span class="dt">color=</span>후보)) +
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">0.8</span>) +
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="dv">2</span>) +
+<span class="st">  </span><span class="kw">facet_wrap</span>(~지역) +
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">53</span>)) +
+<span class="st">  </span><span class="kw">theme_tufte</span>(<span class="dt">base_family=</span><span class="st">&quot;NanumGothic&quot;</span>) +
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;top&quot;</span>, 
+        <span class="dt">plot.caption=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>,<span class="dt">size=</span><span class="dv">10</span>),
+        <span class="dt">plot.subtitle=</span><span class="kw">element_text</span>(<span class="dt">face=</span><span class="st">&quot;italic&quot;</span>),
+        <span class="dt">text=</span><span class="kw">element_text</span>(<span class="dt">family=</span><span class="st">&quot;NanumGothic&quot;</span>), 
+        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="fl">7.5</span>),
+        <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">00</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">size=</span><span class="dv">9</span>),
+        <span class="dt">strip.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>))+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;&quot;</span>,<span class="dt">title=</span><span class="st">&quot;리얼미터 지역별 대선후보 지지율&quot;</span>,
+       <span class="dt">caption=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st"> 지지율 여론조사 : 리얼미터 1월 4주, 2월1주, 2월2주&quot;</span>,
+       <span class="dt">subtitle=</span><span class="st">&quot;&quot;</span>,
+       <span class="dt">fill=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
+<p><img src="fig/pdf-survey-ggplot-1.png" title="plot of chunk pdf-survey-ggplot" alt="plot of chunk pdf-survey-ggplot" style="display: block; margin: auto;" /></p>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://xwmooc.net">xwMOOC</a>
+        <a class="label swc-blue-bg" href="https://github.com/statkclee/data-science">Source</a>
+        <a class="label swc-blue-bg" href="mailto:i@xwmooc.net">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
