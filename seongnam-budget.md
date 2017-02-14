@@ -1,28 +1,6 @@
----
-layout: page
-title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 성남시 세입세출 예산 - 생키그림
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
----
+# 데이터 과학자와 함께 하는 제19대 대통령 선거
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-# 0. 환경설정 --------------------------------------------------------------
-library(tidyverse)
-library(stringr)
-library(googleVis)
-library(readxl)
-library(scales)
-library(stringr)
-library(networkD3)
-library(extrafont)
-loadfonts()
-```
+
 
 ## 지방자치단체 세입 세출 데이터
 
@@ -35,7 +13,8 @@ loadfonts()
 
 세입 세출 데이터를 바탕으로 생키그림을 통해 세입과 세출의 흐름을 시각화하기 위해서 환경을 설정한다.
 
-``` {r sn-sankey-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 --------------------------------------------------------------
 library(tidyverse)
 library(stringr)
@@ -43,7 +22,7 @@ library(googleVis)
 library(readxl)
 library(scales)
 library(stringr)
-```
+~~~
 
 ### 세입세출 데이터 전처리
 
@@ -52,7 +31,8 @@ R과 달리 자바스크립트는 0부터 인덱스가 시작되어 이를 맞�
 
 `sankeyNetwork` 함수에 데이터를 넣을 때 가장 먼저 링크와 노드를 별도 데이터프레임으로 준비하고 이를 인자에 맞춰 넣어준다.
 
-``` {r sn-sankey-import}
+
+~~~{.r}
 # 1. 데이터 가져오기 --------------------------------------------------------------
 rm(list=ls())
 
@@ -107,16 +87,27 @@ tax_flow$from <-  lut[tax_flow$from]
 tax_flow$to <-  lut[tax_flow$to]
 
 tax_node_df <- data.frame(name =tax_node_df[,2])
-```
+~~~
 
 ### 세입세출 데이터 전처리
 
 `sankeyNetwork` 함수에 한글 글꼴, 노드 폭, 글꼴 크기를 설정하여 시각화를 완성한다.
 
-``` {r sn-sankey-sankey}
+
+~~~{.r}
 # 2. 생키그림 시각화 --------------------------------------------------------------
 
 sankeyNetwork(Links = tax_flow, Nodes = tax_node_df, Source = 'from',
               Target = 'to', Value = 'amt', NodeID = 'name',
               width = 700, fontSize = 12, nodeWidth = 30, fontFamily="NanumGothic")
-```
+~~~
+
+
+
+~~~{.output}
+Links is a tbl_df. Converting to a plain data frame.
+
+~~~
+
+<!--html_preserve--><div id="htmlwidget-744c710f372733784cb6" style="width:700px;height:480px;" class="sankeyNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-744c710f372733784cb6">{"x":{"links":{"source":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,14,14,14,14,14,14,14,14,14,14,14,14],"target":[7,7,0,0,0,0,0,14,14,14,14,14,14,14,15,16,17,18,19,20,21,22,23,24,25,26,27],"value":[8332.31,130,428.575,2529.37,1194.43,501,3678.94,8462.31,1563.24,122.84,2132.81,3782.38,190,840,1063.5,49.67,626.48,1432.1,990.92,6315.59,1283.24,91.41,396.69,1563.22,946.86,94.55,2269.35]},"nodes":{"name":["보통세","보통세외","주민세","재산세","자동차세","담배소비세","지방소득세","지방세","세외수입","지방교부세","조정교부금","국가,도비보조금","지방채","보존수입등및내부거래","세입세출","일반공공행정","공공질서및안전","교육","문화및관광","환경보호","사회복지","보건","농림해양수산","산업,중소기업","수송및교통","국토및지역개발","예비비","기타"],"group":["보통세","보통세외","주민세","재산세","자동차세","담배소비세","지방소득세","지방세","세외수입","지방교부세","조정교부금","국가,도비보조금","지방채","보존수입등및내부거래","세입세출","일반공공행정","공공질서및안전","교육","문화및관광","환경보호","사회복지","보건","농림해양수산","산업,중소기업","수송및교통","국토및지역개발","예비비","기타"]},"options":{"NodeID":"name","NodeGroup":"name","LinkGroup":null,"colourScale":"d3.scale.category20()","fontSize":12,"fontFamily":"NanumGothic","nodeWidth":30,"nodePadding":10,"units":"","margin":{"top":null,"right":null,"bottom":null,"left":null},"iterations":32}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
