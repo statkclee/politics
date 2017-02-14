@@ -137,6 +137,7 @@ rm_node_df <- data.frame(name =rm_node_df[,2])
 
 rm_link_df <- bind_rows(region2party, party2job) %>% bind_rows(job2person) %>% 
   bind_rows(person2age)
+```
 
 ### 지지율 흐름 시각화
 
