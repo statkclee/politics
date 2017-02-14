@@ -1,0 +1,152 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 지지율은 어디서 와서 누구에게 가는가?
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+options(warn=-1)
+library(networkD3)
+library(pdftools)
+library(tidyverse)
+library(stringr)
+library(lubridate)
+library(testthat)
+library(ggthemes)
+library(extrafont)
+loadfonts()
+```
+
+## 여론조사기관 PDF 파일에서 지지율 흐름도까지
+
+[리얼미터](http://www.realmeter.net/)에서 발간하는 PDF 파일을 파싱하여 대선후보이 어디에서 왔는지를 생키플롯을 통해 시각화한다.
+[리얼미터 주간 여론조사](http://www.realmeter.net/category/pdf/) 웹사이트에서 PDF 파일을 다운로드 받아 디렉토리에 저장하고,
+지지율 흐름도를 시각화할 데이터를 추출한다. 
+
+특히, 지역, 정당, 직업, 후보, 연령별로 지지율 데이터를 추출하여 생키그림(SankeyPlot)으로 지지율 흐름을 시각화한다.
+
+``` {r realmeter-sankeyplot-setup, eval=FALSE}
+# 0. 환경설정 -----------------------------------------------
+library(networkD3)
+library(pdftools)
+library(tidyverse)
+library(stringr)
+library(lubridate)
+library(testthat)
+library(ggthemes)
+library(extrafont)
+loadfonts()
+```
+
+### 생키그림으로 시각화할 데이터
+
+지역-정당, 정당-직업, 직업-후보, 후보-연령 정보가 연결되어 있는 리얼미터 여론조사 PDF파일을 파싱하여 
+`csv`로 사전 작업하여 정리한다.
+
+``` {r realmeter-sankeyplot-import}
+# 0. 환경설정 -----------------------------------------------
+
+# 1. 데이터 가져오기 -----------------------------------------------
+## 1.1. 지역-정당 데이터 가져오기 ----------------------------------
+region2party <- read_csv("data/sankey_region_to_party.csv")
+region2party <- region2party %>% gather(party, support, -지역) %>% dplyr::select(from=지역, to= party, support)
+
+## 1.2. 정당-직업 데이터 가져오기 ----------------------------------
+party2job <- read_csv("data/sankey_party_to_job.csv")  
+party2job <- party2job %>% gather(party, support, -직업) %>% dplyr::select(from=party, to=직업, support)
+
+## 1.3. 직업-후보 데이터 가져오기 ----------------------------------
+job2person <- read_csv("data/sankey_job_to_person.csv")  
+job2person <- job2person %>% gather(person, support, -직업) %>% dplyr::select(from=직업, to= person, support)
+
+## 1.4. 후보-연령 데이터 가져오기 ----------------------------------
+person2age <- read_csv("data/sankey_person_to_age.csv")  
+person2age <- person2age %>% gather(person, support, -연령) %>% dplyr::select(from=person, to= 연령, support)
+```
+
+### 노드와 링크 형태 네트워크 데이터 변환
+
+`networkD3` 팩키지 `sankeyNetwork` 함수를 활용하여 생키그림을 통해 지지율 흐름을 시각화하는데 적당한 
+형태 데이터로 가공한다.
+
+``` {r realmeter-sankeyplot-network}
+# 2. 생키그림 데이터  -----------------------------------------------
+## 2.1. 노드 데이터 -------------------------------------------------
+rm_node <- unique(c(region2party$from, region2party$to, party2job$from, party2job$to,
+                    job2person$from, job2person$to, person2age$from, person2age$to))
+
+rm_node_df <- data.frame(id=c(0:(length(rm_node)-1)), name=rm_node)
+
+lut <- c("서울" = 0, 
+         "경기/인천" = 1, 
+         "대전/충청/세종" = 2, 
+         "강원" = 3, 
+         "부산/경남/울산" = 4, 
+         "대구/경북" = 5, 
+         "광주/전라" = 6, 
+         "제주" = 7, 
+         "민주당" = 8, 
+         "새누리당" = 9, 
+         "국민의당" = 10, 
+         "바른정당" = 11, 
+         "정의당" = 12, 
+         "기타정당" = 13, 
+         "사무직" = 14, 
+         "노동직" = 15, 
+         "가정주부" = 16, 
+         "자영업" = 17, 
+         "학생" = 18, 
+         "농림어업" = 19, 
+         "무직" = 20, 
+         "기타직업" = 21, 
+         "문재인" = 22, 
+         "손학규" = 23, 
+         "안철수" = 24, 
+         "안희정" = 25, 
+         "유승민" = 26, 
+         "이재명" = 27, 
+         "황교안" = 28, 
+         "기타후보" = 29, 
+         "19~29세" = 30, 
+         "30대" = 31, 
+         "40대" = 32, 
+         "50대" = 33, 
+         "60세이상" = 34)
+
+region2party$from <-  lut[region2party$from]
+region2party$to <-  lut[region2party$to]
+
+party2job$from <-  lut[party2job$from]
+party2job$to <-  lut[party2job$to]
+
+job2person$from <-  lut[job2person$from]
+job2person$to <-  lut[job2person$to]
+
+person2age$from <-  lut[person2age$from]
+person2age$to <-  lut[person2age$to]
+
+
+rm_node_df <- data.frame(name =rm_node_df[,2])
+
+rm_link_df <- bind_rows(region2party, party2job) %>% bind_rows(job2person) %>% 
+  bind_rows(person2age)
+
+### 지지율 흐름 시각화
+
+`networkD3` 팩키지 `sankeyNetwork` 함수에 데이터를 넣어 지지율 흐름을 시각화한다.
+
+``` {r realmeter-sankeyplot-viz}
+# 2. 생키그림 시각화 --------------------------------------------------------------
+
+sankeyNetwork(Links = rm_link_df, Nodes = rm_node_df, Source = 'from',
+              Target = 'to', Value = 'support', NodeID = 'name', units = '%', 
+              width = 640, height=480, fontSize = 12, nodeWidth = 30, fontFamily="NanumGothic")
+
+```
