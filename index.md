@@ -43,6 +43,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [인구통계 분석](05-vote-demographic.html)
         - [여론조사 지지율](07-vote-approval-rating.html)
         - [여론조사 지지율 흐름](07-vote-approval-sankeyplot.html)
+            - [성남시 세입세출 예산 - 생키그림](seongnam-budget.html)
         - [대선후보 지역별 지지율 - PDF 파일](pe-support-by-region.html)
     1. [투표율 분석: 제20대 국회의원 선거](08-vote-ballots.html)
         - [사전 투표율](09-vote-early.html)
