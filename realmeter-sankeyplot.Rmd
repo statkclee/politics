@@ -148,6 +148,6 @@ rm_link_df <- bind_rows(region2party, party2job) %>% bind_rows(job2person) %>%
 
 sankeyNetwork(Links = rm_link_df, Nodes = rm_node_df, Source = 'from',
               Target = 'to', Value = 'support', NodeID = 'name', units = '%', 
-              width = 640, height=480, fontSize = 12, nodeWidth = 30, fontFamily="NanumGothic")
+              width = 800, height=640, fontSize = 12, nodeWidth = 30, fontFamily="NanumGothic")
 
 ```

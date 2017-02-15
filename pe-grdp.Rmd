@@ -69,8 +69,8 @@ grdp <- read_excel("data/행정구역_시도_별_경제활동별_지역내총생
 
 grdp <- grdp %>% slice(-1) %>% dplyr::rename(sido=`행정구역(시도)별`, "2015" = `2015 p)`) %>% dplyr::select(-경제활동별)
 
-#datatable(grdp) %>% 
-#  formatCurrency(c(as.character(rep(1985:2015))), "", interval=3, mark=",", digit=0)
+datatable(grdp) %>%
+ formatCurrency(c(as.character(rep(1985:2015))), "", interval=3, mark=",", digit=0)
 
 grdp <- grdp %>% mutate(sido = plyr::revalue(sido, 
                                             c( "서울특별시"   = "수도권"  ,
@@ -120,9 +120,9 @@ dlist <- unique(grdp_df_lng$year)
 ggplot(grdp_df_lng , aes(year, pcnt, group=sido, color=sido, label=sido)) +
   geom_point() +
   geom_line() +
-  theme_fivethirtyeight(base_family="NanumGothic") +
+  theme_fivethirtyeight(base_family="AppleGothic") +
   coord_flip() +
-  geom_text(data=grdp_df_lng %>% dplyr::filter(year==tail(dlist,1)), vjust=-1) +
+  geom_text(data=grdp_df_lng %>% dplyr::filter(year==tail(dlist,1)), vjust=-1, family="AppleGothic") +
   scale_x_date(breaks=seq(dlist[1], tail(dlist,1)+years(1), "5 year"),
                date_labels="%Y",limits=c(dlist[1],tail(dlist,1)+years(1)))+ 
   scale_y_continuous(labels=percent) +
