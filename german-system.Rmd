@@ -185,7 +185,7 @@ ggplot(party_stat_tbl_lng, aes(party, value, fill=type, label=value)) +
   theme(legend.position="top", plot.caption=element_text(hjust=0,size=8), 
         plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=11.5), legend.title=element_blank(),
-        plot.title = element_text(size=22),
+        plot.title = element_text(size=22, family="NanumGothic"),
         text=element_text(family="AppleGothic")) +
   scale_fill_manual(values=c("#999999", "#E69F00")) +
   geom_text(aes(label = value), size = 5.0, vjust = -0.5, color="#E69F00", position=position_dodge(width=0.5), hjust=0.5) +
@@ -320,7 +320,7 @@ ggplot(precinct_20_df_lng,
         axis.text=element_text(size=8), 
         legend.title=element_blank(),
         axis.text.x = element_text(angle = 00, hjust = 0.5),
-        plot.title = element_text(size=18),
+        plot.title = element_text(size=18, family="NanumGothic"),
         text=element_text(family="NanumGothic"),
         strip.text.x = element_text(size = 10, colour = "darkorange", angle = 0),
         legend.key.width = unit(0.3, "cm"),
