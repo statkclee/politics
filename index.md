@@ -50,6 +50,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [투표율 분석: 제20대 국회의원 선거](08-vote-ballots.html)
         - [사전 투표율](09-vote-early.html)
         - [역대선거 투표율](10-vote-history.html)
+        - [독일식 비례투표제](german-system.html)
     1. [일자리 잡스(Jobs)](pe-jobs.html)     
         - [광역지방자치 단체장 창출 일자리](pe-politician-jobs.html)     
         - [저평가 우량주 - 손학규](pe-hq-mb.html)     
