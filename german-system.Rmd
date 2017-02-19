@@ -330,6 +330,135 @@ ggplot(precinct_20_df_lng,
        subtitle="") 
 ```
   
-       
+### 선거구별 당선과 낙선 비교 (상자그림)
+
+각 정당별 평균 당선표와 낙선표를 지역별로 살펴보면, 새누리가 당선과 낙선 표차이가 가장 작고,
+민주당와 국민의당, 정의당의 당선과 낙선 표차이가 크게 벌어지는 것이 확인된다.
+
+지역별로 보면 민주당의 경우 낙선자의 표가 당선자의 표보다 평균적으로 더 많은 기현상도 광주호남에서 관찰된다.
+TK지역에서는 5만표를 얻고도 낙선한 사례가 있다. 전주시병과 순천시가 그곳이다.
+`precinct_20_df %>% dplyr::filter(winlose=="낙선" & sido=="광주호남" & vote >50000)`
+
+``` {r precinct-winloss-by-party}
+# 1. 데이터 가져오기 -------------------------------------------
+## 1.1. 실제 지역구별 득표
+vote_20_df <- read_excel("data/제20대_총선_종합.xlsx", sheet="Sheet1") %>% dplyr::rename("무소속"=무당파, sido=시도)
+vote_20_df <- vote_20_df %>% mutate(sido = str_replace_all(sido, "[0-9]", "")) %>% 
+  dplyr::select(sido, precinct = 선거구, 새누리당, 더불어민주당, 무소속, 국민의당, 정의당) %>% 
+  gather(party, vote, -sido, -precinct)
+
+## 1.2. 당선 및 낙선 
+vote_20_rank <- vote_20_df %>% group_by(sido, precinct) %>% 
+  mutate(the_rank = rank(-vote, ties.method="random")) %>% 
+  arrange(sido, precinct)
+
+## 2.3. 지역 및 당선/낙선
+precinct_20_df <- vote_20_rank %>% ungroup %>%  mutate(sido = plyr::revalue(sido, c("서울" = "수도권" ,
+                                      "경기" = "수도권" ,
+                                      "인천" = "수도권" ,
+                                      "충남" = "대전충청" ,
+                                      "충북" = "대전충청" ,
+                                      "대전" = "대전충청" ,
+                                      "세종" = "대전충청" ,
+                                      "경남" = "PK"   ,
+                                      "부산" = "PK"   ,
+                                      "대구" = "TK"   ,
+                                      "울산" = "TK"   ,
+                                      "경북" = "TK"   ,
+                                      "광주" = "광주호남" ,
+                                      "전북" = "광주호남" ,
+                                      "전남" = "광주호남" ,
+                                      "강원" = "강원제주",
+                                      "제주" = "강원제주"))) %>% 
+  mutate(sido=factor(sido, levels=c("TK", "PK", "광주호남", "수도권", "대전충청", "강원제주"))) %>% 
+  mutate(party = plyr::revalue(party, c("새누리당" = "새누리",
+                                        "더불어민주당" ="민주",
+                                        "국민의당" = "국민",
+                                        "정의당" = "정의",
+                                        "무소속" = "무소속"))) %>% 
+  mutate(party=factor(party, levels=c("새누리", "민주", "국민", "정의", "무소속", "투표수"))) %>% 
+  mutate(winlose = ifelse(the_rank == 1, "당선", "낙선"),
+         winlose = factor(winlose, levels=c("당선", "낙선")))
+
+# 3. 시각화 -------------------------------------------
+# 3.3. 정당별
+ggplot(precinct_20_df, 
+       aes(party, vote, color=factor(winlose))) +
+  geom_point(position = position_jitter(w = 0.3, h = 0), alpha=0.3) + theme_bw(base_family='NanumGothic') +
+  scale_y_continuous(labels = comma, limits = c(0, 85000)) +
+  theme(legend.position="top", plot.caption=element_text(hjust=0,size=8), 
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=8), 
+        legend.title=element_blank(),
+        axis.text.x = element_text(angle = 00, hjust = 0.5),
+        plot.title = element_text(size=18, family="NanumGothic"),
+        text=element_text(family="NanumGothic"),
+        strip.text.x = element_text(size = 10, colour = "black", angle = 0),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm")) +
+  scale_fill_manual(values=c("#999999", "#E69F00")) +
+  labs(x="",y="",title="정당별 당선표와 낙선표 비교")
+
+# 3.4. 정당별, 지역별 당선과 낙선
+ggplot(precinct_20_df, 
+       aes(party, vote, color=factor(winlose))) +
+  geom_point(position = position_jitter(w = 0.3, h = 0), alpha=0.3) + theme_bw(base_family='NanumGothic') +
+  scale_y_continuous(labels = comma, limits = c(0, 85000)) +
+  facet_wrap(~sido) +
+  theme(legend.position="top", plot.caption=element_text(hjust=0,size=8), 
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=8), 
+        legend.title=element_blank(),
+        axis.text.x = element_text(angle = 00, hjust = 0.5),
+        plot.title = element_text(size=18, family="NanumGothic"),
+        text=element_text(family="NanumGothic"),
+        strip.text.x = element_text(size = 10, colour = "black", angle = 0),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm")) +
+  scale_fill_manual(values=c("#999999", "#E69F00")) +
+  labs(x="",y="",title="지역별 당선표와 낙선표 비교")
+
+```
+
+### 선거구별 당선과 낙선 비교 (상자그림)
+
+``` {r precinct-winloss-by-party-dot}
+# 3.1. 정당별 
+ggplot(precinct_20_df, 
+       aes(party, vote, color=factor(winlose))) +
+  geom_boxplot() + theme_bw(base_family='NanumGothic') +
+  scale_y_continuous(labels = comma, limits = c(0, 85000)) +
+  theme(legend.position="top", plot.caption=element_text(hjust=0,size=8), 
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=8), 
+        legend.title=element_blank(),
+        axis.text.x = element_text(angle = 00, hjust = 0.5),
+        plot.title = element_text(size=18, family="NanumGothic"),
+        text=element_text(family="NanumGothic"),
+        strip.text.x = element_text(size = 10, colour = "black", angle = 0),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm")) +
+  scale_fill_manual(values=c("#999999", "#E69F00")) +
+  labs(x="",y="",title="정당별 당선표와 낙선표 비교")
+
+# 3.2. 정당별, 지역별 당선과 낙선
+ggplot(precinct_20_df, 
+       aes(party, vote, color=factor(winlose))) +
+  geom_boxplot() + theme_bw(base_family='NanumGothic') +
+  scale_y_continuous(labels = comma, limits = c(0, 85000)) +
+  facet_wrap(~sido) +
+  theme(legend.position="top", plot.caption=element_text(hjust=0,size=8), 
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=8), 
+        legend.title=element_blank(),
+        axis.text.x = element_text(angle = 00, hjust = 0.5),
+        plot.title = element_text(size=18, family="NanumGothic"),
+        text=element_text(family="NanumGothic"),
+        strip.text.x = element_text(size = 10, colour = "black", angle = 0),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm")) +
+  scale_fill_manual(values=c("#999999", "#E69F00")) +
+  labs(x="",y="",title="지역별 당선표와 낙선표 비교")
 
 
+```
