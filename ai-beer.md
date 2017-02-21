@@ -10,15 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(tidyverse)
-library(lubridate)
-library(ggthemes)
-library(animation)
-library(extrafont)
-loadfonts()
-```
+
 
 <img src="fig/ai-beer-cooperative.png" alt="협동조합 AI 맥주" width="100%" />
 
