@@ -15,6 +15,9 @@ source("tools/chunk-options.R")
 library(Rfacebook)
 library(tidyverse)
 library(threejs)
+require(png)
+require(jpeg)
+require(igraph)
 ```
 
 ## 페북 친구 네트워크 시각화 [^kateo-facebook-viz] [^facebook-igraph]
@@ -75,3 +78,97 @@ graphjs(my_network_g,
 #         vertex.label=V(my_network_g)$name)
 ```
 
+## 페북 친구 프로파일 사진 시각화 [^kateo-facebook-viz]
+
+[^kateo-facebook-viz]: [Facebook data collection and photo network visualization with Gephi and R](http://kateto.net/2014/04/facebook-data-collection-and-photo-network-visualization-with-gephi-and-r/)
+
+페북 친구 네트워크를 친구 프로파일에 있는 사진을 노드에 넣어 시각화하는 것도 상기와 유사한 과정을 거치게 된다.
+다만, 친구 사진 다운로드하는 과정이 추가되고 이를 `Gephi`, `igraph`, `qgraph` 등에 담는 과정이 추가될 따름이다.
+
+
+``` {r fb-network-igraph-setup}
+# 0. 환경설정 ---------------------------------------------------
+## 0.1. 팩키지 불러오기
+#library(png)
+#library(jpeg)
+#library(igraph)
+
+## 0.2. 토큰 설정
+me_token <- "EAACEdEose0cBAEZBqu8Uq7RvypMKPXZAKaHXxCwftm0ZCcBw0puI6UuKbzslFbg3NpF3i5xzoUeiOluJZCv84bkrIbU3G5AhYyG7ajkL338J0SbIKjvcZAiUD8nEJIjK8NUZB0Lle5Suh55ywZCwwFpmNwYZCfkZBuJneoHzF0Lo0dsA5VdAxH8HSPtJG3ZCptBWMZD"
+
+# 1. 데이터 긁어오기 ---------------------------------------------------
+## 1.1. 친구정보 가져오기
+my_friends <- getFriends(token=me_token, simplify = FALSE)
+
+## 1.2. 친구네트워크 가져오기
+my_network <- getNetwork(token = me_token, format="adj.matrix") + 0
+my_network_el <- as.data.frame(getNetwork(token = me_token, format = "edgelist"))
+
+## 1.3. 친구 사진 다운로드 -----------------------------------------------------------------
+dir.create("FbImages")
+
+my_friends$picture.dld <- NA
+
+for (i in 1:dim(my_friends)[1]) { 
+  # Fb images 프로파일 사진 거의 대부분이 JPEG
+  pic_ext <- ".jpg" 
+  if(grepl(".gif$", my_friends$picture[i])) pic_ext <- ".gif"
+  
+  # 페북사용자 이름에 파일확장자 추가
+  my_friends$picture.dld[i] <- paste0("FBImages/", sub(" ", "_", my_friends$name[i]), pic_ext)
+  
+  # UTF-8 인코딩을 갖지 않는 사용자 처리로직:
+  if (Encoding(my_friends$name[i])=="UTF-8") {
+    my_friends$picture.dld[i] <- paste0("FBImages/", "FbID_", my_friends$id[i], pic_ext) }
+  
+  download.file(my_friends$picture[i],  my_friends$picture.dld[i],  mode = 'wb')  
+}
+
+# 사진 정보 저장
+colnames(my_network_el) <- c("Source", "Target")
+my_friends$ID <- my_friends$name
+my_friends$image <- gsub("FBImages/(*.)", "\\1", my_friends$picture.dld)
+
+# write.csv(my_network_el, file="Facebook-friend-EDGES.csv", row.names=F)
+# write.csv(my_friends, file="Facebook-friend-NODES.csv", row.names=F)
+
+# 2. 네트워크 데이터 준비 ---------------------------------------------------
+
+fb_net <- graph.adjacency(my_network)
+
+my_friends$degree <- degree(fb_net)
+my_friends$color <- "gray45"
+my_friends$color[my_friends$gender=="female"] <- "lightpink3"
+my_friends$color[my_friends$gender=="male"]   <- "lightblue"
+my_network_el$color <- my_friends$color[match(my_network_el$Source, my_friends$name)]
+```
+
+시각화를 위해 사진이 들어가지 않는 그래프와 사진이 들어간 그래프를 넣어 시각화한다.
+
+``` {r fb-network-igraph-viz}
+# 3. 페북 프로파일 사진 시각화 ---------------------------------------------------
+
+## 3.1. 사진없이 시각화
+l <- layout.fruchterman.reingold(fb_net, niter=10000, 
+                                 area=vcount(fb_net)^2.3,
+                                 repulserad=vcount(fb_net)^2.65)
+
+plot(fb_net, vertex.size=my_friends$degree/20, vertex.label=NA, 
+     vertex.color=my_friends$color, edge.color=my_network_el$color,
+     edge.width=1, edge.arrow.size=0, edge.curved=0.3,  layout=l)
+
+## 3.2. 프로필 사진 넣어 시각화
+# 레이아웃 -1에서 1로 척도 재조정
+l <- layout.norm(l, -1, 1, -1, 1)
+
+plot(fb_net, vertex.size=4, vertex.label=NA, edge.color=my_network_el$color, 
+     vertex.shape="square",vertex.color="white", vertex.frame.color="white",
+     edge.width=1.5, edge.arrow.size=0, edge.curved=0.2,  layout=l)
+
+img.sc <- 0.05 #Image scaling
+for (i in 1:dim(l)[1]) {
+  img <- my_friends$picture.dld[i]
+  img <- if(grepl(".jpg", img)) readJPEG(img) else "gray20"
+  rasterImage(img, l[i,1]-img.sc, l[i,2]-img.sc, l[i,1]+img.sc, l[i,2]+img.sc)
+}
+```
