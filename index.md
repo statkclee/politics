@@ -61,7 +61,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [제20대 총선 선거구](06-vote-precinct.html)
         - [생활안전](31-vote-probation-office.html)
     1. [SNS 디지털 미디어](20-vote-digial-media.html)
-        - [페이스북 페이지](21-vote-fb.html)
+        - [페북 페이지와 데이터 긁어오기](21-vote-fb.html)
         - [페이스북 페이지(분당을 임태희 후보)](22-vote-fb-page.html)        
         - [페이스북 페이지(황교안 대통령 권한대행)](fb-page-hwang.html)        
         - [페이스북 페이지(대권후보)](fb-hq-page.html)        
