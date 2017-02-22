@@ -60,18 +60,18 @@ graphjs(my_network_g,
         vertex.label=V(my_network_g)$name)
 
 # 애니메이션
-graphjs(my_network_g, 
-        layout=list(layout_randomly(LeMis, dim=3),
-            layout_on_sphere(LeMis),
-            layout_with_drl(LeMis, dim=3),
-            layout_with_fr(LeMis, dim=3)),
-        main=list("random layout", "sphere layout", "drl layout", "fr layout"), fpl=300,
-        vertex.label.cex=0.5,
-        edge.arrow.size=3,
-        edge.curved=TRUE,
-        vertex.size = jsonlite::toJSON(my_network_g$degree/20),
-        vertex.color="darkkhaki",
-        edge.color="darkgrey",
-        vertex.label=V(my_network_g)$name)
+# graphjs(my_network_g, 
+#         layout=list(layout_randomly(my_network_g, dim=3),
+#                     layout_on_sphere(my_network_g),
+#                     layout_with_drl(my_network_g, dim=3),
+#                     layout_with_fr(my_network_g, dim=3)),
+#         main=list("random layout", "sphere layout", "drl layout", "fr layout"), fpl=300,
+#         vertex.label.cex=0.5,
+#         edge.arrow.size=3,
+#         edge.curved=TRUE,
+#         vertex.size = jsonlite::toJSON(my_network_g$degree/20),
+#         vertex.color="darkkhaki",
+#         edge.color="darkgrey",
+#         vertex.label=V(my_network_g)$name)
 ```
 
