@@ -94,7 +94,7 @@ graphjs(my_network_g,
 #library(igraph)
 
 ## 0.2. 토큰 설정
-me_token <- "EAACEdEose0cBAEZBqu8Uq7RvypMKPXZAKaHXxCwftm0ZCcBw0puI6UuKbzslFbg3NpF3i5xzoUeiOluJZCv84bkrIbU3G5AhYyG7ajkL338J0SbIKjvcZAiUD8nEJIjK8NUZB0Lle5Suh55ywZCwwFpmNwYZCfkZBuJneoHzF0Lo0dsA5VdAxH8HSPtJG3ZCptBWMZD"
+me_token <- "EAACEdEose0cBAFJbE5lwlt8s9lbZAmx5Nsrw5W4FgXraBViIqHi4L4MYXJ6bVlhYo4HG2ZBwyK8ZCTzr5bqLLK9xeZA1qeRHj8XmwOU1rDNM2zOAEmiZAQZBHgD3HYZChf9xEWZBoaZBpEpT2O8zEZChsjoMLkByZCXQqAg9XHgxFGp2FlcClZBl6MwGJg1gIkvK6lQZD"
 
 # 1. 데이터 긁어오기 ---------------------------------------------------
 ## 1.1. 친구정보 가져오기
