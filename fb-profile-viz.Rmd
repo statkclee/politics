@@ -1,0 +1,77 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 페북 프로파일(Profile) 시각화
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+library(Rfacebook)
+library(tidyverse)
+library(threejs)
+```
+
+## 페북 친구 네트워크 시각화 [^kateo-facebook-viz] [^facebook-igraph]
+
+[^facebook-igraph]: [How to analyze your Facebook friends network with R](http://blog.revolutionanalytics.com/2013/11/how-to-analyze-you-facebook-friends-network-with-r.html)
+
+페북 친구 네트워크를 시각화하는 코드는 지속적으로 진화를 해왔다. `igraph`를 활용하여 정적 네트워크 그래프 시각화 방법을 지나서,
+
+[rthreejs](https://github.com/bwlewis/rthreejs)를 활용하여 웹브라우져에서도 정말 가볍게 네트워크 시각화가 가능하게 되었다.
+
+1. `getNetwork()` 함수를 활용해서 본인 네트워크 정보를 가져온다.
+1. `graph_from_adjacency_matrix` 함수로 인접행렬(Adjacent Matrix)을 `igraph` 객체로 변환한다.
+    - `igraph` 함수 `degree` 정보를 추가한다.
+1. 3D 자바스크립트 [three.js](https://threejs.org/)를 R에서 구현한 `threejs` 팩키지 `graphjs` 함수를 활용하여 3차원 시각화한다.
+
+``` {r fb-network-threejs}
+# 0. 환경설정 ---------------------------------------------------
+## 0.1. 팩키지 불러오기
+
+## 0.2. 토큰 설정
+me_token <- "EAACEdEose0cBAFJbE5lwlt8s9lbZAmx5Nsrw5W4FgXraBViIqHi4L4MYXJ6bVlhYo4HG2ZBwyK8ZCTzr5bqLLK9xeZA1qeRHj8XmwOU1rDNM2zOAEmiZAQZBHgD3HYZChf9xEWZBoaZBpEpT2O8zEZChsjoMLkByZCXQqAg9XHgxFGp2FlcClZBl6MwGJg1gIkvK6lQZD"
+
+# 1. 데이터 긁어오기 ---------------------------------------------------
+
+my_network <- getNetwork(token = me_token, format="adj.matrix")
+
+# 2. 시각화 위한 데이터 변환 ---------------------------------------------------
+# 인접행렬(Adjacent Matrix)를 igraph 객체로 변환
+my_network_g <- graph_from_adjacency_matrix(my_network, weighted=TRUE)
+
+my_network_g$degree <- degree(my_network_g)
+
+# 3. 시각화 ---------------------------------------------------
+# threejs 동적 페이스북 그래프
+graphjs(my_network_g, 
+        layout=layout_with_fr(my_network_g, dim=3), 
+        vertex.label.cex=0.5,
+        edge.arrow.size=1,
+        edge.curved=TRUE,
+        vertex.size = jsonlite::toJSON(my_network_g$degree/20),
+        vertex.color="darkkhaki",
+        edge.color="darkgrey",
+        vertex.label=V(my_network_g)$name)
+
+# 애니메이션
+graphjs(my_network_g, 
+        layout=list(layout_randomly(LeMis, dim=3),
+            layout_on_sphere(LeMis),
+            layout_with_drl(LeMis, dim=3),
+            layout_with_fr(LeMis, dim=3)),
+        main=list("random layout", "sphere layout", "drl layout", "fr layout"), fpl=300,
+        vertex.label.cex=0.5,
+        edge.arrow.size=3,
+        edge.curved=TRUE,
+        vertex.size = jsonlite::toJSON(my_network_g$degree/20),
+        vertex.color="darkkhaki",
+        edge.color="darkgrey",
+        vertex.label=V(my_network_g)$name)
+```
+
