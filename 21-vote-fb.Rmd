@@ -12,6 +12,7 @@ mainfont: NanumGothic
 
 ```{r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
+library(Rfacebook)
 library(tidyverse)
 library(gridExtra)
 library(ggplot2)
@@ -145,10 +146,10 @@ URL을 복사하여 붙여 넣게 되면 페이스북 ID를 반환해 준다.
 "Hello World"를 찍어본다. `getUsers()` 함수에 개인 프로파일 ID와 토큰을 넣어 정보를 얻어오고, `getFriends()` 함수를 통해
 친구 정보도 받아오고 나서 친구 성별을 표로 만들어본다.
 
-```{r fb-page-profile, tidy=FALSE, eval=FALSE}
+```{r fb-page-profile, tidy=FALSE}
 # devtools::install_github("pablobarbera/Rfacebook")
-library(Rfacebook)
-library(tidyverse)
+#library(Rfacebook)
+#library(tidyverse)
 
 me_token <-"EAACEdEose0cBAA2JEOrM4YC6ZCkWmDTXgu0SCCYaZC27vftd2XydDoLlsT10effWMXVfPgs4nwOFgnrT2rAqwYw2EWVyeZCkWDcWBZBFmlXsNjXeUUy0Uc3CeoZAy1jRBFVgulTS4sRfG9mMjIUZAYADr6B8V0fePVxxlTg8pLMFIn5ZB6YfAnsDlalZAZBZBOIwAZD"
 

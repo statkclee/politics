@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="generator" content="pandoc">
-    <title>Software Carpentry: 데이터 과학자가 바라본 20대 총선</title>
+    <title>Software Carpentry: 데이터 과학자와 함께 하는 제19대 대통령 선거</title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
@@ -36,25 +36,18 @@
       <article>
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
-          <h1 class="title">데이터 과학자가 바라본 20대 총선</h1>
-          <h2 class="subtitle">페이스북 페이지</h2>
-<section class="objectives panel panel-warning">
-<div class="panel-heading">
-<h2 id="학습-목표"><span class="glyphicon glyphicon-certificate"></span>학습 목표</h2>
-</div>
-<div class="panel-body">
-<ul>
-<li>페이스북의 다양한 서비스를 이해한다.</li>
-<li>페이스북 개인 프로파일과 페이지의 장단점에 대해 이해한다.</li>
-</ul>
-</div>
-</section>
+          <h1 class="title">데이터 과학자와 함께 하는 제19대 대통령 선거</h1>
+          <h2 class="subtitle">페북 페이지와 데이터 긁어오기</h2>
+<h2 id="페이스북facebook">페이스북(Facebook)</h2>
 <p><a href="http://www.facebook.com/">페이스북(Facebook)</a>은 SNS 서비스의 대표격으로, 과거 싸이월드 및 Myspace 같은 소셜 네트워크 서비스를 확장하여 현재 전세계 표준이 되었다. 물론 대표적인 SNS 서비스로 자리매김하기까지 우여곡절도 많았지만, 지속적인 혁신을 가져이어 가며 최고의 위상을 이어가고 있다.</p>
-<h3 id="페이스북-서비스-구분">페이스북 서비스 구분</h3>
+<p>페이스북은 그 자체로 다양한 서비스를 아우르고 있고, 특히 페이스북 개인 프로파일과 페이지의 장단점에 대해 이해하고, 페이스북 그룹 기능에 대한 올바른 이해가 필수적이다.</p>
+<ul>
+<li>페이스북 서비스 구분
 <ul>
 <li>개인 프로필(Personal Profile)</li>
 <li>페이지(Page)</li>
 <li>그룹(Group)</li>
+</ul></li>
 </ul>
 <h3 id="페이지와-그룹-비교">페이지와 그룹 비교</h3>
 <p>페이스북 페이지와 그룹은 유사해 보지만 상당한 차이가 있다. 페이지는 일대다(One-to-Many) 방송 플랫폼인 반면에 그룹은 유사한 관심사를 갖는 사람들 간에 협업과 토론을 위한 장이다. <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
@@ -91,10 +84,14 @@
 </table>
 <h3 id="개인-프로필과-페이지-비교-2">개인 프로필과 페이지 비교 <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></h3>
 <p>개인 프로필(Personal Profile)은 비영리 및 각 개인을 대변한다. 팔로어 기능을 통해 친구가 아닌 사람도 관심갖고 있는 사람에 대한 최신 정보를 받아볼 수 있다. 페이지는 개인 프로파일과 유사하지만, 사업, 브랜드, 조직을 위한 유일무이한 도구를 제공한다. 페이지는 개인 프로파일을 갖는 사람이 관리하며, 페이지에 좋아요를 누르면 뉴스피드를 통해 최신 정보를 받아보게 된다.</p>
-<blockquote>
-<p>개인 계정을 페이지로 전환해야 되는 이유 {.callout}</p>
+<aside class="callout panel panel-info">
+<div class="panel-heading">
+<h3 id="개인-계정을-페이지로-전환해야-되는-이유"><span class="glyphicon glyphicon-pushpin"></span>개인 계정을 페이지로 전환해야 되는 이유</h3>
+</div>
+<div class="panel-body">
 <p>사업, 브랜드, 조직 등을 대표하는데 개인 계정을 사용하는 것은 페이스북 계약조항에 위배된다. 개인이 아닌 사업, 브랜드, 조직을 대표하여 사용하고 있는데 이를 페이지로 전환하지 않는다면, 영구히 계정에 대한 접근 권한을 잃어버릴 수 있다.</p>
-</blockquote>
+</div>
+</aside>
 <h3 id="개인-프로파일에-대한-페이지-사용할-때-좋은-점-14-3">개인 프로파일에 대한 페이지 사용할 때 좋은 점 14 <a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></h3>
 <ol style="list-style-type: decimal">
 <li>페이스북 활동 이력 데이터에 대한 접근</li>
@@ -108,12 +105,58 @@
 <li>예약 스케쥴링</li>
 <li>페이스북 위치</li>
 </ol>
+<h2 id="페이스북-데이터-긁어오기">페이스북 데이터 긁어오기</h2>
+<h3 id="oauth를-활용한-영구-토큰을-이용한-방법">OAuth를 활용한 영구 토큰을 이용한 방법</h3>
+<p>페북 데이터를 R을 활용하여 분석할 경우 <code>Rfacebook</code> 팩키지를 활용하여 페이스북 페이지 데이터를 분석한다. 먼저 <a href="https://developers.facebook.com/">페이스북 개발자 페이지</a>에 접속해서 <code>Add a New App</code>을 클릭하고 나서, <code>Website</code>를 선택한다. 사용할 페이스북앱 이름과 더불어, 연락처 및 관련된 설정을 선택한다.</p>
+<p><code>fbOAuth</code> 인자로 넘길 <code>app_id</code>와 <code>app_secret</code> 정보를 확인한 후에 R에서 목표로 삼고 있는 페이스북 페이지 정보를 가져와서 분석한다. 자세한 사항은 <a href="http://thinktostart.com/analyzing-facebook-with-r/">Analyze Facebook with R</a>, <a href="http://www.r-bloggers.com/analyze-facebook-with-r/">R-Blogger: Analyze Facebook with R</a>을 참조한다.</p>
+<p><code>Rfacebook</code>을 Github을 통해 설치를 할 것이기 때문에, <code>devtools</code>가 필요하다. 이후, <code>fbOAuth</code>에서 사용될 <code>app_id</code>와 <code>app_secret</code> 정보를 넣어 페이스북 인증준비를 마친다.</p>
+<p>주의할 점은 <code>app_id</code>와 <code>app_secret</code>을 인터넷에 노출시킬 수 없어서, <code>save(fb_oauth, file=&quot;fb_oauth&quot;)</code> 명령어로 처리한 점을 이해하면 좋다. <code>fb_oauth</code> 파일에 인증보안에 사용되는 열쇠가 포함되어 있다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 ================================================================</span>
+<span class="co"># library(devtools)</span>
+<span class="co"># install_github(&quot;Rfacebook&quot;, &quot;pablobarbera&quot;, subdir=&quot;Rfacebook&quot;)</span>
+
+<span class="kw">suppressMessages</span>(<span class="kw">require</span>(<span class="st">&quot;Rfacebook&quot;</span>))
+<span class="co"># fb_oauth &lt;- fbOAuth(app_id=&quot;1XXXXXXXX30&quot;, </span>
+<span class="co">#                    app_secret=&quot;982XXXXXXXXXXXXXXXXXXXXdaa&quot;,</span>
+<span class="co">#                    extended_permissions = TRUE)</span>
+<span class="co"># save(fb_oauth, file=&quot;fb_oauth&quot;)</span>
+<span class="kw">load</span>(<span class="st">&quot;fb_oauth&quot;</span>)</code></pre></div>
+<h3 id="페이스북-임시-토큰을-이용한-간단한-방법">페이스북 임시 토큰을 이용한 간단한 방법</h3>
+<p>페이스북에서 제공하는 <a href="https://developers.facebook.com/tools/explorer">Graph API Explorer</a>를 통해 토큰(Token)을 얻어와서 이를 활용하여 2시간 내 잠깐 사용하는 데이터 작업에 활용하기에는 이보다 더 좋은 것이 없다. <code>Get Token</code>으로 발급된 <strong>Access Token</strong>을 복사해서 변수에 넣고 이를 페이스북 데이터를 가져오는데 활용한다.</p>
+<p><a href="https://developers.facebook.com/tools/explorer" class="uri">https://developers.facebook.com/tools/explorer</a> → <code>Tools &amp; Support</code> → <code>Graph API Explorer</code> → <code>Get Token</code> → <code>Get User Access Token</code></p>
+<p><img src="fig/fb-graph-api-token.png" alt="페이스북 그래프 API 임시 토큰" width="77%" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">me_token &lt;-<span class="st">&quot;EAACExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;</span></code></pre></div>
+<h3 id="페이스북-id-알아내는-방법">페이스북 ID 알아내는 방법</h3>
+<p>페이스북 개인 프로파일 URL을 알아내는 방법은 페이스북 페이지 좌측 상단 본인 계정을 클릭하면 확인이 가능하다. 개인 프로파일이나 페북 페이지 혹은 그룹 URL을 확인한 후에 페이스북 ID를 알고 있으면 좋다. 한 사례로 <span class="citation">[손학규 @koreasohn]</span>(https://www.facebook.com/koreasohn/) 페이스북 페이지 URL을 통해 페이스북 ID를 알아내는 사례를 살펴보자.</p>
+<p><a href="http://findmyfbid.com/">Find your Facebook ID</a> 웹페이지를 방문하여 페이스북 프로파일, 그룹, 페이지 등 URL을 확인했으면, URL을 복사하여 붙여 넣게 되면 페이스북 ID를 반환해 준다.</p>
+<p><img src="fig/fb-find-facebook-id.png" alt="페이스북 ID 찾아보기" width="77%" /></p>
+<h3 id="페이스북-프로파일-헬로우-월드">페이스북 프로파일 헬로우 월드</h3>
+<p>페이스북에서 데이터를 긁어오기 위해 토큰을 생성하고 페이지 ID를 얻었으면 이를 바탕으로 “Hello World”를 찍어본다. <code>getUsers()</code> 함수에 개인 프로파일 ID와 토큰을 넣어 정보를 얻어오고, <code>getFriends()</code> 함수를 통해 친구 정보도 받아오고 나서 친구 성별을 표로 만들어본다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># devtools::install_github(&quot;pablobarbera/Rfacebook&quot;)</span>
+<span class="co">#library(Rfacebook)</span>
+<span class="co">#library(tidyverse)</span>
+
+me_token &lt;-<span class="st">&quot;EAACEdEose0cBAA2JEOrM4YC6ZCkWmDTXgu0SCCYaZC27vftd2XydDoLlsT10effWMXVfPgs4nwOFgnrT2rAqwYw2EWVyeZCkWDcWBZBFmlXsNjXeUUy0Uc3CeoZAy1jRBFVgulTS4sRfG9mMjIUZAYADr6B8V0fePVxxlTg8pLMFIn5ZB6YfAnsDlalZAZBZBOIwAZD&quot;</span>
+
+me &lt;-<span class="st"> </span><span class="kw">getUsers</span>(<span class="st">&quot;533419894&quot;</span>, <span class="dt">token=</span>me_token, <span class="dt">private_info=</span><span class="ot">TRUE</span>)
+me$name</code></pre></div>
+<pre class="output"><code>[1] &quot;KwangChun Lee&quot;
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my_friends &lt;-<span class="st"> </span><span class="kw">getFriends</span>(<span class="dt">token=</span>me_token, <span class="dt">simplify =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre class="output"><code>Only friends who use the application will be returned
+See ?getFriends for more details
+</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(my_friends$gender)</code></pre></div>
+<pre class="output"><code>
+female   male 
+     3     48 
+</code></pre>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>http://thesocialskinny.com/facebook-pages-vs-facebook-groups/<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>https://www.facebook.com/help/217671661585622<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>http://www.jonloomer.com/2012/09/03/benefits-of-a-facebook-business-page/<a href="#fnref3">↩</a></p></li>
+<li id="fn1"><p><a href="http://thesocialskinny.com/facebook-pages-vs-facebook-groups/">Facebook Pages vs Facebook Groups - Cara Pring</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="https://www.facebook.com/help/217671661585622">Why should I convert my personal account to a Facebook Page?</a><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p><a href="http://www.jonloomer.com/2012/09/03/benefits-of-a-facebook-business-page/">14 Benefits of a Facebook Business Page Over a Personal Profile</a><a href="#fnref3">↩</a></p></li>
 </ol>
 </div>
         </div>
