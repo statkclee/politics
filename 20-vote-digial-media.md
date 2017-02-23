@@ -68,8 +68,25 @@ subtitle: 디지털 미디어와 SNS 그리고 데이터 과학
 
 디지털 미디어를 통해 배포된 데이터는 페이스북의 경우, *좋아요*, *공유*, *코멘트* 등을 통해서 얼마나 많은 사용자가 관심을 가지고 적극적으로 디지털 미디어를 소비했는지 파악할 수 있고, 이 데이터를 DB에 모아 [구글 애널리틱스(Google Analytics, GA)](http://analytics.google.com)를 통해 다양한 통계분석, 모니터링, [A/B 테스팅](https://en.wikipedia.org/wiki/A/B_testing) 등을 별도 비용없이 진행가능하다.
 
-## 디지털 콘텐츠 제작
+### 4. 소셜 미디어 
 
-3부작 제작 중 
+네트워킹, 블로깅, 사진, 동영상, 지식 공유 및 교환을 위한 다양한 서비스가 존재하고 
+친숙한 회사도 많다.
+
+- 네트워킹 : Facebook, LinkedIn, ...
+- 마이크로 블로깅: Twitter, Tumblr...
+- 사진 공유: Instagram, Flickr...
+- 동영상 공유: YouTube, Vimeo...
+- Stack 교환: Stack Overflow, Github...
+- Instant messaging: 카톡, 라인, Whatsapp, Hike...
+
+이런 일반적인 서비스 외에도 어쩌면 전통이 되버린 당연한 서비스도 다수 존재한다.
+
+- 블로그/마이크로 블로그
+- 소셜 뉴스
+- 소셜 북마크
+- 전문가 모임 그룹
+- 커뮤니티
+- 위키
 
 
