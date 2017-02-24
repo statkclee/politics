@@ -16,6 +16,10 @@ source("tools/chunk-options.R")
 library(gtrendsR)
 library(tidyverse)
 library(extrafont)
+library(trelliscopejs)
+library(rbokeh)
+library(plotly)
+
 loadfonts()
 par(family = "NanumGothic")
 ```
@@ -149,7 +153,9 @@ ggplot(df, aes(x=date, y=hits, fill=keyword, color=keyword)) +
     facet_wrap(~keyword)
 ```
 
-### `trelliscope` 격자 시각화
+### `trelliscope` 격자 시각화 [^trelliscopejs]
+
+[^trelliscopejs]: [Introducing trelliscopejs](http://ryanhafen.com/blog/trelliscopejs)
 
 `facet_wrap`의 문제는 격자가 한 화면에 담기에 너무 많은 경우 발생된다. 이를 해결하는 방식이 
 `trelliscopejs` 를 활용하는 방법이다.
@@ -157,10 +163,10 @@ ggplot(df, aes(x=date, y=hits, fill=keyword, color=keyword)) +
 
 ``` {r google-trend-gtrendsR-trelliscope}
 # 4. 동적(plot.ly) 격자(Trellis) 시각화 --------------------------------------------------
-#devtools::install_github("hafen/trelliscopejs")
-library(trelliscopejs)
-library(rbokeh)
-library(plotly)
+# devtools::install_github("hafen/trelliscopejs")
+# library(trelliscopejs)
+# library(rbokeh)
+# library(plotly)
 
 qplot(date, hits, data=df, geom=c("point", "smooth"), color=keyword, size=I(0.7)) +
     ylim(0,100) +
@@ -168,5 +174,6 @@ qplot(date, hits, data=df, geom=c("point", "smooth"), color=keyword, size=I(0.7)
     theme(legend.position="none") +
     labs(x="",y="",title="Webzen Keywords",
          caption="\n Source: Google Trends, https://trends.google.com/trends/") +
-    facet_trelliscope( ~keyword, width=600, nrow=2, ncol=3, as_plotly = TRUE)
+    facet_trelliscope( ~keyword, width=600, nrow=2, ncol=3, as_plotly = TRUE, self_contained = TRUE)
+
 ```
