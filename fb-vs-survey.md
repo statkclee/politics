@@ -10,32 +10,7 @@ output:
 mainfont: NanumGothic
 ---
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(RCurl)
-library(RJSONIO)
-library(tidyverse)
-library(tibble)
-library(stringr)
-library(lubridate)
-library(plyr)
-library(ggthemes)
-library(extrafont)
-library(rvest)
-loadfonts()
 
-fb_page_fan_likes <- read_csv("data/fb_page_fan_likes.csv")
-survey_df_lng <- read_csv("data/fb_page_fan_survey.csv")
-
-fb_page_fan_likes <- fb_page_fan_likes %>% mutate(person = 
-                               factor(person, levels=c("문재인","안희정", "이재명",
-                                                       "안철수", "손학규", "황교안")))
-
-survey_df_lng <- survey_df_lng %>% 
-  mutate(person = factor(person, 
-                         levels=c("문재인","안희정", "이재명", "안철수", "손학규", "황교안")))
-```
 
 ## 민심, 페북(SNS), 여론조사, 투표, 당선
 
@@ -59,7 +34,8 @@ survey_df_lng <- survey_df_lng %>%
 
 ### 환경설정
 
-```{r fb-survey-setup, eval=FALSE}
+
+~~~{.r}
 # 0. 환경설정 ---------------------------------------------------------------
 library(RCurl)
 library(RJSONIO)
@@ -72,14 +48,15 @@ library(ggthemes)
 library(extrafont)
 library(rvest)
 loadfonts()
-```
+~~~
 
 ### 데이터 가져오기
 
 페이스북 각 후보 페이지에서 일자별 팬 좋아요 데이터를 가져오고, 
 여론조사 데이터는 나무위키 리얼미터 주별 여론조사 데이터를 긁어와서 활용한다.
 
-```{r fb-survey-import, eval=FALSE}
+
+~~~{.r}
 # 1. 데이터 가져오기 ---------------------------------------------------------------
 ## 1.1. 페북 좋아요 --------------------------------------
 fb_page_fan_likes <- read_csv("data/fb_page_fan_likes.csv")
@@ -146,14 +123,15 @@ survey_df_lng <- survey_df_lng %>%
                          levels=c("문재인","안희정", "이재명", "안철수", "손학규", "황교안")))
 
 # write_csv(survey_df_lng, "output/fb_page_fan_survey.csv")
-```
+~~~
 
 ## 페북 좋아요 vs. 설문조사 시각화
 
 주요 대선후보 페북 좋아요와 설문조사 데이터가 준비되면 `ggplot`을 통해 각 후보별로 
 지지율과 페북 좋아요를 시각화한다.
 
-```{r fb-survey-fb-viz, fig.width=12}
+
+~~~{.r}
 # 3. 시각화 ---------------------------------------------------------------
 # 3.1. 페이스북 좋아요 ---------------------------------------------------------------
 dlist <- unique(fb_page_fan_likes$fdate)
@@ -173,9 +151,12 @@ ggplot(fb_page_fan_likes, aes(x=fdate, y=fan_likes, color=person)) +
   labs(x="",y="",title="주요 대선후보 공식 페북 페이지 팬좋아요 추세",
        caption="\n 자료출처: facebook for develoopers, https://developers.facebook.com/tools/explorer") +
   facet_wrap(~person)
-```
+~~~
 
-```{r fb-survey-fb-survey, fig.width=12}
+<img src="fig/fb-survey-fb-viz-1.png" title="plot of chunk fb-survey-fb-viz" alt="plot of chunk fb-survey-fb-viz" style="display: block; margin: auto;" />
+
+
+~~~{.r}
 # 3. 시각화 ---------------------------------------------------------------
 # 3.2. 설문조사 ---------------------------------------------------------------
 dlist <- unique(survey_df_lng$fdate)
@@ -195,4 +176,6 @@ ggplot(survey_df_lng, aes(x=fdate, y=survey/100, color=person)) +
   labs(x="",y="",title="주요 대선후보 여론조사(리얼미터) 추세",
        caption="\n 자료출처: facebook for develoopers, https://developers.facebook.com/tools/explorer") +
   facet_wrap(~person)
-```
+~~~
+
+<img src="fig/fb-survey-fb-survey-1.png" title="plot of chunk fb-survey-fb-survey" alt="plot of chunk fb-survey-fb-survey" style="display: block; margin: auto;" />
