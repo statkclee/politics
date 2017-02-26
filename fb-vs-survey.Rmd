@@ -42,7 +42,7 @@ survey_df_lng <- read_csv("data/fb_page_fan_survey.csv")
 들어내고 직접민주주의에 더 다가서게 되었다. 물론 페이스북 같은 또다른 형태의 중간관리자/업체가 생긴 것으로 볼 수도 있겠으나 
 생긴지도 얼마되지 않았고, 특히 대한민국에서는 새로운 형태의 선거형태로 혜성처럼 등장했다.
 
-<img src="fig/fb-vs-survey.png" alt="SNS와 여론조사" width="77%" />
+<img src="fig/fb-vs-survey.png" alt="SNS와 여론조사" width="97%" />
 
 ## 페이스북 페이지 좋아요와 여론조사 
 
@@ -145,7 +145,7 @@ survey_df_lng <- survey_df_lng %>%
 주요 대선후보 페북 좋아요와 설문조사 데이터가 준비되면 `ggplot`을 통해 각 후보별로 
 지지율과 페북 좋아요를 시각화한다.
 
-```{r fb-survey-fb-viz}
+```{r fb-survey-fb-viz, fig.width=12}
 # 3. 시각화 ---------------------------------------------------------------
 # 3.1. 페이스북 좋아요 ---------------------------------------------------------------
 dlist <- unique(fb_page_fan_likes$fdate)
@@ -167,7 +167,7 @@ ggplot(fb_page_fan_likes, aes(x=fdate, y=fan_likes, color=person)) +
   facet_wrap(~person)
 ```
 
-```{r fb-survey-fb-survey}
+```{r fb-survey-fb-survey, fig.width=12}
 # 3. 시각화 ---------------------------------------------------------------
 # 3.2. 설문조사 ---------------------------------------------------------------
 dlist <- unique(survey_df$fdate)
