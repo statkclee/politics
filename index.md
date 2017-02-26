@@ -64,10 +64,11 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - **페이스북**
             - [페북 페이지와 데이터 긁어오기](21-vote-fb.html)
             - [페북 프로파일(Profile) 시각화](fb-profile-viz.html)
-            - [페북 페이지 팬페이지 좋아요 시각화](fb-fan-likes.html)
+            - [페북 페이지 팬 좋아요(fan likes) 시각화](fb-fan-likes.html)            
             - [페이스북 페이지(분당을 임태희 후보)](22-vote-fb-page.html)        
             - [페이스북 페이지(황교안 대통령 권한대행)](fb-page-hwang.html)        
-            - [페이스북 페이지(대권후보)](fb-hq-page.html)                    
+            - [페이스북 페이지(대권후보)](fb-hq-page.html)
+            - [페이스북과 여론조사](fb-vs-survey.html)
         - **트위터**
             - [여론조사에 반영되지 않은 팩트](twitter-activity.html)
             - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
