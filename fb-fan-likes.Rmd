@@ -1,0 +1,181 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 페북 페이지 팬 좋아요(fan likes)시각화
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+options(warn=-1)
+library(RCurl)
+library(RJSONIO)
+library(tidyverse)
+library(tibble)
+library(stringr)
+library(lubridate)
+library(plyr)
+library(ggthemes)
+library(extrafont)
+loadfonts()
+
+```
+
+## 페북 페이지 팬 좋아요
+
+페북 페이지에 팬을 많이 확보하면 나름 여러가지 면에서 큰 도움(?)이 된다. 
+페북 마케팅을 활용하여 성과를 얻은 성공사례는 구글에서 흔히 검색되고 다양한 컨설팅업체도 서비스를 제공하고 있다.
+
+엑셀을 활용한 방법도 조금 오래되었지만 자세한 안내가 나와 있다. [^fb-likes-excel]
+
+[^fb-likes-excel]: [How to extract Facebook page likes history by countries to Excel](https://nocodewebscraping.com/how-to-check-facebook-page-likes-history-by-countries/)
+
+엑셀 대신에 R언어 생태계에서 제공되는 팩키지를 활용하여 페북 데이터를 정제한다.
+가장 먼저 페이스북 개발자 웹사이트에서 제공하는 API를 숙지하고 이를 기반으로 API에서 제공하는 데이터를 긁어온다.
+
+데이터가 JSON형태로 제공되기 때문에 JSON 파일을 R 데이터프레임으로 변환하는 방식 중 하나를 선택하여 데이터프레임으로 변환한다.
+그 다음 데이터 정제 과정을 거쳐서 `ggplot` 함수로 시각화한다. [^fb-r-json-df]
+
+[^fb-r-json-df]: [Parsing Facebook JSON results in R](http://stackoverflow.com/questions/15758077/parsing-facebook-json-results-in-r)
+
+### 환경설정
+
+페이스북 개발자 API에서 제공하는 웹페이지에서 데이터를 받아오기 위한 기본 설정을 한다.
+
+``` {r fb-fan-likes-setup, eval=FALSE}
+# 1. 환경설정 ---------------------------------------------------------------
+library(RCurl)
+library(RJSONIO)
+library(tidyverse)
+library(tibble)
+library(stringr)
+library(lubridate)
+library(plyr)
+library(ggthemes)
+library(extrafont)
+loadfonts()
+```
+
+### 팬페이지 좋아용 데이터 가져오기  
+
+`get_fb_likes` 함수를 생성하여 최대 3개월치 페북 팬좋아요 데이터를 가져온다.
+이렇게 쪼개야 되는 이유는 페이스북에서 3개월치 페북 팬좋아요 데이터를 제공하기 때문이다.
+
+국민의당 경선을 치열하게 치르고 있는 [손학규](https://www.facebook.com/koreasohn/), 
+[안철수](https://www.facebook.com/ahncs111/) 공식 페북 페이지를 주소를 확인하고 `get_fb_likes` 함수를 통해 데이터를 쭉 긁어온다.
+
+긁어온 데이터는 데이터 전처리 및 정제과정을 거쳐 시각화를 위한 준비를 한다.
+
+``` {r fb-fan-likes-import}
+fb_keys <- "EAACEdEose0cBAAqgzxp74SSkSYdbi3FocjXRk5olE8nKY63i6WlJc0wjfYNE8SsO3l2OcgfdCDEZACkv1U60lJkbpG3UajipT4xo1bIbCJIi0LMpHSkilwAwsinVcJjqrVVCYG0L05g281ZCgP5iufmgn85KzFZCPnJ6ZBYZCyZAkRapY3PAIj"
+
+get_fb_likes <- function(fb_pages, sdate, edate, fb_keys){
+  url         <- paste0("https://graph.facebook.com/v2.8/", fb_pages, "/insights/page_fans_country/lifetime?&since=", sdate, "&until=", edate, "&access_token=", fb_keys)
+  url_json    <- getURL(url)
+  url_list    <- fromJSON(url_json)
+  url_dat_likes  <- lapply(url_list$data[[1]]$values, function(x) {x$value})
+  library(gtools)
+  url_dat_df <- do.call(smartbind, url_dat_likes)
+  url_dat_df[is.na(url_dat_df)] <- 0
+  url_date <- lapply(url_list$data[[1]]$values, function(x) {x$end_time})
+  url_date_df <- do.call(rbind, url_date)
+
+  url_df <- cbind(url_date_df, url_dat_df)
+  url_df <- url_df %>%
+    mutate(url_date_df = ymd(str_sub(url_date_df, 1, 10))) %>% 
+    dplyr::rename(fdate=url_date_df)
+  return(url_df)
+}
+
+# 2. 데이터 가져오기 ---------------------------------------------------------------
+## 2.1. 손학규 
+sohn_16_01 <- get_fb_likes("koreasohn", "2016-01-01", "2016-03-31", fb_keys)
+sohn_16_04 <- get_fb_likes("koreasohn", "2016-04-01", "2016-06-31", fb_keys)
+sohn_16_07 <- get_fb_likes("koreasohn", "2016-07-01", "2016-09-31", fb_keys)
+sohn_16_10 <- get_fb_likes("koreasohn", "2016-10-01", "2016-12-31", fb_keys)
+sohn_17_01 <- get_fb_likes("koreasohn", "2017-01-01", "2017-02-25", fb_keys)
+
+## 2.2. 안철수
+ahn_16_01 <- get_fb_likes("ahncs111", "2016-01-01", "2016-03-31", fb_keys)
+ahn_16_04 <- get_fb_likes("ahncs111", "2016-04-01", "2016-06-31", fb_keys)
+ahn_16_07 <- get_fb_likes("ahncs111", "2016-07-01", "2016-09-31", fb_keys)
+ahn_16_10 <- get_fb_likes("ahncs111", "2016-10-01", "2016-12-31", fb_keys)
+ahn_17_01 <- get_fb_likes("ahncs111", "2017-01-01", "2017-02-25", fb_keys)
+
+# 3. 데이터 정제하기 ---------------------------------------------------------------
+# 3.1. 손학규-----------------------------------------------------------------------
+sohn_fan_likes <- sohn_16_01 %>% 
+  bind_rows(sohn_16_04) %>% 
+  bind_rows(sohn_16_07) %>% 
+  bind_rows(sohn_16_10) %>% 
+  bind_rows(sohn_17_01)
+sohn_fan_likes[is.na(sohn_fan_likes)] <- 0
+
+sohn_fan_likes_df <- sohn_fan_likes %>% select(2:length(sohn_fan_likes)) %>% 
+  mutate(fan_likes = rowSums(.)) %>% dplyr::select(fan_likes)
+
+sohn_fan_likes <- bind_cols(sohn_fan_likes, sohn_fan_likes_df)
+
+## 3.2. 안철수-----------------------------------------------------------------------
+ahn_fan_likes <- ahn_16_01 %>% 
+  bind_rows(ahn_16_04) %>% 
+  bind_rows(ahn_16_07) %>% 
+  bind_rows(ahn_16_10) %>% 
+  bind_rows(ahn_17_01)
+ahn_fan_likes[is.na(ahn_fan_likes)] <- 0
+
+ahn_fan_likes_df <- ahn_fan_likes %>% select(2:length(ahn_fan_likes)) %>% 
+  mutate(fan_likes = rowSums(.)) %>% dplyr::select(fan_likes)
+
+ahn_fan_likes <- bind_cols(ahn_fan_likes, ahn_fan_likes_df)
+```
+
+### 손학규, 안철수 팬좋아요 시각화
+
+[손학규](https://www.facebook.com/koreasohn/), 
+안철수 공식 페북 페이지에 팬 좋아요 갯수를 `ggplot`으로 시각화한다.
+
+``` {r fb-fan-likes-viz}
+# 4. 추세 시각화 ---------------------------------------------------------------
+## 4.1. 손학규-----------------------------------------------------------------------
+dlist <- unique(sohn_fan_likes$fdate)
+
+ggplot(sohn_fan_likes, aes(x=fdate, y=fan_likes)) +
+  geom_line(size=1.1) +
+  # geom_vline(xintercept=as.numeric(ymd("2008-01-01")), linetype=2) +
+  scale_x_date(breaks=seq(dlist[1], tail(dlist, n=1) + days(1), "30 day"),
+               date_labels= "%y-%m", limits=c(dlist[1],tail(dlist, n=1) + days(1))) +
+  scale_y_continuous(label=scales::comma) +
+  theme_fivethirtyeight(base_family="NanumGothic") +
+  theme(legend.position="none",
+        plot.caption=element_text(hjust=0,size=7),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=7.5),
+        axis.text.x = element_text(angle = 90, hjust = 1))+
+  labs(x="",y="",title="손학규 공식 페북 페이지 팬좋아요 추세",
+       caption="\n 자료출처: facebook for develoopers, https://developers.facebook.com/tools/explorer")
+
+## 4.2. 안철수-----------------------------------------------------------------------
+dlist <- unique(ahn_fan_likes$fdate)
+
+ggplot(ahn_fan_likes, aes(x=fdate, y=fan_likes)) +
+  geom_line(size=1.1) +
+  # geom_vline(xintercept=as.numeric(ymd("2008-01-01")), linetype=2) +
+  scale_x_date(breaks=seq(dlist[1], tail(dlist, n=1) + days(1), "30 day"),
+               date_labels= "%y-%m", limits=c(dlist[1],tail(dlist, n=1) + days(1))) +
+  scale_y_continuous(label=scales::comma) +
+  theme_fivethirtyeight(base_family="NanumGothic") +
+  theme(legend.position="none",
+        plot.caption=element_text(hjust=0,size=7),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=7.5),
+        axis.text.x = element_text(angle = 90, hjust = 1))+
+  labs(x="",y="",title="안철수 공식 페북 페이지 팬좋아요 추세",
+       caption="\n 자료출처: facebook for develoopers, https://developers.facebook.com/tools/explorer")
+```
+
