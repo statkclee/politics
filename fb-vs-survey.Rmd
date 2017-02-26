@@ -27,6 +27,14 @@ loadfonts()
 
 fb_page_fan_likes <- read_csv("data/fb_page_fan_likes.csv")
 survey_df_lng <- read_csv("data/fb_page_fan_survey.csv")
+
+fb_page_fan_likes <- fb_page_fan_likes %>% mutate(person = 
+                               factor(person, levels=c("문재인","안희정", "이재명",
+                                                       "안철수", "손학규", "황교안")))
+
+survey_df_lng <- survey_df_lng %>% 
+  mutate(person = factor(person, 
+                         levels=c("문재인","안희정", "이재명", "안철수", "손학규", "황교안")))
 ```
 
 ## 민심, 페북(SNS), 여론조사, 투표, 당선
