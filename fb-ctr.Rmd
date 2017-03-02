@@ -59,7 +59,7 @@ loadfonts()
 시점은 손학규 후보가 만덕산에서 내려와 대선 행보를 시작한 시점을 기준으로 안철수 후보와 비교한다.
 
 ``` {r fb-ctr-import}
-fb_keys <- "EAACEdEose0cBABOisrwSSyf11fNXupmcrwjvhcWPv6ZCTnlCZBBydwgEAu5RVQSO1oHDPIxgiKnBBJF5xS6cKS5O1RfzSHZCa2bKrdtIusNvIUfVYfQiPdGQEeXedVKEdz1rfaKjZC7izyYFZAaKord7UUL6hyFpIspzBBKUGz1oGUXyv4SkVgTRPZBrnrNI4ZD"
+fb_keys <- "EAACEdEose0cBAE7ZBDCig7SiVrivqkynmSSjEueB6Jv3FlyTRuwwTk1wMVMi4rNGh4HYMgrEPJHupd1koHzQNxMG6w7vMkjxJ4w9B00PsD14QsBpE4JOGG40p5u8EQCDUtYb85HgZBXyLY8kXZCbArljo80lsj9extY6nQZBXEBn0qj2ouF77QaGQAZBpVCMZD"
 
 # 2. 페북 페이지 데이터 긁어오기 --------------------------------------
 
