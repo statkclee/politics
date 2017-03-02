@@ -1,0 +1,100 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 위키트리 - 손학규 vs. 유승민
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+library(tidyverse)
+library(tibble)
+library(stringr)
+library(lubridate)
+library(ggthemes)
+library(extrafont)
+library(Rfacebook)
+library(DT)
+loadfonts()
+
+```
+
+## 위키트리 - 이언경의 작은 방 큰 토크
+
+[위키트리 페북 방송](https://www.facebook.com/wikitree.page/)에 국민의당 손학규 후보와 
+바른정당 유승민 후보가 일주일 간격으로 방송을 했다. 페이스북 관심도를 바탕으로 두 후보간의 인기도를 확인해본다.
+
+
+
+### 환경설정
+
+위키트리 페북 페이지에서 최근 500개 글을 긁어오고 나서 [유승민](https://www.facebook.com/wikitree.page/videos/1647156672003688/)
+[손학규](https://www.facebook.com/wikitree.page/videos/1657860544266634/) 페북 생방송에 달린 댓글을 긁어온다.
+
+```{r wikitree-setup}
+fb_keys <- "EAACEdEose0cBAHEaXkQ58DFb7Ada0zov45xKT4xxFO9HyXNkzMATQYGWZCmZBZAC9HrZAXnJMje5ywu0jnZAzYQ1zcLIZBsUl1y0xqiBR8mOZAxg9ZAGEGUv4Vc8NAg8gNZBf01JgiRMlpsfbfbZAjudx6OOYQTeMmncRxdCWxNBVCwj6mAhSaHclLDSjuBeDyNaYZD"
+
+wiki_pg <- getPage("wikitree.page", n=500, token = fb_keys)
+
+wiki_tbl <- wiki_pg %>% dplyr::filter(id %in% c("118955304823840_1657860544266634", "118955304823840_1647156672003688"))
+```
+
+## 손학규 유승민 위키트리 통계분석
+
+페북 활성화 지표인 좋아요, 댓글, 공유 건수를 확인한다. "유승민 승" 물론... 유승민 페북 생방송은 일주일 전에 촬영된 것이라...
+그점을 감안해야는 점은 있다.
+
+```{r wikitree-stat}
+datatable(wiki_tbl %>% dplyr::select(from_name, type, link, created_time, likes_count, comments_count, shares_count, message))
+```
+
+## 손학규 유승민 위키트리 통계분석 상세
+
+손학규 vs. 유승민... 위키트리 댓글을 찬찬히 뜯어보고 내용을 살펴보자.
+
+### 손학규
+
+손학규 후보 페북 생방송에 올린 댓글을 올린 사람과 댓글 좋아요를 바탕으로 누가 가장 많은 좋아요를 받았고, 어떤 메시지가 인기가 있었는지 확인해보자.
+
+```{r wikitree-sohn}
+## 2.1. 손학규(3/2일) ---------------
+
+sohn_post <- getPost("118955304823840_1657860544266634", token=fb_keys, n = 1000, likes = TRUE, comments = TRUE)
+
+sohn_single <- sohn_post$comments
+
+datatable(sohn_single %>% dplyr::select(from_name,likes_count, created_time, message) %>% arrange(desc(likes_count)))
+
+sohn_tbl <- sohn_single %>% group_by(from_name) %>% 
+  dplyr::summarise(tot_likes = sum(likes_count),
+                   comments_cnt = n()) %>% 
+  arrange(desc(tot_likes))
+
+datatable(sohn_tbl)
+```
+
+### 유승민
+
+유승민 후보 페북 생방송에 올린 댓글을 올린 사람과 댓글 좋아요를 바탕으로 누가 가장 많은 좋아요를 받았고, 어떤 메시지가 인기가 있었는지 확인해보자.
+
+```{r wikitree-yoo}
+## 2.2. 유승민(3/2일) ---------------
+
+yoo_post <- getPost("118955304823840_1647156672003688", token=fb_keys, n = 1000, likes = TRUE, comments = TRUE)
+
+yoo_single <- yoo_post$comments
+
+datatable(yoo_single %>% dplyr::select(from_name,likes_count, created_time, message) %>% arrange(desc(likes_count)))
+
+yoo_tbl <- yoo_single %>% group_by(from_name) %>% 
+  dplyr::summarise(tot_likes = sum(likes_count),
+                   comments_cnt = n()) %>% 
+  arrange(desc(tot_likes))
+
+datatable(yoo_tbl)
+```
