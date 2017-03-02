@@ -69,6 +69,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
             - [페이스북 페이지(황교안 대통령 권한대행)](fb-page-hwang.html)        
             - [페이스북 페이지(대권후보)](fb-hq-page.html)
             - [페이스북과 여론조사](fb-vs-survey.html)
+            - [페이스북 성과(CTR)](fb-ctr.html)
         - **트위터**
             - [여론조사에 반영되지 않은 팩트](twitter-activity.html)
             - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
