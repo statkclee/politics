@@ -1,32 +1,6 @@
----
-layout: page
-title: 데이터 과학자와 함께 하는 제19대 대통령 선거
-subtitle: 페북 페이지 성능(CTR)
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
----
+# 데이터 과학자와 함께 하는 제19대 대통령 선거
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-options(warn=-1)
-library(RCurl)
-library(RJSONIO)
-library(tidyverse)
-library(tibble)
-library(stringr)
-library(lubridate)
-library(plyr)
-library(ggthemes)
-library(extrafont)
-library(Rfacebook)
 
-loadfonts()
-
-```
 
 ## 페이스북 페이지 성과 [^fb-ctr-wiki]
 
@@ -41,7 +15,8 @@ loadfonts()
 
 `Rfacebook`을 비롯한 필요한 팩키지를 불러온다.
 
-``` {r fb-ctr-setup, eval=FALSE}
+
+~~~{.r}
 # 1. 환경설정 ---------------------------------------------------------------
 library(tidyverse)
 library(tibble)
@@ -51,21 +26,46 @@ library(ggthemes)
 library(extrafont)
 library(Rfacebook)
 loadfonts()
-```
+~~~
 
 ### 페북 페이지 불러오기
 
 페북 키를 발급받아 손학규, 안철수 공식 페북 페이지에서 데이터를 긁어온다.
 시점은 손학규 후보가 만덕산에서 내려와 대선 행보를 시작한 시점을 기준으로 안철수 후보와 비교한다.
 
-``` {r fb-ctr-import}
+
+~~~{.r}
 fb_keys <- "EAACEdEose0cBAE7ZBDCig7SiVrivqkynmSSjEueB6Jv3FlyTRuwwTk1wMVMi4rNGh4HYMgrEPJHupd1koHzQNxMG6w7vMkjxJ4w9B00PsD14QsBpE4JOGG40p5u8EQCDUtYb85HgZBXyLY8kXZCbArljo80lsj9extY6nQZBXEBn0qj2ouF77QaGQAZBpVCMZD"
 
 # 2. 페북 페이지 데이터 긁어오기 --------------------------------------
 
 ahn_pg  <- getPage("ahncs111",    n=1000, token=fb_keys, since='2016/10/01', until="2017/03/01")
+~~~
+
+
+
+~~~{.output}
+25 posts 50 posts 75 posts 100 posts 125 posts 150 posts 175 posts 200 posts 225 posts 250 posts 275 posts 300 posts 325 posts 350 posts 375 posts 400 posts 411 posts 
+
+~~~
+
+
+
+~~~{.r}
 ahn_pg <- ahn_pg %>% mutate(person = "안철수", fb_type="Page")
 sohn_pg <- getPage("koreasohn",   n=1000, token=fb_keys, since='2016/10/01', until="2017/03/01")
+~~~
+
+
+
+~~~{.output}
+25 posts 50 posts 75 posts 100 posts 125 posts 150 posts 175 posts 200 posts 219 posts 
+
+~~~
+
+
+
+~~~{.r}
 sohn_pg <- sohn_pg %>% mutate(person = "손학규", fb_type="Page")
 
 # 3. 데이터 전처리 및 정제 --------------------------------------
@@ -97,14 +97,15 @@ ahn_ctr_df  <- convert_month_ctr(ahn_df)
 sohn_ctr_df <- convert_month_ctr(sohn_df)
 
 ctr_df <- bind_rows(ahn_ctr_df, sohn_ctr_df)
-```
+~~~
 
 ### 페북 페이지 성과 시각화
 
 페북 페이지 성과를 시각화한다. 
 페북 좋아요, 댓글, 공유 갯수를 월별 합계를 하고 이를 월별로 합산하여 추세를 살펴본다.
 
-``` {r fb-ctr-viz}
+
+~~~{.r}
 # 4. 시각화 -------------------------------------------------
 # 4.1. 손학규 vs. 안철수 좋아요, 댓글, 공유
 ggplot(data=ctr_df %>% mutate(fb_ym = ymd(paste0("19", fb_ym,"-01")))) +
@@ -122,7 +123,18 @@ ggplot(data=ctr_df %>% mutate(fb_ym = ymd(paste0("19", fb_ym,"-01")))) +
        caption="\n 데이터: 페이스북 페이지(https://www.facebook.com/wikitree.page/) ",
        subtitle="페이스북 활동건수 [like, share, comments]") +
   facet_wrap(~type)
+~~~
 
+
+
+~~~{.output}
+`geom_smooth()` using method = 'loess'
+
+~~~
+
+<img src="fig/fb-ctr-viz-1.png" style="display: block; margin: auto;" />
+
+~~~{.r}
 # 4.2. 손학규 vs. 안철수 좋아요, 댓글, 공유
 ggplot(data=ctr_df %>% mutate(fb_ym = ymd(paste0("19", fb_ym,"-01")))) +
   aes(x=fb_ym, y=activity, color=type) +
@@ -141,5 +153,14 @@ ggplot(data=ctr_df %>% mutate(fb_ym = ymd(paste0("19", fb_ym,"-01")))) +
        caption="\n 데이터: 페이스북 페이지(https://www.facebook.com/wikitree.page/) ",
        subtitle="페이스북 월별 활동건수 [like, share, comments]") +
   facet_wrap(~person)
-```
+~~~
+
+
+
+~~~{.output}
+`geom_smooth()` using method = 'loess'
+
+~~~
+
+<img src="fig/fb-ctr-viz-2.png" style="display: block; margin: auto;" />
 
