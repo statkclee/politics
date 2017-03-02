@@ -39,7 +39,7 @@ loadfonts()
 ```{r wikitree-setup}
 fb_keys <- "EAACEdEose0cBAHEaXkQ58DFb7Ada0zov45xKT4xxFO9HyXNkzMATQYGWZCmZBZAC9HrZAXnJMje5ywu0jnZAzYQ1zcLIZBsUl1y0xqiBR8mOZAxg9ZAGEGUv4Vc8NAg8gNZBf01JgiRMlpsfbfbZAjudx6OOYQTeMmncRxdCWxNBVCwj6mAhSaHclLDSjuBeDyNaYZD"
 
-wiki_pg <- getPage("wikitree.page", n=500, token = fb_keys)
+wiki_pg <- getPage("wikitree.page", n=1000, token = fb_keys)
 
 wiki_tbl <- wiki_pg %>% dplyr::filter(id %in% c("118955304823840_1657860544266634", "118955304823840_1647156672003688"))
 ```
@@ -50,7 +50,7 @@ wiki_tbl <- wiki_pg %>% dplyr::filter(id %in% c("118955304823840_165786054426663
 그점을 감안해야는 점은 있다.
 
 ```{r wikitree-stat}
-datatable(wiki_tbl %>% dplyr::select(from_name, type, link, created_time, likes_count, comments_count, shares_count, message))
+datatable(wiki_tbl %>% dplyr::select(from_name, type, created_time, likes_count, comments_count, shares_count, message))
 ```
 
 ## 손학규 유승민 위키트리 통계분석 상세
