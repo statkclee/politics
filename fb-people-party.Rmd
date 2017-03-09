@@ -100,7 +100,7 @@ ahn_fb_page_df_lng <- ahn_fb_page_df %>% ungroup %>% dplyr::select(fb_date, like
 먼저 [안철수 페북 페이지](https://www.facebook.com/ahncs111)에서 데이터를 긁어와서 `ggplot2`에 넣고 이를 `plotly`에 넣어
 동일한 방법으로 동적 그래프로 시각화하여 페북 활동성 추세를 살펴본다.
 
-``` {r dynamic-plot-sohn}
+``` {r dynamic-plot-sohn, fig.width=12}
 
 ## 2. 페북 시각화 ---------------------------------
 
@@ -141,7 +141,7 @@ g_facet <- ggplot(data=fb_page_df_lng, aes(x=fb_date, y=activity_avg, color=type
 ggplotly(g_facet)
 ```
 
-``` {r dynamic-plot-ahn}
+``` {r dynamic-plot-ahn, fig.width=12}
 ## 2.2. 안철수 페이지 한장 찍기
 dlist <- unique(ahn_fb_page_df_lng$fb_date)
 
