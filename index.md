@@ -71,6 +71,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
             - [페이스북과 여론조사](fb-vs-survey.html)
             - [페이스북 성과(CTR)](fb-ctr.html)
             - [위키트리 - 손학규 vs. 유승민](fb-wikitree-sohn-vs-yoo.html)
+            - [페이스북 페이지 - 국민의당 경선](fb-people-party.html)
         - **트위터**
             - [여론조사에 반영되지 않은 팩트](twitter-activity.html)
             - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
