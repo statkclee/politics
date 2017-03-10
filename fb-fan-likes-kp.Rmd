@@ -114,12 +114,18 @@ end_date   <- "2017-03-09"
 ## 2.1. 손학규 
 sohn_fan <- get_fb_likes("koreasohn", start_date, end_date, fb_keys)
 
+sohn_fan_lng <- sohn_fan %>% 
+  gather(`iso-a2`, fans, -fdate)
+
 sohn_fan[is.na(sohn_fan)] <- 0
 sohn_fan <- sohn_fan %>% dplyr::select(-fdate) %>% mutate(fans_sum=rowSums(.))
 sohn_fan  <- sohn_fan  %>% mutate(person="손학규")
 
 ## 2.2. 안철수 
 ahn_fan <- get_fb_likes("ahncs111", start_date, end_date, fb_keys)
+
+ahn_fan_lng <- ahn_fan %>% 
+  gather(`iso-a2`, fans, -fdate)
 
 ahn_fan[is.na(ahn_fan)] <- 0
 ahn_fan <- ahn_fan %>% dplyr::select(-fdate) %>% mutate(fans_sum=rowSums(.))
@@ -128,12 +134,18 @@ ahn_fan   <- ahn_fan   %>% mutate(person="안철수")
 ## 2.3. 문재인
 moon_fan <- get_fb_likes("moonbyun1", start_date, end_date, fb_keys)
 
+moon_fan_lng <- moon_fan %>% 
+  gather(`iso-a2`, fans, -fdate)
+
 moon_fan[is.na(moon_fan)] <- 0
 moon_fan <- moon_fan %>% dplyr::select(-fdate) %>% mutate(fans_sum=rowSums(.))
 moon_fan  <- moon_fan  %>% mutate(person="문재인")
 
 ## 2.4. 이재명
 ljm_fan <- get_fb_likes("jaemyunglee1", start_date, end_date, fb_keys)
+
+ljm_fan_lng <- ljm_fan %>% 
+  gather(`iso-a2`, fans, -fdate)
 
 ljm_fan[is.na(ljm_fan)] <- 0
 ljm_fan <- ljm_fan %>% dplyr::select(-fdate) %>% mutate(fans_sum=rowSums(.))
@@ -142,6 +154,9 @@ ljm_fan   <- ljm_fan   %>% mutate(person="이재명")
 ## 2.5. 안희정
 ahj_fan <- get_fb_likes("steelroot", start_date, end_date, fb_keys)
 
+ahj_fan_lng <- ahj_fan %>% 
+  gather(`iso-a2`, fans, -fdate)
+
 ahj_fan[is.na(ahj_fan)] <- 0
 ahj_fan <- ahj_fan %>% dplyr::select(-fdate) %>% mutate(fans_sum=rowSums(.))
 ahj_fan   <- ahj_fan   %>% mutate(person="안희정")
@@ -149,6 +164,9 @@ ahj_fan   <- ahj_fan   %>% mutate(person="안희정")
 
 ## 2.6. 황교안
 hwang_fan <- get_fb_likes("PM0415HwangKyoahn", start_date, end_date, fb_keys)
+
+hwang_fan_lng <- hwang_fan %>% 
+  gather(`iso-a2`, fans, -fdate)
 
 hwang_fan[is.na(hwang_fan)] <- 0
 hwang_fan <- hwang_fan %>% dplyr::select(-fdate) %>% mutate(fans_sum=rowSums(.))
