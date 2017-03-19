@@ -40,6 +40,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [제19대 대통령선거 일정](pe-schedule.html)
         - [대한민국 인구 피라미드](pe-population-pyramid.html)
         - [지역내총생산(GRDP) 변화](pe-grdp.html)
+        - [국민의당 경선 투표소](pe-people-party-station.html)
     1. [여론조사 개요](04-vote-survey.html)
         - [인구통계 분석](05-vote-demographic.html)
         - [여론조사 지지율](07-vote-approval-rating.html)

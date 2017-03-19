@@ -1,0 +1,62 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 국민의당 경선 투표소
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+options(warn=-1)
+library(tidyverse)
+suppressMessages(library(leaflet))
+suppressMessages(library(ggmap))
+library(DT)
+library(readxl)
+```
+
+## 국민의당 경선 투표소 시각화
+
+- 국민의당 경선 
+    - 2017년 3월 25일(토) 09:00~
+    - 광주: 1곳
+    - 전남: 22곳
+    - 제주: 2곳
+
+``` {r people-party-voting-station, message=FALSE, warn=FALSE, echo=FALSE}
+suppressMessages(library(tidyverse))
+suppressMessages(library(leaflet))
+suppressMessages(library(ggmap))
+suppressMessages(library(readxl))
+
+df <- read_excel("data/국민의당_경선.xlsx")
+names(df) <- c("sido", "sigun", "v_station", "addr", "추가정보")
+
+df$addr <- enc2utf8(df$addr)
+
+latlon <- geocode(df$addr, source="google")
+
+df <- bind_cols(df, latlon)
+
+#---------------------------------------------------------------------------------------------------
+# IP 주소 위경도 정보 시각화
+#---------------------------------------------------------------------------------------------------
+
+m <- leaflet(data = df) %>% 
+  addTiles() %>% 
+  addMarkers(lng=~lon, lat=~lat, 
+             popup = ~ as.character(paste0("<strong>거점투표소</strong><br><br>", 
+                                           "&middot; 시군: ", sigun, "<br>", "&middot; 주소: ", addr, "<br>")), clusterOptions = markerClusterOptions())
+m 
+
+#---------------------------------------------------------------------------------------------------
+# 경선 투표 장소
+#---------------------------------------------------------------------------------------------------
+
+DT::datatable(df)
+```
