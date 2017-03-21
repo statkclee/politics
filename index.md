@@ -85,6 +85,8 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [연설문 판별 - 오바마 vs. 롬니](text-classify-speeches.html)
         - [미국 - 오바마 퇴임사 vs. 트럼프 취임사](http://statkclee.github.io/ml/ml-wordcloud.html)
         - [대한민국 - 이명박 퇴임사 vs. 박근혜 취임사](text-mb-gh.html)
+    1. **데이터 제품**
+        - [손학규 대모험 애니메이션](pe-adventure-animation.html)
 1. [**기계와 더불어 사는 한국인** - 패러다임 전환](https://statkclee.github.io/xwMOOC/paradigm/)
     1. [국민의당 대권주자 사진 속 나이와 감정](ml-people-party-candidate.html)
         - [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
