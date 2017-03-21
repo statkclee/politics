@@ -79,6 +79,8 @@ adven_part_1_stack
 # image_write(adven_part_1_stack, "output/adven_part_1_horizon.png", format = "png")
 ```
 
+<img src="fig/adven_1_stack.png" alt="" width="27%" />
+
 ### 손학규 대모험 애니메이션
 
 동일한 이미지를 사용하는 것은 같으나 각 사진을 애니메이션 프레임으로 넣고 `fps` 값을 조정하여 애니메이션을 실행시킨다.
@@ -101,4 +103,4 @@ animation
 # image_write(animation, "output/adven_1.gif")
 ```
 
-
+<img src="fig/adven_1.gif" alt="" width="47%" />
