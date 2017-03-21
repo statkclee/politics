@@ -143,7 +143,7 @@ dat_m <- merge(party_df, shp_mst, by = c("sido","sigun"))
 ``` {r election-merge}
 # 3. 지도 데이터 병합(@data 방식)-------------------------------------------
 sigun_vote_shp <- merge(korea_sigun_shp,  dat_m, by='CTPRVN_CD')
-
+```
 
 ### 득표정보 시각화
 
