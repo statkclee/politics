@@ -1,0 +1,170 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 20대 총선
+subtitle: 제19대 국회의원 선거
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+library(tidyverse)
+library(readxl)
+library(ggmap)
+library(maps)
+library(maptools)
+library(RColorBrewer)
+library(scales)
+library(rgdal)
+library(rgeos)
+library(maptools)
+library(gpclib)
+require(tmap)
+library(viridis)
+library(stringr)
+library(zoo)
+gpclibPermit()
+
+```
+
+## 제 19 대 4 &middot; 13총선
+
+박근혜 대통령 탄핵으로 대선이 급작스럽게 다가왔다. 전통적인 보수 대 진보의 구도가 전혀 새로운 방향으로 재편되는 시점에도 
+여전히 그나마 가장 최근에 있었던 선거결과를 바탕으로 대선을 준비하는 것은 여전히 유효하다. 더욱이 정당별로 4 &middot; 13총선에서 각 정당별로 득표한 
+표를 바탕으로 지역별 강세지역과 약세지역을 세부적으로 정보를 제공하는 거의 유일한 원천이다.
+
+### 환경설정
+
+제19대 총선 투표 결과 시각화를 위한 관련 팩키지를 불러온다.
+
+``` {r election-setup, eval=FALSE}
+# 0. 환경설정-------------------------------------------
+library(tidyverse)
+library(readxl)
+library(ggmap)
+library(maps)
+library(maptools)
+library(RColorBrewer)
+library(scales)
+library(rgdal)
+library(rgeos)
+library(maptools)
+library(gpclib)
+require(tmap)
+library(viridis)
+library(stringr)
+library(zoo)
+gpclibPermit()
+```
+
+### 데이터 가져오기
+
+정당별 총선 투표정보를 시군구별로 시각화하기 위해 데이터를 불러와야 한다.
+우선 `shapefile` 지도를 불러온다. 그리고 나서, 각 당별 득표 데이터도 불러온다.
+
+``` {r election-ingest}
+# 1. 지도 가져오기-------------------------------------------
+
+korea_sigun_shp <-  readShapeSpatial("data/shapefile_sgg/TL_SCCO_SIG.shp", verbose=TRUE,
+                                    proj4string=CRS("+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=955000 +y_0=2000000
+                                                    +ellps=GRS80 +units=m +no_defs"))
+
+names(korea_sigun_shp@data) <- c("CTPRVN_CD", "CTP_ENG_NM", "SIG_KOR_NM")
+korea_sigun_shp@data$SIG_KOR_NM <- str_replace_all(korea_sigun_shp@data$SIG_KOR_NM, " ", "")
+korea_sigun_shp@data$SIG_KOR_NM <- ifelse(korea_sigun_shp@data$SIG_KOR_NM=="여주군", "여주시", korea_sigun_shp@data$SIG_KOR_NM)
+
+party_df <- read_csv("data/vote_party.csv", col_names = TRUE)
+```
+
+### 데이터 정제
+
+지도정보와 정확한 매칭을 위해 데이터를 정제한다.
+
+``` {r election-cleansing}
+# 2. 데이터 정제-------------------------------------------
+
+sigun_pattern <- "[가-흫]*$" #시군을 뽑아내는 패턴
+sido_pattern <- "[0-9|가-힣]*" 
+sido_pattern_c <- "[^0-9]." 
+
+party_df <- party_df %>% 
+  mutate(str_tmp = str_sub(dir_file_unlists, 14, -1L)) %>% 
+  mutate(str_tmp = str_replace_all(str_tmp, ".xlsx", "")) %>%
+  mutate(sido = str_extract(str_tmp, sido_pattern)) %>% 
+  mutate(sido = str_extract(sido, sido_pattern_c)) %>% 
+mutate(sigun = str_extract(str_tmp, sigun_pattern)) 
+
+party_df <- party_df %>% mutate(sido = dplyr::recode(sido, 
+                                        "강원" = "강원도",
+                                        "경기" = "경기도",
+                                        "경남" = "경상남도",
+                                        "경북" = "경상북도",
+                                        "광주" = "광주광역시",
+                                        "대구" = "대구광역시",
+                                        "대전" = "대전광역시",
+                                        "부산" = "부산광역시",
+                                        "서울" = "서울특별시",
+                                        "세종" = "세종특별자치시",
+                                        "울산" = "울산광역시",
+                                        "인천" = "인천광역시",
+                                        "전남" = "전라남도",
+                                        "전북" = "전라북도",
+                                        "제주" = "제주특별자치도",
+                                        "충남" = "충청남도",
+                                        "충북" = "충청북도"))
+
+party_df <- party_df %>% 
+  mutate(sigun = ifelse(sido=="인천광역시", str_replace_all(sigun, "인천", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sido=="부산광역시", str_replace_all(sigun, "부산", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sido=="울산광역시", str_replace_all(sigun, "울산", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sido=="인천광역시", str_replace_all(sigun, "인천", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sido=="대구광역시", str_replace_all(sigun, "대구", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sido=="광주광역시", str_replace_all(sigun, "광주", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sido=="대전광역시", str_replace_all(sigun, "대전", ""), sigun)) %>% 
+  mutate(sigun = ifelse(sigun=="진구", str_replace_all(sigun, "진구", "부산진구"), sigun)) %>% 
+  mutate(sigun = str_replace_all(sigun, " ", ""))
+
+shp_mst <- read_excel("data/sido_sgg_code_table.xlsx", sheet="sido_sgg_20161219", col_names = TRUE)
+
+party_df <-  party_df %>% arrange(sido, sigun)
+shp_mst <- shp_mst %>% arrange(sido, sigun)
+
+dat_m <- merge(party_df, shp_mst, by = c("sido","sigun"))
+```
+
+### 데이터 병합
+
+각 정당별 득표 데이터를 정제하면 지도정보에 병합시킨다.
+
+``` {r election-merge}
+# 3. 지도 데이터 병합(@data 방식)-------------------------------------------
+sigun_vote_shp <- merge(korea_sigun_shp,  dat_m, by='CTPRVN_CD')
+
+
+### 득표정보 시각화
+
+각 정당별 득표 데이터를 주제도(Theme map) 형태로 시각화하는데 `tmap` 팩키지를 활용하여 시각화한다.
+
+``` {r election-tmap, fig.width=12}
+# 4. 주제도 시각화(tmap)-------------------------------------------
+sigun_vote_shp@data %>% dplyr::filter(is.na(votes)) 
+
+pal10 <- viridis(10, option="D")
+
+party_tmap <- tm_shape(sigun_vote_shp) + 
+  tm_fill("votes",
+          style = "kmeans",
+          palette=pal10,
+          n=10,
+          title=c("시군", "유권자", "새누리", "더민주", "국민의당", "정의당"),
+          popup.vars=c("sigun", "votes", "saenuri", "minju", "people", "justice")) + 
+  tm_borders(alpha=.7, lwd=2) +
+  tm_layout(outer.margins=0, asp=0, scale=.8)
+
+tmap_mode("view")
+party_tmap
+```
