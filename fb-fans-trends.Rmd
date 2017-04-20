@@ -23,7 +23,7 @@ source("tools/chunk-options.R")
 
 ### 페이스북 페이지 팬수 비교 
 
-``` {r facebook-page-moon-ahn, echo=FALSE}
+``` {r facebook-page-moon-ahn, echo=FALSE, warn=FALSE, message=FALSE}
 # 0. 참고문헌 ---------------------------------------------------------------------
 library(Rfacebook)
 library(RCurl)
@@ -72,8 +72,6 @@ ahn_fan <- bind_rows(ahn_fan_1703, ahn_fan_1704)
 ahn_fan_lng <- ahn_fan %>% 
   gather(`iso-a2`, fans, -fdate) %>% 
   mutate(fans = ifelse(is.na(fans), 0, fans))
-  
-summary(ahn_fan)
   
 ahn_fan_lng <- ahn_fan_lng %>% 
   group_by(fdate) %>% 
@@ -138,7 +136,7 @@ grid.arrange(ahn_p, moon_p, nrow=1)
 # 3.2. 문재인 vs. 안철수 한장
 fb_fans_df %>% dplyr::select(-ratio) %>% 
   gather(candidate, fans, -fdate) %>% 
-  ggplot(aes(x= fdate, y=fans, fill=candidate)) +
+  ggplot(aes(x= fdate, y=fans, color=candidate)) +
   geom_line() +
   geom_point(size=0.3) +
   scale_x_date(date_labels = "%m-%d") +
@@ -146,6 +144,5 @@ fb_fans_df %>% dplyr::select(-ratio) %>%
   theme_minimal(base_family="NanumGothic") +
   labs(x="",y="",title="페이스북 팬 추세",
        caption="\n 자료출처: Facebook for Developers, 그래프 API 탐색기") +
-  theme(legend.position="none") +
-  facet_wrap(~candidate)
+  theme(legend.position="top") 
 ```
