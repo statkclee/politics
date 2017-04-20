@@ -109,7 +109,8 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [부패지수와 인간개발지수](korea-cpi-hdi.html) 
     1. [불안한 안보 - 군사비 지출](korea-military.html) 
     1. [컴퓨팅 사고력 SW 교육](ct-education.html) 
-
+1. 19대 대통령 선거
+    1. [페이스북 페이지 팬추세(문,안)](fb-fans-trends.html)
 
 > ### xwMOOC 오픈 교재
 > 
