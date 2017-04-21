@@ -5,6 +5,7 @@ subtitle: 페이스북 페이지 활동성(CTR)
 output:
   html_document: 
     keep_md: yes
+    toc: yes
   pdf_document:
     latex_engine: xelatex
 mainfont: NanumGothic
@@ -37,7 +38,7 @@ library(ggthemes)
 library(extrafont)
 loadfonts()
 
-fb_keys <- "EAACEdEose0cBAJxb8x5a6YbqzrHJZCNh8pSt2Qt4PlwVb574sEiNw5PXaZAPlxKbBNkZAuQI48qyVsTICoi7Gi1OrbofjM3hZCzTrvkbyieRhZA9wOaaT0unrbFZA2uEMdzhJwyAc98gFXPaNc2lwe6iUtyKOl2aGx9dpemkPxPlCyOBM9mpRm"
+fb_keys <- "EAACEdEose0cBANDQoParhyI0hNdNx9FBw5UPASmBVxb3UADLZA7aCDb4PZBOqZCJLkwXUyGVXv8oWyE0lF4AKjxqq0jo2Wr1HJn6CqXU6tQPFxozEbWsnLpnjZBoEzT4E1gamCMULLb42aTby5SlqdIvk0GIdIx3YajHYxtoZAaZC86cxgm44t"
 
 # 1. 데이터 불러오기 ---------------------------------------------------------------------
 
@@ -63,14 +64,16 @@ get_fb_posts <- function(page_name, start_date, end_date, fb_keys) {
   return(posts)
 }
 
-moon_df <- get_fb_posts("moonbyun1", start_date, end_date, fb_keys)
-ahn_df <- get_fb_posts("ahncs111", start_date, end_date, fb_keys)
+# moon_df <- get_fb_posts("moonbyun1", start_date, end_date, fb_keys)
+# ahn_df <- get_fb_posts("ahncs111", start_date, end_date, fb_keys)
+
+moon_df <- read_csv("data/fb_moon.csv")
+ahn_df <- read_csv("data/fb_ahn.csv")
 
 # 2. 데이터 변환 ---------------------------------------------------------------------
 ## 2.1. 안철수 -----------------------------------------------------------------------
 ahn_time_df <- ahn_df %>% 
-  mutate(fb_date = parse_date_time(str_sub(created_time, 1,19),  "%Y-%m-%dT%H:%M:%S", exact = TRUE))%>%
-  dplyr::select(from_name, fb_date, type, likes_count, comments_count, shares_count) %>% 
+  dplyr::select(from_name, fb_date=created_time, type, likes_count, comments_count, shares_count) %>% 
   mutate(wday = week(fb_date))
 
 ahn_ctr_df <- ahn_time_df %>% group_by(wday) %>% 
@@ -85,8 +88,7 @@ ahn_ctr_tbl_df <- ahn_time_df %>% group_by(wday, type) %>%
 
 ## 2.2. 문재인 -----------------------------------------------------------------------
 moon_time_df <- moon_df %>% 
-  mutate(fb_date = parse_date_time(str_sub(created_time, 1,19),  "%Y-%m-%dT%H:%M:%S", exact = TRUE))%>%
-  dplyr::select(from_name, fb_date, type, likes_count, comments_count, shares_count) %>% 
+  dplyr::select(from_name, fb_date=created_time, type, likes_count, comments_count, shares_count) %>% 
   mutate(wday = week(fb_date))
 
 moon_ctr_df <- moon_time_df %>% group_by(wday) %>% 
@@ -110,7 +112,7 @@ ggplot(data=fb_ctr_df)  +
   geom_point(aes(colour=candid), alpha=0.9) +
   geom_line(aes(colour=candid), alpha=0.9) +
   scale_y_continuous(labels = scales::comma) +
-  theme_tufte() +
+  theme_tufte(base_family="NanumGothic") +
   theme(legend.position="top", 
         legend.title = element_blank(),
         plot.caption=element_text(hjust=0,size=8),
@@ -128,7 +130,7 @@ ahn_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "안철수"))  +
   geom_point(aes(colour="green"), alpha=0.3) +
   geom_line(aes(colour="green"), alpha=0.3) +
   scale_y_continuous(labels = scales::comma) +
-  theme_tufte() +
+  theme_tufte(base_family="NanumGothic") +
   theme(legend.position="none", 
         legend.title = element_blank(),
         plot.caption=element_text(hjust=0,size=8),
@@ -144,7 +146,7 @@ moon_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "문재인"))  +
   geom_point(aes(colour="blue"), alpha=0.3) +
   geom_line(aes(colour="blue"), alpha=0.3) +
   scale_y_continuous(labels = scales::comma) +
-  theme_tufte() +
+  theme_tufte(base_family="NanumGothic") +
   theme(legend.position="none", 
         legend.title = element_blank(),
         plot.caption=element_text(hjust=0,size=8),
@@ -162,7 +164,7 @@ grid.arrange(ahn_p, moon_p, nrow=1)
 
 #### 안철수
 
-``` {r facebook-page-table-ahn echo=FALSE, warn=FALSE, message=FALSE}
+``` {r facebook-page-table-ahn, echo=FALSE, warn=FALSE, message=FALSE}
 
 DT::datatable(ahn_df %>% dplyr::select(from_name, id, type, likes=likes_count, comments=comments_count, 
                                        shares=shares_count, link))
@@ -173,7 +175,7 @@ DT::datatable(ahn_ctr_tbl_df %>% dplyr::select(candid, type, wday, posts, likes_
 
 #### 문재인
 
-``` {r facebook-page-table-moon echo=FALSE, warn=FALSE, message=FALSE}
+``` {r facebook-page-table-moon,  echo=FALSE, warn=FALSE, message=FALSE}
 
 DT::datatable(moon_df %>% dplyr::select(from_name, id, type, likes=likes_count, comments=comments_count, 
                                        shares=shares_count, link))
