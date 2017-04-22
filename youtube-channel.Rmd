@@ -29,7 +29,7 @@ yt_oauth("1074029284102-m0tvanqafjpk1bkteffmdqvkcnuvqfaf.apps.googleusercontent.
 
 ## 유튜브 현황
 
-``` {r youtube-setup, echo=FALSE, message=FALSE, warn=FALSE}
+``` {r youtube-setup, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 # 1. 검색 동영상 데이터 가져오기 ------------------------------------------------------------
 ## 1.1. 안철수 ------------------------------------------------------------------------------
 # jinsimcamp : UCTPfDsz2XqmLzYud-fc6xBw
