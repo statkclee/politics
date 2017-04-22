@@ -31,7 +31,7 @@ loadfonts()
 
 ## 트위터 현황 팔로워와 친구
 
-``` {r twitter-follower-stat, eval=FALSE}
+``` {r twitter-follower-stat, echo=FALSE, message=FALSE, warn=FALSE}
 # 01. 환경설정 ----------------------------------------------------------
 
 consumer_key    <- "UGXurF0rmyoeE2Y1x6RaxTKsb"
@@ -81,7 +81,7 @@ p2 <- ggplot(twit_stat_lng, aes(x=kname, y=value)) +
   labs(x="", y="") +
   scale_y_continuous(labels = comma) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  theme(text=element_text(family="NanumGothic")) +
+  theme_minimal(base_family="NanumGothic") +
   scale_color_manual(values=fill_color)
 
 grid.arrange(p1, p2, ncol=2)
@@ -92,7 +92,7 @@ datatable(twit_stat %>% dplyr::select(kname, followers, friends, tweets)) %>%
 
 ## 트위터 해쉬태그
 
-``` {r twitter-follower-hashtag, eval=FALSE}
+``` {r twitter-follower-hashtag, echo=FALSE, message=FALSE, warn=FALSE}
 #######################################################################################
 # 트위터 추세분석 
 #######################################################################################
@@ -125,19 +125,21 @@ ahn_tw_hashtag_df <- ahn_tw_hashtag_df[order(ahn_tw_hashtag_df$freq,decreasing =
 ahn_tw_p <- ggplot(ahn_tw_hashtag_df, aes(x = tag, y = freq)) + 
   geom_bar(stat="identity", fill = "#1cd313") +
   coord_flip() + 
-  labs(x="트윗수", title = "안철수 트위 해쉬태그(@cheolsoo0919)")
+  labs(x="트윗수", title = "안철수 트위 해쉬태그(@cheolsoo0919)") +
+    theme_minimal(base_family="NanumGothic")
 
 moon_tw_p <- ggplot(moon_tw_hashtag_df, aes(x = tag, y = freq)) + 
   geom_bar(stat="identity", fill = "#4286f4") +
   coord_flip() + 
-  labs(x="트윗수", title = "문재인 트위 해쉬태그(@moonriver365)")
+  labs(x="트윗수", title = "문재인 트위 해쉬태그(@moonriver365)") +
+    theme_minimal(base_family="NanumGothic")
 
 grid.arrange(ahn_tw_p, moon_tw_p, nrow=1)
 ```
 
 ## 인기있는 트윗
 
-``` {r twitter-hits, eval=FALSE}
+``` {r twitter-hits, echo=FALSE, message=FALSE, warn=FALSE}
 
 DT::datatable(moon_tw_df %>% dplyr::select(screenName, id, created, favoriteCount, retweetCount, text) %>% 
                 arrange(desc(favoriteCount)))
