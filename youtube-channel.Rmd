@@ -1,0 +1,166 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 유튜브 채널
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+options(warn=-1)
+# devtools::install_github("soodoku/tuber", build_vignettes = TRUE)
+library(tidyverse)
+library(tuber)
+library(readr)
+library(stringr)
+library(lubridate)
+library(ggthemes)
+library(extrafont)
+loadfonts()
+
+yt_oauth("1074029284102-m0tvanqafjpk1bkteffmdqvkcnuvqfaf.apps.googleusercontent.com", "z_C_afku0FIxKfSLMThhBapU")
+
+```
+
+## 유튜브 현황
+
+``` {r youtube-setup, echo=FALSE, message=FALSE, warn=FALSE}
+# 1. 검색 동영상 데이터 가져오기 ------------------------------------------------------------
+## 1.1. 안철수 ------------------------------------------------------------------------------
+# jinsimcamp : UCTPfDsz2XqmLzYud-fc6xBw
+# https://johnnythetank.github.io/youtube-channel-name-converter/
+
+ahn_yt <- list_channel_resources(filter = c(channel_id = "UCTPfDsz2XqmLzYud-fc6xBw"), 
+                                 part="contentDetails",
+                                 published_before = "2017-04-22T00:00:00Z") # published_after="2017-03-01T00:00:00Z"
+
+# Uploaded playlists:
+ahn_playlist_id <- ahn_yt$items[[1]]$contentDetails$relatedPlaylists$uploads
+
+# Get videos on the playlist
+ahn_vids <- get_playlist_items(filter= c(playlist_id=ahn_playlist_id)) 
+
+# Video ids
+ahn_vid_ids <- unlist(sapply(unname(sapply(ahn_vids$items, "[", "contentDetails")), "[", "videoId"))
+ahn_vid_time <- unlist(sapply(unname(sapply(ahn_vids$items, "[", "contentDetails")), "[", "videoPublishedAt"))
+
+# get stats:
+ahn_yt_df <- data.frame()
+for (i in ahn_vid_ids) {
+  temp <- get_stats(i)
+  temp$vid_id <- i
+  temp <- temp %>% unlist %>% enframe %>% spread(name, value)
+  ahn_yt_df  <- bind_rows(ahn_yt_df, temp)
+}
+
+ahn_vid_time_df <- ahn_vid_time %>% enframe
+ahn_yt_df <- bind_cols(ahn_yt_df, ahn_vid_time_df)
+
+## 1.2. 문재인 ------------------------------------------------------------------------------
+# moonriver365 : UCgVtybWKIBQb5B0_9PiVgug
+moon_yt <- list_channel_resources(filter = c(channel_id = "UCgVtybWKIBQb5B0_9PiVgug"), 
+                                  part="contentDetails",
+                                  published_before = "2017-04-22T00:00:00Z") # published_after="2017-03-01T00:00:00Z"
+
+# Uploaded playlists:
+moon_playlist_id <- moon_yt$items[[1]]$contentDetails$relatedPlaylists$uploads
+
+# Get videos on the playlist
+moon_vids <- get_playlist_items(filter= c(playlist_id=moon_playlist_id)) 
+
+# Video ids
+moon_vid_ids <- unlist(sapply(unname(sapply(moon_vids$items, "[", "contentDetails")), "[", "videoId"))
+moon_vid_time <- unlist(sapply(unname(sapply(moon_vids$items, "[", "contentDetails")), "[", "videoPublishedAt"))
+
+# get stats:
+moon_yt_df <- data.frame()
+for (i in moon_vid_ids) {
+  temp <- get_stats(i)
+  temp <- temp %>% unlist %>% enframe %>% spread(name, value)
+  moon_yt_df  <- bind_rows(moon_yt_df, temp)
+}
+
+moon_vid_time_df <- moon_vid_time %>% enframe
+moon_yt_df <- bind_cols(moon_yt_df, moon_vid_time_df)
+
+# 2. 데이터 병합 ------------------------------------------------------------------------------
+
+moon_yt_m_df <- moon_yt_df %>% 
+  mutate(dtime = parse_date_time(value, "Ymd HMS z"),
+         commentCount = as.numeric(commentCount),
+         favoriteCount = as.numeric(favoriteCount),
+         viewCount = as.numeric(viewCount),
+         candid ="문재인") %>% 
+  dplyr::select(candid, id, dtime, commentCount, favoriteCount, viewCount)
+
+ahn_yt_m_df <- ahn_yt_df %>% 
+  mutate(dtime = parse_date_time(value, "Ymd HMS z"),
+         commentCount = as.numeric(commentCount),
+         favoriteCount = as.numeric(favoriteCount),
+         viewCount = as.numeric(viewCount),
+         candid ="안철수") %>% 
+  dplyr::select(candid, id, dtime, commentCount, favoriteCount, viewCount)
+
+yt_m_df <- bind_rows(moon_yt_m_df, ahn_yt_m_df)
+
+# 3. 시각화 ------------------------------------------------------------------------------
+
+yt_m_viz_df <- yt_m_df %>% ungroup() %>% mutate(monday = format(dtime, "%m-%d")) %>% 
+  group_by(candid, monday) %>% 
+  summarise(viewMax = max(viewCount),
+            viewMin = min(viewCount),
+            viewMean = mean(viewCount),
+            dtime = first(dtime))
+
+moon_yt_p <- ggplot(yt_m_viz_df %>% dplyr::filter(candid=="문재인"), aes(x=monday, y=viewMean, color=candid, group = 1)) +
+  geom_errorbar(aes(ymin=viewMin, ymax=viewMax), width=.1) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels=scales::comma) +
+  labs(x="", y="", title="문재인 유튜브 시청횟수(최근 50개)") +
+  theme_tufte(base_family="NanumGothic") +
+  theme(legend.position="none")
+
+ahn_yt_p <- ggplot(yt_m_viz_df %>% dplyr::filter(candid=="안철수"& dtime >= ymd("2017-01-01")), aes(x=monday, y=viewMean, color=candid, group = 1)) +
+  geom_errorbar(aes(ymin=viewMin, ymax=viewMax), width=.1) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels=scales::comma) +
+  labs(x="", y="", title="안철수 유튜브 시청횟수(최근 50개)")+
+  theme_tufte(base_family="NanumGothic") +
+  theme(legend.position="none")
+
+gridExtra::grid.arrange(moon_yt_p, ahn_yt_p)
+```
+
+## 문재인, 안철수 유튜브 조회수 
+
+``` {r youtube-table, echo=FALSE, message=FALSE, warn=FALSE}
+# 4. 유튜브 조회수 표 ------------------------------------------------------------------------------
+moon_yt_tbl <- moon_yt_m_df %>% mutate(dtime = format(dtime, "%m-%d"),
+                      yt_id = paste0("https://www.youtube.com/watch?v=", id)) %>% 
+  dplyr::select(candid, dtime, viewCount, commentCount, yt_id) %>% 
+  arrange(desc(viewCount))
+
+  
+DT::datatable(moon_yt_tbl)
+
+ahn_yt_tbl <- ahn_yt_m_df %>% mutate(dtime = format(dtime, "%m-%d"),
+                                       yt_id = paste0("https://www.youtube.com/watch?v=", id)) %>% 
+  dplyr::select(candid, dtime, viewCount, commentCount, yt_id) %>% 
+  arrange(desc(viewCount))
+
+DT::datatable(ahn_yt_tbl)
+```
+
+## 문재인, 안철수 유튜브 API 원데이터
+
+``` {r youtube-list, echo=FALSE, message=FALSE, warn=FALSE}
+listviewer::jsonedit(ahn_vids, mode="view")
+listviewer::jsonedit(moon_vids, mode="view")
+```
