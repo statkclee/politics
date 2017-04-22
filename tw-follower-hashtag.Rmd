@@ -1,0 +1,147 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 트위터 팔로워 & 해쉬태그
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+options(warn=-1)
+library(lubridate)
+library(ggplot2)
+library(twitteR)
+library(ROAuth)
+library(tidyverse)
+library(wordcloud)
+library(DT)
+library(ggthemes)
+library(scales)
+library(gridExtra)
+library(stringr)
+library(extrafont)
+options(scipen=10000)
+loadfonts()
+```
+
+## 트위터 현황 팔로워와 친구
+
+``` {r twitter-follower-stat, eval=FALSE}
+# 01. 환경설정 ----------------------------------------------------------
+
+consumer_key    <- "UGXurF0rmyoeE2Y1x6RaxTKsb"
+consumer_secret <- "0ijb17M1hrfpaOBR02BOpQyJy2gLeu1SgUwgHDYOFN5c9a0psv"
+access_token    <- "51896377-Ll9AbaDPQQWmXuKLIZ09Bs74t6LGDsLWlPLv40Bpc"
+access_secret   <- "GXOW2XOmYKSMSsuh0RmTyEsOIh5rYgM8dUZe0OtF4Fh1L"
+
+setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
+
+# 02. 트위터 데이터 가져오기 ----------------------------------------------------------
+# 문재인: @moonriver365
+# 안철수: @cheolsoo0919
+
+twits_stat <- function(user_name){
+  lst_info <- getUser(user_name)
+  tweets <- lst_info$statusesCount
+  followers <- lst_info$followersCount
+  friends <- lst_info$friendsCount
+  df <- tibble(twit_id=user_name, tweets=tweets, followers=followers, friends=friends)
+  return(df)
+}
+
+moon_df <- twits_stat("moonriver365") %>% mutate(kname="문재인")
+ahn_df <- twits_stat("cheolsoo0919") %>% mutate(kname="안철수")
+
+twit_stat <- bind_rows(moon_df, ahn_df)
+
+twit_stat_lng <- twit_stat %>% dplyr::select(-twit_id) %>% gather(twit_stat, value, -kname) %>% 
+  mutate(kname = factor(kname, levels=c("문재인", "안철수", "이재명", "안희정", "손학규")))
+
+# 03. 트위터 친구와 팔로워 표 현황과 시각화 ----------------------------------------------------------
+
+fill_color <- c("#1cd313", "#4286f4")
+
+p1 <- ggplot(twit_stat_lng, aes(x=twit_stat, y=value)) + 
+  geom_bar(stat="identity") +
+  facet_wrap(~kname) +
+  labs(x="", y="") +
+  scale_y_continuous(labels = comma) +
+  theme_minimal(base_family="NanumGothic") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_fill_manual(values=c("문재인" = "#1cd313", "안철수"="#4286f4"))
+
+p2 <- ggplot(twit_stat_lng, aes(x=kname, y=value)) + 
+  geom_bar(stat="identity") +
+  facet_wrap(~twit_stat) + 
+  labs(x="", y="") +
+  scale_y_continuous(labels = comma) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(text=element_text(family="NanumGothic")) +
+  scale_color_manual(values=fill_color)
+
+grid.arrange(p1, p2, ncol=2)
+
+datatable(twit_stat %>% dplyr::select(kname, followers, friends, tweets)) %>% 
+  formatCurrency(c("followers", "friends", "tweets"), " ", digits=0)
+```
+
+## 트위터 해쉬태그
+
+``` {r twitter-follower-hashtag, eval=FALSE}
+#######################################################################################
+# 트위터 추세분석 
+#######################################################################################
+# 1. 트위터: 문재인 -------------------------------------------------------------------
+moon_tw <- twitteR::userTimeline("moonriver365", n = 1000)
+moon_tw_df <- twListToDF(moon_tw)
+
+hash_pattern <- "#[ㄱ-흫]+"
+
+moon_tw_hashtag <- str_extract_all(moon_tw_df$text, hash_pattern)
+
+moon_tw_hashtag_df <- data.frame(table(unlist(moon_tw_hashtag)))
+colnames(moon_tw_hashtag_df) = c("tag","freq")
+moon_tw_hashtag_df  <- moon_tw_hashtag_df[order(moon_tw_hashtag_df$freq,decreasing = TRUE),]
+
+# 2. 트위터: 안철수 
+ahn_tw <- twitteR::userTimeline("cheolsoo0919", n = 1000)
+ahn_tw_df <- twListToDF(ahn_tw)
+
+hash_pattern <- "#[ㄱ-흫]+"
+
+ahn_tw_hashtag <- str_extract_all(ahn_tw_df$text, hash_pattern)
+
+ahn_tw_hashtag_df <- data.frame(table(unlist(ahn_tw_hashtag)))
+colnames(ahn_tw_hashtag_df) = c("tag","freq")
+ahn_tw_hashtag_df <- ahn_tw_hashtag_df[order(ahn_tw_hashtag_df$freq,decreasing = TRUE),]
+
+# 2. 시각화 트위터 -------------------------------------------------------------------
+
+ahn_tw_p <- ggplot(ahn_tw_hashtag_df, aes(x = tag, y = freq)) + 
+  geom_bar(stat="identity", fill = "#1cd313") +
+  coord_flip() + 
+  labs(x="트윗수", title = "안철수 트위 해쉬태그(@cheolsoo0919)")
+
+moon_tw_p <- ggplot(moon_tw_hashtag_df, aes(x = tag, y = freq)) + 
+  geom_bar(stat="identity", fill = "#4286f4") +
+  coord_flip() + 
+  labs(x="트윗수", title = "문재인 트위 해쉬태그(@moonriver365)")
+
+grid.arrange(ahn_tw_p, moon_tw_p, nrow=1)
+```
+
+## 인기있는 트윗
+
+``` {r twitter-hits, eval=FALSE}
+
+DT::datatable(moon_tw_df %>% dplyr::select(screenName, id, created, favoriteCount, retweetCount, text) %>% 
+                arrange(desc(favoriteCount)))
+
+DT::datatable(ahn_tw_df %>% dplyr::select(screenName, id, created, favoriteCount, retweetCount, text) %>% 
+                arrange(desc(favoriteCount)))
+```
