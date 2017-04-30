@@ -115,6 +115,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)
     1. [유튜브 채널](youtube-channel.html)
     1. [대선후보 정책평가](radar-chart.html)
+    1. [소득과 득표율 관계](income-vs-vote.html)
 
 > ### xwMOOC 오픈 교재
 > 
