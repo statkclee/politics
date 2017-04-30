@@ -81,6 +81,9 @@ party_colMatrix <- c(col2rgb("#07f91f"),
                      col2rgb("#f2ee09")) 
 
 party_colMatrix <- matrix(party_colMatrix, nrow=3)
+
+DT::datatable(policy_by_candidate)
+
 ```
 ### 3.3. 정책별 후보의 정책평가 결과 시각화
 
@@ -106,6 +109,8 @@ chartJSRadar(scores = policy_by_candidate, maxScale = 5, scaleLineWidth=5, scale
 ``` {r radarchart-by-policy, fig.width=12}
 candidate_by_policy <- policy_by_candidate %>% gather(`후보`, `점수`, -`분야`) %>% 
   spread(`분야`, `점수`)
+
+DT::datatable(candidate_by_policy)
 
 chartJSRadar(scores = candidate_by_policy, maxScale = 5, scaleLineWidth=5, scaleStepWidth = 1,  
                                           main="분야별 대선후보 공약평가 결과", 
