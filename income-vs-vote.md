@@ -1,26 +1,6 @@
----
-layout: page
-title: 데이터 과학자가 바라본 20대 총선
-subtitle: 소득과 득표율 관계
-output:
-  html_document: 
-    keep_md: yes
-    toc: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: AppleGothic
----
+# 데이터 과학자가 바라본 20대 총선
 
-```{r setOptions, message=FALSE, include=FALSE}
-source("tools/chunk-options.R")
-library(tidyverse)
-library(readxl)
-library(ggrepel)
-library(ggthemes)
-library(extrafont)
-loadfonts()
-theme_set(theme_wsj(base_family = "AppleGothic"))
-```
+
 
 ## 정치 경제
 
@@ -42,20 +22,21 @@ theme_set(theme_wsj(base_family = "AppleGothic"))
 
 엑셀 파일을 불러읽어오기 위해 `readxl` 팩키지와 시각화에 필요한 팩키지를 불러온다.
 
-``` {r political-economy-setup, eval=FALSE}
+
+~~~{.r}
 library(tidyverse)
 library(readxl)
 library(ggrepel)
 library(ggthemes)
 library(extrafont)
 loadfonts()
-
-```
+~~~
 ## 데이터 가져오기
 
 2012년 대선 득표율 데이터와 2012년 시도별 소득데이터를 불러와서 각 후보별 득표율을 계산한다.
 
-``` {r political-economy-import}
+
+~~~{.r}
 # 1. 데이터 가져오기 ---------------------------------------------
 ## 1.1. 2012년 대선 득표율 ---------------------------------------
 vote_df <- read_excel("data/제18대 대선 투표구별 개표자료.xls", skip=3)
@@ -92,13 +73,14 @@ df <- votes_df %>% left_join(incomes_df, by="시도명")
 ratio_df <- df %>% 
   dplyr::select(시도명, 박득표율, 문득표율, 개인소득) %>% 
   gather(후보, 득표율, -시도명, -개인소득)
-```
+~~~
 
 ## 데이터 시각화
 
 2012년 개인소득(경제)과 대선 후보별득표율(정치) 간의 관계를 산점도를 그려보고 `lowess` 적합을 통해 추세를 시각화한다.
 
-``` {r political-economy-viz, fig.width=12}
+
+~~~{.r}
 # 3. 데이터 시각화 ---------------------------------------------
 
 ggplot(ratio_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`, fill=`후보`)) +
@@ -116,10 +98,24 @@ ggplot(ratio_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`, fil
   labs(x="1인당 소득 (단위:천원)",y="",title="시도별 득표수와 1인당 소득",
        subtitle="X축: 후보별 지지율(%), Y축: 1인당 소득(천원)",
        caption="\n 자료출처: 선관위 18대 대선 득표수와 통계청 시도별 소득자료")
+~~~
 
+
+
+~~~{.output}
+`geom_smooth()` using method = 'loess'
+
+~~~
+
+<img src="fig/political-economy-viz-1.png" style="display: block; margin: auto;" />
+
+~~~{.r}
 # 4. 데이터 표 ---------------------------------------------
 
 DT::datatable(votes_df %>% mutate(`박득표율` = `박득표율`/100, `문득표율`=`문득표율`/100)) %>% 
   DT::formatCurrency(c(2,3,4), currency="", interval=3, mark=",", digits=0) %>% 
   DT::formatPercentage(c('박득표율','문득표율'), digits=1)
-```
+~~~
+
+<!--html_preserve--><div id="htmlwidget-75b2232dda32ae5ba7bf" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-75b2232dda32ae5ba7bf">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["서울특별시","부산광역시","대구광역시","인천광역시","광주광역시","대전광역시","울산광역시","경기도","강원도","충청북도","충청남도","전라북도","전라남도","경상북도","경상남도","제주특별자치도"],[6307869,2219699,1585806,1657821,898416,904367,694938,7018577,911988,925778,1168095,1142133,1171210,1710122,2008683,330967],[3024572,1324159,1267789,852600,69574,450576,413977,3528915,562876,518442,658928,150315,116296,1375164,1259174,166184],[3227639,882511,309034,794213,823737,448310,275451,3442084,340870,398907,497630,980322,1038347,316659,724896,161235],[0.479491885452916,0.596548901450152,0.799460337519217,0.514289540306221,0.0774407401471034,0.498222513647667,0.595703501607338,0.502796364562218,0.617196717500669,0.560006826690632,0.564104803119609,0.131609015762613,0.099295600276637,0.804132102855819,0.626865463589825,0.502116525212483],[0.511684532446695,0.397581383782216,0.194875035155624,0.479070418338289,0.91687703691831,0.495716893694706,0.396367733524429,0.490424768439528,0.373765882884424,0.430888398730581,0.426018431720023,0.858325606562458,0.886559199460387,0.185167490974328,0.360881234122059,0.487163372783389]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>시도명<\/th>\n      <th>투표수<\/th>\n      <th>박근혜<\/th>\n      <th>문재인<\/th>\n      <th>박득표율<\/th>\n      <th>문득표율<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data) {\nDTWidget.formatPercentage(this, row, data, 5, 1);\nDTWidget.formatPercentage(this, row, data, 6, 1);\nDTWidget.formatCurrency(this, row, data, 2, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 3, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 4, '', 0, 3, ',', '.', true);\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script><!--/html_preserve-->
