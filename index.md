@@ -114,6 +114,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [페이스북 페이지 활동성(CTR)](fb-page-ctr.html)
     1. [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)
     1. [유튜브 채널](youtube-channel.html)
+    1. [대선후보 정책평가](radar-chart.html)
 
 > ### xwMOOC 오픈 교재
 > 
