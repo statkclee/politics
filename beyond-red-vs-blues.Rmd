@@ -156,3 +156,77 @@ DT::datatable(votes_sp@data %>% dplyr::select(CTPRVN_CD, CTP_KOR_NM, area,
                                                 선거인수, 박근혜, 문재인, 표차)) %>% 
   DT::formatCurrency(c(3,4,5,6,7), currency="", interval = 3, mark=',', digits=0)
 ```
+
+## 카토그램(Cartogram)
+
+[카토그램(cartogram, 변량비례도(變量比例圖))](https://ko.wikipedia.org/wiki/카토그램)은 의석수나 선거인단수, 인구 등의 특정한 데이터 값의 변화에 따라 지도의 면적이 왜곡되는 그림으로 실제 보고자 하는 정보를 경우에 따라서는 더 잘 표현할 수도 있다.
+
+### 환경설정
+
+R에서 카토그램을 구현할 경우 `Rcartogram`, `getcartr` 팩키지를 설치해야 한다.
+사전에 `brew install fftw`을 통해 맥을 사용하는 경우 `fftw`를 설치해야만 된다.
+
+``` {r cartogram-r, eval=FALSE}
+## 2.2. Cartogram --------------------------------------------------------------------
+# devtools::install_github("omegahat/Rcartogram")
+# devtools::install_github('chrisbrunsdon/getcartr',subdir='getcartr')
+# X11(type='cairo')
+library(Rcartogram)
+library(getcartr)
+## 2.2.1. 박근혜
+park_carto <- quick.carto(spdf=votes_sp,v=votes_sp@data$박근혜,res=256)
+
+png(filename="fig/park-carto.png", width = 1024)
+spplot(park_carto, "박근혜", col.regions = park.palette, 
+       cuts = length(park.palette)-1,
+       # main="Park(박근혜 득표수)", 
+       colorkey = list(space = "bottom", height = 1))
+dev.off()
+
+## 2.2.2. 문재인
+moon_carto <- quick.carto(spdf=votes_sp,v=votes_sp@data$문재인, res=256)
+
+png(filename="fig/moon-carto.png", width = 1024)
+spplot(moon_carto, "문재인", col.regions = moon.palette, 
+       cuts = length(moon.palette)-1, 
+       # main="Moon(문재인 득표수)", 
+       colorkey = list(space = "bottom", height = 1))
+dev.off()
+
+## 2.2.3. 유권자
+voter_carto <- quick.carto(spdf=votes_sp,v=votes_sp@data$선거인수, res=256)
+
+png(filename="fig/voter-carto.png", width = 1024)
+spplot(voter_carto, "선거인수", col.regions = voter.palette, 
+       cuts = length(voter.palette)-1, 
+       # main="Voters(선거인수)", 
+       colorkey = list(space = "bottom", height = 1))
+dev.off()
+
+### 2.2.4. 한번에 비교
+
+png(filename="fig/park-moon-all-carto.png", width = 1024)
+grid.arrange(
+  spplot(park_carto, "박근혜", col.regions = park.palette, 
+         cuts = length(park.palette)-1,
+         # main="Park(박근혜 득표수)", 
+         colorkey = list(space = "bottom", height = 1)),
+  
+  spplot(voter_carto, "선거인수", col.regions = voter.palette, 
+         cuts = length(voter.palette)-1, 
+         # main="Voters(선거인수)", 
+         colorkey = list(space = "bottom", height = 1)),
+  
+  spplot(park_carto, "문재인", col.regions = moon.palette, 
+         cuts = length(moon.palette)-1, 
+         # main="Moon(문재인 득표수)", 
+         colorkey = list(space = "bottom", height = 1)), nrow=1
+)
+dev.off()
+```
+
+<img src=fig/park-carto.png alt="박근혜 득표 카토그램" width=77% />
+
+<img src=fig/moon-carto.png alt="문재인 득표 카토그램" width=77% />
+
+<img src=fig/park-moon-all-carto.png alt="박근혜, 문재인, 선거권자 카토그램" width=77% />

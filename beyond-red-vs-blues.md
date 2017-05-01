@@ -180,5 +180,80 @@ DT::datatable(votes_sp@data %>% dplyr::select(CTPRVN_CD, CTP_KOR_NM, area,
   DT::formatCurrency(c(3,4,5,6,7), currency="", interval = 3, mark=',', digits=0)
 ~~~
 
-<!--html_preserve--><div id="htmlwidget-b48644fb44650d9805f3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b48644fb44650d9805f3">{"x":{"filter":"none","data":[["10","9","16","15","5","3","6","2","1","8","7","4","14","13","17","12","11"],["42","41","48","47","29","27","30","26","11","36","31","28","46","45","50","44","43"],["강원도","경기도","경상남도","경상북도","광주광역시","대구광역시","대전광역시","부산광역시","서울특별시","세종특별자치시","울산광역시","인천광역시","전라남도","전라북도","제주특별자치도","충청남도","충청북도"],[16624.934186905,10154.8956384103,10508.3052456701,19016.5954829329,498.003139685362,879.903259087752,539.107264941478,769.298060799281,605.244224025221,464.870277561034,1054.78022589739,1045.64132399591,12121.9852777511,8057.62480354393,1845.54921681481,8212.3902052025,7408.90161647403],[1235647,9364077,2608874,2185987,1117781,1990746,1182321,2911700,8393847,null,886061,2241366,1530012,1483402,451731,1601751,1234832],[562876,3528915,1259174,1375164,69574,1267789,450576,1324159,3024572,null,413977,852600,116296,150315,166184,658928,518442],[340870,3442084,724896,316659,823737,309034,448310,882511,3227639,null,275451,794213,1038347,980322,161235,497630,398907],[222006,86831,534278,1058505,-754163,958755,2266,441648,-203067,null,138526,58387,-922051,-830007,4949,161298,119535]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>CTPRVN_CD<\/th>\n      <th>CTP_KOR_NM<\/th>\n      <th>area<\/th>\n      <th>선거인수<\/th>\n      <th>박근혜<\/th>\n      <th>문재인<\/th>\n      <th>표차<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data) {\nDTWidget.formatCurrency(this, row, data, 3, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 4, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 5, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 6, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 7, '', 0, 3, ',', '.', true);\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-023af2bd70cce73398b3" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-023af2bd70cce73398b3">{"x":{"filter":"none","data":[["10","9","16","15","5","3","6","2","1","8","7","4","14","13","17","12","11"],["42","41","48","47","29","27","30","26","11","36","31","28","46","45","50","44","43"],["강원도","경기도","경상남도","경상북도","광주광역시","대구광역시","대전광역시","부산광역시","서울특별시","세종특별자치시","울산광역시","인천광역시","전라남도","전라북도","제주특별자치도","충청남도","충청북도"],[16624.934186905,10154.8956384103,10508.3052456701,19016.5954829329,498.003139685362,879.903259087752,539.107264941478,769.298060799281,605.244224025221,464.870277561034,1054.78022589739,1045.64132399591,12121.9852777511,8057.62480354393,1845.54921681481,8212.3902052025,7408.90161647403],[1235647,9364077,2608874,2185987,1117781,1990746,1182321,2911700,8393847,null,886061,2241366,1530012,1483402,451731,1601751,1234832],[562876,3528915,1259174,1375164,69574,1267789,450576,1324159,3024572,null,413977,852600,116296,150315,166184,658928,518442],[340870,3442084,724896,316659,823737,309034,448310,882511,3227639,null,275451,794213,1038347,980322,161235,497630,398907],[222006,86831,534278,1058505,-754163,958755,2266,441648,-203067,null,138526,58387,-922051,-830007,4949,161298,119535]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>CTPRVN_CD<\/th>\n      <th>CTP_KOR_NM<\/th>\n      <th>area<\/th>\n      <th>선거인수<\/th>\n      <th>박근혜<\/th>\n      <th>문재인<\/th>\n      <th>표차<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data) {\nDTWidget.formatCurrency(this, row, data, 3, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 4, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 5, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 6, '', 0, 3, ',', '.', true);\nDTWidget.formatCurrency(this, row, data, 7, '', 0, 3, ',', '.', true);\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script><!--/html_preserve-->
+
+## 카토그램(Cartogram)
+
+[카토그램(cartogram, 변량비례도(變量比例圖))](https://ko.wikipedia.org/wiki/카토그램)은 의석수나 선거인단수, 인구 등의 특정한 데이터 값의 변화에 따라 지도의 면적이 왜곡되는 그림으로 실제 보고자 하는 정보를 경우에 따라서는 더 잘 표현할 수도 있다.
+
+### 환경설정
+
+R에서 카토그램을 구현할 경우 `Rcartogram`, `getcartr` 팩키지를 설치해야 한다.
+사전에 `brew install fftw`을 통해 맥을 사용하는 경우 `fftw`를 설치해야만 된다.
+
+
+~~~{.r}
+## 2.2. Cartogram --------------------------------------------------------------------
+# devtools::install_github("omegahat/Rcartogram")
+# devtools::install_github('chrisbrunsdon/getcartr',subdir='getcartr')
+# X11(type='cairo')
+library(Rcartogram)
+library(getcartr)
+## 2.2.1. 박근혜
+park_carto <- quick.carto(spdf=votes_sp,v=votes_sp@data$박근혜,res=256)
+
+png(filename="fig/park-carto.png", width = 1024)
+spplot(park_carto, "박근혜", col.regions = park.palette, 
+       cuts = length(park.palette)-1,
+       # main="Park(박근혜 득표수)", 
+       colorkey = list(space = "bottom", height = 1))
+dev.off()
+
+## 2.2.2. 문재인
+moon_carto <- quick.carto(spdf=votes_sp,v=votes_sp@data$문재인, res=256)
+
+png(filename="fig/moon-carto.png", width = 1024)
+spplot(moon_carto, "문재인", col.regions = moon.palette, 
+       cuts = length(moon.palette)-1, 
+       # main="Moon(문재인 득표수)", 
+       colorkey = list(space = "bottom", height = 1))
+dev.off()
+
+## 2.2.3. 유권자
+voter_carto <- quick.carto(spdf=votes_sp,v=votes_sp@data$선거인수, res=256)
+
+png(filename="fig/voter-carto.png", width = 1024)
+spplot(voter_carto, "선거인수", col.regions = voter.palette, 
+       cuts = length(voter.palette)-1, 
+       # main="Voters(선거인수)", 
+       colorkey = list(space = "bottom", height = 1))
+dev.off()
+
+### 2.2.4. 한번에 비교
+
+png(filename="fig/park-moon-all-carto.png", width = 1024)
+grid.arrange(
+  spplot(park_carto, "박근혜", col.regions = park.palette, 
+         cuts = length(park.palette)-1,
+         # main="Park(박근혜 득표수)", 
+         colorkey = list(space = "bottom", height = 1)),
+  
+  spplot(voter_carto, "선거인수", col.regions = voter.palette, 
+         cuts = length(voter.palette)-1, 
+         # main="Voters(선거인수)", 
+         colorkey = list(space = "bottom", height = 1)),
+  
+  spplot(park_carto, "문재인", col.regions = moon.palette, 
+         cuts = length(moon.palette)-1, 
+         # main="Moon(문재인 득표수)", 
+         colorkey = list(space = "bottom", height = 1)), nrow=1
+)
+dev.off()
+~~~
+
+<img src=fig/park-carto.png alt="박근혜 득표 카토그램" width=77% />
+
+<img src=fig/moon-carto.png alt="문재인 득표 카토그램" width=77% />
+
+<img src=fig/park-moon-all-carto.png alt="박근혜, 문재인, 선거권자 카토그램" width=77% />
