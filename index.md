@@ -118,6 +118,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [소득과 득표율 관계](income-vs-vote.html)
     1. [보수와 진보를 넘어서](beyond-red-vs-blues.html)
     1. [네이버, 구글 추세(Trends)](naver-google-trends.html) 
+        - [구글 추세(Trends)](google-trends-only.html) 
 
 > ### xwMOOC 오픈 교재
 > 
