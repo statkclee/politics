@@ -131,8 +131,16 @@ survey_facet_g <- ggplot(survey_df, aes(x=주차, y=지지율, group=후보, col
 
 ``` {r survey-almost-polls, fig.width=12, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(survey_g)
+
+library(data.table)
+survey_tbl <- dcast(setDT(survey_df), 주차 ~ 조사업체+후보, value.var =c("지지율"))
+
+DT::datatable(survey_tbl) %>% 
+  DT::formatPercentage(c(2:21), digits=1)
+
 survey_facet_g
 ```
+
 ``` {r survey-setup, eval=FALSE}
 # 0. 환경설정 --------------------------------------------------
 library(tidyverse)
