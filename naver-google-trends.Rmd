@@ -115,7 +115,7 @@ ntrend_hist_g <- ggplot(trends_hist_df, aes(x=후보, y=tlt_cnt)) +
 
 17년 4월 1일부터 최근까지 한달간 추세는 다음과 같다.
 
-``` {r ntrend-recent, echo=FALSE}
+``` {r ntrend-recent, echo=FALSE, fig.width=12}
 ggplotly(ntrend_g)  %>%
   layout(showlegend = FALSE)
 
