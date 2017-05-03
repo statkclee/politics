@@ -115,7 +115,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
             - [네이버 추세(Trends)](naver-google-trends.html) 
             - [구글 추세(Trends)](google-trends-only.html) 
         - **좋아하는 것(페북Like)**            
-            - [페이스북 페이지 팬추세(문,안)](fb-fans-trends.html)
+            - [페이스북 페이지 팬추세(문,안,심)](fb-fans-trends.html)
             - [페이스북 페이지 활동성(CTR)](fb-page-ctr.html)
         - **[여론조사(나무위키)](survey-namu-wiki.html)**            
         - [제18대 대선 투표결과](http://statkclee.github.io/data-science/geo-18-president.html)

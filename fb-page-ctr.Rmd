@@ -60,7 +60,7 @@ fb_keys <- "EAACEdEose0cBANDQoParhyI0hNdNx9FBw5UPASmBVxb3UADLZA7aCDb4PZBOqZCJLkw
 ## 1.1. 페북 데이터 데이터---------------------------------
 
 start_date <- "2017/01/01"
-end_date   <- "2017/04/21"
+end_date   <- "2017/05/02"
 
 # 페북 포스트글 긁어오기: 일별 100개
 get_fb_posts <- function(page_name, start_date, end_date, fb_keys) {
