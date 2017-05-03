@@ -60,9 +60,9 @@ library(gridExtra)
 library(ggthemes)
 library(extrafont)
 loadfonts()
-fb_keys <- "EAACEdEose0cBAFkMShc5ip4LjKRCZCblqzPPZAPXFOZCao5vCMEaNumbWsVug53JvL6UOxZBrfZC6haf4hfRfmCdGfySXEqsU8gpvbZAp7UunaRkgiW2TEZCM9Na2vZCdeznpdaxfdckx7yasF8Cbe1HT3G3RFVjZB6J03VEDOrBCIG9Kii9olNBi"
+fb_keys <- "EAACEdEose0cBAHWKOFk58ltUcZBvzFH5d6HYFDGD17iMC7ZALo5sxuU8WgYVX55FMYL3bslRhcKUWEwxacHVKDjgq7d2edjSBTUVUcQmkVtJOc9pldZCO9ZABhKCiiQ3nc2gjYHzgeZCbCZB5N7gceefKZASqVZBEbCHQNZAlc1TRlAzxsAIiV86v"
 
-fb_crawl_date <- "2017-05-02"
+fb_crawl_date <- "2017-05-03"
 
 # 1. 데이터 불러오기 ---------------------------------------------------------------------
 
@@ -173,7 +173,7 @@ fans_p <- fb_fans_long_df %>%
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
     labs(x="",y="",title="Facebook Fans Trend",
-         caption="\n Source: Facebook for Developers, Graph API Explorer") +
+         caption="\n 출처: Facebok for Developers, Graph API Explorer") +
     theme(legend.position="top") +
     scale_colour_manual(name="",
                         values=c(moon_fans="#065ce8", 
@@ -196,8 +196,8 @@ ahn_p1 <- ahn_df %>%
     scale_x_date(date_labels = "%m-%d") +
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
-    labs(x="",y="",title="Ahn Facebook Fans Trend",
-         caption="\n Source: Facebook(ahncs111)") +
+    labs(x="",y="",title="안철수 페이스북 페이지 팬 추세",
+         caption="\n 출처: 페이스북 페이지(ahncs111)") +
     theme(legend.position="none") +
     geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="red", size=0.9) +
     geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="red", size=0.9) +
@@ -212,8 +212,8 @@ moon_p1 <- moon_df %>%
     scale_x_date(date_labels = "%m-%d") +
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
-    labs(x="",y="",title="Moon Facebook Fans Trend",
-         caption="\n Source: Facebook(moonbyun1)") +
+    labs(x="",y="",title="문재인 페이스북 페이지 팬 추세",
+         caption="\n 출처: 페이스북 페이지(moonbyun1)") +
     theme(legend.position="none") +
     geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="red", size=0.9) +
     geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="red", size=0.9) +
@@ -228,8 +228,8 @@ sim_p1 <- sim_df %>%
     scale_x_date(date_labels = "%m-%d") +
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
-    labs(x="",y="",title="Sim Facebook Fans Trend",
-         caption="\n Source: Facebook(simsangjung)") +
+    labs(x="",y="",title="심상정 페이스북 페이지 팬 추세",
+         caption="\n 출처: 페이스북 페이지(simsangjung)") +
     theme(legend.position="none") +
     geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="red", size=0.9) +
     geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="red", size=0.9) +
@@ -248,8 +248,8 @@ ahn_p2 <- ahn_df %>% dplyr::filter(fdate >="2017-04-01") %>%
     scale_x_date(date_labels = "%m-%d") +
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
-    labs(x="",y="",title="Ahn Facebook Fans Trend",
-         caption="\n Source: Facebook(ahncs111)") +
+    labs(x="",y="",title="안철수 페이스북 페이지 팬 추세",
+         caption="\n 출처: 페이스북 페이지(ahncs111)") +
     theme(legend.position="none") +
     geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="#ab3ae8", size=0.3) +
     geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="#ab3ae8", size=0.3) +
@@ -269,8 +269,8 @@ moon_p2 <- moon_df %>% dplyr::filter(fdate >="2017-04-01") %>%
     scale_x_date(date_labels = "%m-%d") +
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
-    labs(x="",y="",title="Moon Facebook Fans Trend",
-         caption="\n Source: Facebook(moonbyun1)") +
+    labs(x="",y="",title="문재인 페이스북 페이지 팬 추세",
+         caption="\n 출처: 페이스북 페이지(moonbyun1)") +
     theme(legend.position="none") +
     geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="#ab3ae8", size=0.3) +
     geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="#ab3ae8", size=0.3) +
@@ -290,8 +290,8 @@ sim_p2 <- sim_df %>% dplyr::filter(fdate >="2017-04-01") %>%
     scale_x_date(date_labels = "%m-%d") +
     scale_y_continuous(labels=scales::comma) +
     # theme_minimal(base_family="NanumGothic") +
-    labs(x="",y="",title="Sim Facebook Fans Trend",
-         caption="\n Source: Facebook(simsangjung)") +
+    labs(x="",y="",title="심상정 페이스북 페이지 팬 추세",
+         caption="\n 출처: 페이스북 페이지(simsangjung)") +
     theme(legend.position="none") +
     geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="#ab3ae8", size=0.3) +
     geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="#ab3ae8", size=0.3) +
