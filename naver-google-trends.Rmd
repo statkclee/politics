@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 데이터 과학자가 바라본 20대 총선
-subtitle: 네이버, 구글 추세(Trends)
+subtitle: 네이버 추세(Trends)
 output:
   html_document: 
     keep_md: yes
@@ -25,7 +25,7 @@ library(lubridate)
 # 1. 데이터 긁어오기 --------------------------------------------------------
 
 start_date<-"2017-04-01"
-end_date<-"2017-05-01"
+end_date<-"2017-05-03"
 
 candidates <- c("문재인", "홍준표", "안철수", "유승민", "심상정")
 
@@ -55,11 +55,12 @@ ntrend_g <- ggplot(trends_df,aes(x=date, y=ntrend, color=후보)) +
   scale_x_date(date_labels="%m-%d") +
   theme_minimal() +
   theme(legend.position="top", 
+        plot.title = element_text(size = 18, face = "bold"),
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=7.5))+
-  labs(x="",y="",title="후보별 네이버 뉴스검색 추세",
-       caption="\n 데이터출처: 네이버, 네이버 뉴스 수집 도구(https://github.com/forkonlp/N2H4/)",
+  labs(x="",y="",title="후보별 네이버 검색 추세",
+       caption="\n 데이터출처: 네이버, 네이버 검색 수집 도구(https://github.com/forkonlp/N2H4/)",
        subtitle="") +
   scale_colour_manual(name="",
                       values=c(문재인="#065ce8", 
@@ -71,56 +72,74 @@ ntrend_g <- ggplot(trends_df,aes(x=date, y=ntrend, color=후보)) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="darkgrey", size=0.5) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-25")), linetype=4, color="darkgrey", size=0.5) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-28")), linetype=4, color="darkgrey", size=0.5) +
+  geom_vline(xintercept=as.numeric(ymd("2017-05-02")), linetype=4, color="darkgrey", size=0.5) +
   annotate(geom="text",x=as.Date("2017-04-19"), y=3,label="KBS",fontface="bold", size=3) +
   annotate(geom="text",x=as.Date("2017-04-23"), y=3,label="1차",fontface="bold", size=3) +
   annotate(geom="text",x=as.Date("2017-04-25"), y=3,label="JTBC",fontface="bold", size=3) +
-  annotate(geom="text",x=as.Date("2017-04-28"), y=3,label="2차",fontface="bold", size=3)
+  annotate(geom="text",x=as.Date("2017-04-28"), y=3,label="2차",fontface="bold", size=3) +
+  annotate(geom="text",x=as.Date("2017-05-02"), y=3,label="3차",fontface="bold", size=3)
 
-ntrend_hist_g <- ggplot(trends_hist_df, aes(x=후보, y=tlt_cnt)) +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="문재인"), fill="#065ce8") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="홍준표"), fill="#ff0000") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="안철수"), fill="#07f91f") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="유승민"), fill="#00faff") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="심상정"), fill="#f2ee09") +
+ntrend_hist_g <- ggplot(trends_hist_df, aes(x=후보, y=tlt_cnt, fill=후보)) +
+  geom_bar(stat="identity") + 
+  scale_colour_manual(name="",
+                      values=c(문재인="#065ce8", 
+                                  홍준표="#ff0000",
+                                  안철수="#07f91f",
+                                  유승민="#00faff",
+                                  심상정="#f2ee09")) +
+  scale_y_continuous(label=scales::comma) +
   theme_minimal() +
   theme(legend.position="none", 
+        plot.title = element_text(size = 18, face = "bold"),
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
-        axis.text=element_text(size=7.5))+
-  labs(x="",y="",title="후보별 네이버 뉴스검색 추세",
-       caption="\n 데이터출처: 네이버, 네이버 뉴스 수집 도구(https://github.com/forkonlp/N2H4/)",
+        axis.text=element_text(size=15.5))+
+  labs(x="",y="",title="후보별 네이버 검색 추세",
+       caption="\n 데이터출처: 네이버, 네이버 검색 수집 도구(https://github.com/forkonlp/N2H4/)",
        subtitle="") +
-  geom_text(data=trends_hist_df,aes(x=후보,y=tlt_cnt, label=scales::percent(cnt_pcnt)),vjust=0)
+  geom_text(data=trends_hist_df,aes(x=후보,y=tlt_cnt, label=scales::percent(cnt_pcnt)), vjust=-0.3, size=5)
 
 ```
 
-## 네이버, 구글 뉴스 추세
+## 네이버 검색 추세
 
 제19대 대통령선거가 치뤄지고 있는 2017년 현재 기존 PC 패러다임의 강자 네이버와 안드로이드를 품고 있는 
-모바일 강자 구글이 각자 분야에서 양강을 이루는 것은 확실하다. 즉, 이동할 때는 모바일 구글, 이동하지 않고 
-자리를 잡고 있을 때는 PC 네이버가 확실한 경쟁우위를 갖추고 있다.
+모바일 강자 구글이 각자 분야에서 양강을 이뤄 자웅을 겨루는 것은 확실하다. 즉, 이동할 때는 모바일 구글, 이동하지 않고 자리를 잡고 있을 때는 PC 네이버가 확실한 경쟁우위를 갖추고 있다. 
+젊은 사람은 스마트폰을 주로 삼고 PC를 세컨드로 활용하고, 중장년층은 큰화면의 PC를 주로 삼고
+스마트폰을 세컨드로 삼아 검색작업을 수행한다.
 
 [구글 추세(Google Trends)](https://trends.google.com/) 서비스를 통해 사용자들이 가장 많이 검색하는 검색어를 통해 추세를 대세(?)를 살펴볼 수 있다. 
-특히, 안드로이드, iOS 탑재된 스마트폰이 널리 보급되고 검색 인터페이스가 기존 입력방식에서 음성언어를 폭넓게 지원하고, 
-인식률도 현저히 높아짐에 따라 사람들의 검색량도 증가하고 구글 추세 분석 결과도 신빙성을 높혀가고 있다.
+특히, 안드로이드, iOS 탑재된 스마트폰이 널리 보급되고 검색 인터페이스가 기존 입력방식에서 음성언어를 폭넓게 지원하고, 인식률도 현저히 높아짐에 따라 사람들의 검색량도 증가하고 구글 추세 분석 결과도 신빙성을 높혀가고 있다.
 
-그럼 구글 추세를 네이버에 적용이 가능할까? 
+그럼 구글 추세를 네이버 검색에 유사하게 적용하여 보자.
 
-## 네이버 뉴스 추세(nTrend)
+## 네이버 검색 추세(nTrend)
 
-[네이버 뉴스 수집을 위한 도구](https://github.com/forkonlp/N2H4)를 활용하여 원데이터를 가져오고 나서,
-해당기간 최대 뉴스에 대한 값을 최대값으로 정하고 이에 대한 상대적인 비율을 적용하여 추세정보를 생성한다.
+[네이버 검색 도구](https://github.com/forkonlp/N2H4)를 활용하여 원데이터를 가져오고 나서,
+해당기간 최대 검색결과에 대한 값을 최대값으로 정하고 이에 대한 상대적인 비율을 적용하여 추세정보를 생성한다.
 
-### 최근 한달간 추세
+### 검색 총계
 
-17년 4월 1일부터 최근까지 한달간 추세는 다음과 같다.
+최근 한달간 검색을 누적하여 살펴본다.
 
-``` {r ntrend-recent, echo=FALSE, fig.width=12}
+``` {r ntrend-histogram, echo=FALSE, fig.width=12}
+ntrend_hist_g
+```
+
+### 최근 한달간 네이버 검색
+
+17년 4월 1일부터 최근까지 한달간 추세를 인터랙티브하게 표현하여 살펴본다.
+
+``` {r ntrend-interactive, echo=FALSE, fig.width=12}
 ggplotly(ntrend_g)  %>%
   layout(showlegend = FALSE)
+```
 
-ntrend_hist_g
+### 네이버 검색 데이터
 
+4월초부터 각 후보가 검색된 네이버 검색된 데이터는 다음과 같다.
+
+``` {r ntrend-table, echo=FALSE, fig.width=12}
 # 4. 표 --------------------------------------------------------------
 
 DT::datatable(trends_df %>% dplyr::select(후보, date, cnt) %>% 
@@ -128,7 +147,7 @@ DT::datatable(trends_df %>% dplyr::select(후보, date, cnt) %>%
   DT::formatCurrency(c(2:6), "", interval=3, mark=',', digits=0)
 ```
 
-
+## R 코드
 
 ``` {r ntrend-setup, eval=FALSE}
 # 0. 환경설정 ---------------------------------------------------------------
@@ -172,7 +191,8 @@ ntrend_g <- ggplot(trends_df,aes(x=date, y=ntrend, color=후보)) +
   geom_line() +
   scale_x_date(date_labels="%m-%d") +
   theme_minimal() +
-  theme(legend.position="none", 
+  theme(legend.position="none",
+        plot.title = element_text(size = 18, face = "bold"),
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=7.5))+
@@ -189,26 +209,33 @@ ntrend_g <- ggplot(trends_df,aes(x=date, y=ntrend, color=후보)) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="darkgrey", size=0.5) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-25")), linetype=4, color="darkgrey", size=0.5) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-28")), linetype=4, color="darkgrey", size=0.5) +
+  geom_vline(xintercept=as.numeric(ymd("2017-05-02")), linetype=4, color="darkgrey", size=0.5) +
   annotate(geom="text",x=as.Date("2017-04-19"), y=3,label="KBS",fontface="bold", size=3) +
   annotate(geom="text",x=as.Date("2017-04-23"), y=3,label="1차",fontface="bold", size=3) +
   annotate(geom="text",x=as.Date("2017-04-25"), y=3,label="JTBC",fontface="bold", size=3) +
-  annotate(geom="text",x=as.Date("2017-04-28"), y=3,label="2차",fontface="bold", size=3)
+  annotate(geom="text",x=as.Date("2017-04-28"), y=3,label="2차",fontface="bold", size=3) +
+  annotate(geom="text",x=as.Date("2017-05-02"), y=3,label="3차",fontface="bold", size=3)
 
-ntrend_hist_g <- ggplot(trends_hist_df, aes(x=후보, y=tlt_cnt)) +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="문재인"), fill="#065ce8") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="홍준표"), fill="#ff0000") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="안철수"), fill="#07f91f") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="유승민"), fill="#00faff") +
-  geom_bar(stat="identity", data=subset(trends_hist_df, 후보=="심상정"), fill="#f2ee09") +
+ggplot(trends_hist_df, aes(x=후보, y=tlt_cnt, fill=후보)) +
+  geom_bar(stat="identity") + 
+  scale_colour_manual(name="",
+                      values=c(문재인="#065ce8", 
+                                  홍준표="#ff0000",
+                                  안철수="#07f91f",
+                                  유승민="#00faff",
+                                  심상정="#f2ee09")) +
+  scale_y_continuous(label=scales::comma) +
   theme_minimal() +
   theme(legend.position="none", 
+        plot.title = element_text(size = 18, face = "bold"),
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
-        axis.text=element_text(size=7.5))+
+        axis.text=element_text(size=15.5))+
   labs(x="",y="",title="후보별 네이버 뉴스검색 추세",
        caption="\n 데이터출처: 네이버, 네이버 뉴스 수집 도구(https://github.com/forkonlp/N2H4/)",
        subtitle="") +
-  geom_text(data=trends_hist_df,aes(x=후보,y=tlt_cnt, label=scales::percent(cnt_pcnt)),vjust=0)
+  geom_text(data=trends_hist_df,aes(x=후보,y=tlt_cnt, label=scales::percent(cnt_pcnt)), vjust=-0.3, size=5)
+
 
 # 4. 표 --------------------------------------------------------------
 
