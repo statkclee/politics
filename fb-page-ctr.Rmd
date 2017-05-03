@@ -13,19 +13,6 @@ mainfont: NanumGothic
 
 ```{r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
-```
-
-
-## 페이스북 페이지 활동성
-
-민주당 문재인 후보와 국민의당 안철수 후보가 양강 체계를 구축하고 치열한 각축전을 벌이고 있다.
-페이스북 페이지 활동성(CTR)을 비교한다.
-
-
-### 페이스북 페이지 활동성 시각화
-
-``` {r facebook-page-ctr-viz, echo=FALSE, warn=FALSE, message=FALSE}
-# 0. 참고문헌 ---------------------------------------------------------------------
 library(Rfacebook)
 library(RCurl)
 library(tidyverse)
@@ -36,7 +23,35 @@ library(DT)
 library(gridExtra)
 library(ggthemes)
 library(extrafont)
+library(plotly)
 loadfonts()
+
+```
+
+
+## 페이스북 페이지 활동성
+
+민주당 문재인 후보와 국민의당 안철수 후보가 양강 체계를 구축하고 치열한 각축전을 벌이고 있다.
+페이스북 페이지 활동성(CTR)을 비교한다.
+
+### 페이스북 페이지 활동성 데이터
+
+문재인, 안철수, 심상정 후보 페이스북 담벼락에 쓴 포스트(글, 동영상, 사진, 링크)를 긁어와서 활동성(CTR) 평가를 위한 데이터 형태로 준비한다.
+
+``` {r facebook-page-ctr-viz, echo=TRUE, warn=FALSE, message=FALSE, eval=TRUE}
+# 0. 참고문헌 ---------------------------------------------------------------------
+# library(Rfacebook)
+# library(RCurl)
+# library(tidyverse)
+# library(lubridate)
+# library(ggplot2)
+# library(stringr)
+# library(DT)
+# library(gridExtra)
+# library(ggthemes)
+# library(extrafont)
+# library(plotly)
+# loadfonts()
 
 fb_keys <- "EAACEdEose0cBANDQoParhyI0hNdNx9FBw5UPASmBVxb3UADLZA7aCDb4PZBOqZCJLkwXUyGVXv8oWyE0lF4AKjxqq0jo2Wr1HJn6CqXU6tQPFxozEbWsnLpnjZBoEzT4E1gamCMULLb42aTby5SlqdIvk0GIdIx3YajHYxtoZAaZC86cxgm44t"
 
@@ -66,9 +81,11 @@ get_fb_posts <- function(page_name, start_date, end_date, fb_keys) {
 
 # moon_df <- get_fb_posts("moonbyun1", start_date, end_date, fb_keys)
 # ahn_df <- get_fb_posts("ahncs111", start_date, end_date, fb_keys)
+# sim_df <- get_fb_posts("simsangjung", start_date, end_date, fb_keys)
 
-moon_df <- read_csv("data/fb_moon.csv")
-ahn_df <- read_csv("data/fb_ahn.csv")
+moon_df <- read_csv("data/fb_moon_ctr.csv")
+ahn_df  <- read_csv("data/fb_ahn_ctr.csv")
+sim_df  <- read_csv("data/fb_sim_ctr.csv")
 
 # 2. 데이터 변환 ---------------------------------------------------------------------
 ## 2.1. 안철수 -----------------------------------------------------------------------
@@ -101,19 +118,42 @@ moon_ctr_tbl_df <- moon_time_df %>% group_by(wday, type) %>%
             likes_mean = mean(likes_count)) %>% 
   mutate(candid = "문재인")
 
+## 2.3. 심상정 -----------------------------------------------------------------------
+sim_time_df <- sim_df %>% 
+  dplyr::select(from_name, fb_date=created_time, type, likes_count, comments_count, shares_count) %>% 
+  mutate(wday = week(fb_date))
+
+sim_ctr_df <- sim_time_df %>% group_by(wday) %>% 
+  summarise(posts = n(),
+            likes_mean = mean(likes_count)) %>% 
+  mutate(candid = "심상정")
+
+sim_ctr_tbl_df <- sim_time_df %>% group_by(wday, type) %>% 
+  summarise(posts = n(),
+            likes_mean = mean(likes_count)) %>% 
+  mutate(candid = "심상정")
+
 ## 2.3. 데이터 병합 -----------------------------------------------------------------------
 
-fb_ctr_df <- bind_rows(ahn_ctr_df, moon_ctr_df)
+fb_ctr_df <- bind_rows(ahn_ctr_df, moon_ctr_df) %>% 
+  bind_rows(sim_ctr_df)
 
+```
+
+### 페이스북 페이지 활동성 시각화
+
+17년 1월 첫주부터 최근까지 주별 활동성(좋아요 평균)을 각 후보별로 비교한다.
+
+``` {r fb-ctr-viz, fig.width=12}
 # 3. 시각화 -----------------------------------------------------------------------
-## 3.1. 문재인 vs. 안철수 합쳐서 --------------------------------------------------
-ggplot(data=fb_ctr_df)  +
+## 3.1. 문재인, 안철수, 심상정 합쳐서 --------------------------------------------------
+ctr_p <- ggplot(data=fb_ctr_df)  +
   aes(x=wday, y=likes_mean, color=candid) +
   geom_point(aes(colour=candid), alpha=0.9) +
   geom_line(aes(colour=candid), alpha=0.9) +
   scale_y_continuous(labels = scales::comma) +
   theme_tufte(base_family="NanumGothic") +
-  theme(legend.position="top", 
+  theme(legend.position="none", 
         legend.title = element_blank(),
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="bold"),
@@ -121,14 +161,16 @@ ggplot(data=fb_ctr_df)  +
   labs(x="주간 통계: '17년 1월 1주차 ~",y="",title="",
        caption="\n source: https://developers.facebook.com/tools/explorer",
        subtitle="페이스북 주별 담벼락글 별 평균 좋아요") +
-  scale_color_manual(values=c("#4286f4", "#1cd313"))
+  scale_color_manual(values=c("#4286f4", "#1cd313", "#f2ee09"))
 
-## 3.2. 문재인 vs. 안철수 나눠서 --------------------------------------------------
+ggplotly(ctr_p)
+
+## 3.2. 문재인, 안철수, 심상정 나눠서 --------------------------------------------------
 
 ahn_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "안철수"))  +
   aes(x=wday, y=likes_mean) +
-  geom_point(aes(colour="green"), alpha=0.3) +
-  geom_line(aes(colour="green"), alpha=0.3) +
+  geom_point(aes(colour="green"), alpha=1.0, size=1.5) +
+  geom_line(aes(colour="green"), alpha=0.7, size=0.7) +
   scale_y_continuous(labels = scales::comma) +
   theme_tufte(base_family="NanumGothic") +
   theme(legend.position="none", 
@@ -143,8 +185,8 @@ ahn_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "안철수"))  +
 
 moon_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "문재인"))  +
   aes(x=wday, y=likes_mean) +
-  geom_point(aes(colour="blue"), alpha=0.3) +
-  geom_line(aes(colour="blue"), alpha=0.3) +
+  geom_point(aes(colour="blue"), alpha=1.0, size=1.5) +
+  geom_line(aes(colour="blue"), alpha=0.7, size=0.7) +
   scale_y_continuous(labels = scales::comma) +
   theme_tufte(base_family="NanumGothic") +
   theme(legend.position="none", 
@@ -157,14 +199,30 @@ moon_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "문재인"))  +
        subtitle="페이스북 주별 담벼락글 별 평균 좋아요") +
   scale_color_manual(values=c("#4286f4"))
 
-grid.arrange(ahn_p, moon_p, nrow=1)
+sim_p <- ggplot(data=fb_ctr_df %>% dplyr::filter(candid == "심상정"))  +
+  aes(x=wday, y=likes_mean) +
+  geom_point(aes(colour="yellow"), alpha=1.0, size=1.5) +
+  geom_line(aes(colour="yellow"), alpha=0.7, size=0.7) +
+  scale_y_continuous(labels = scales::comma) +
+  theme_tufte(base_family="NanumGothic") +
+  theme(legend.position="none", 
+        legend.title = element_blank(),
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="bold"),
+        axis.text=element_text(size=9.5))+
+  labs(x="주간 통계: '17년 1월 1주차 ~",y="",title="심상정 페북 페이지",
+       caption="\n source: https://developers.facebook.com/tools/explorer",
+       subtitle="페이스북 주별 담벼락글 별 평균 좋아요") +
+  scale_color_manual(values=c("#f2ee09"))
+
+grid.arrange(moon_p, sim_p, ahn_p, nrow=1)
 ```
 
 ### 페이스북 페이지 활동성 상세 집계표
 
 #### 안철수
 
-``` {r facebook-page-table-ahn, echo=FALSE, warn=FALSE, message=FALSE}
+``` {r facebook-page-table-ahn, warn=FALSE, message=FALSE}
 
 DT::datatable(ahn_df %>% dplyr::select(from_name, id, type, likes=likes_count, comments=comments_count, 
                                        shares=shares_count, link))
@@ -175,11 +233,22 @@ DT::datatable(ahn_ctr_tbl_df %>% dplyr::select(candid, type, wday, posts, likes_
 
 #### 문재인
 
-``` {r facebook-page-table-moon,  echo=FALSE, warn=FALSE, message=FALSE}
+``` {r facebook-page-table-moon, warn=FALSE, message=FALSE}
 
 DT::datatable(moon_df %>% dplyr::select(from_name, id, type, likes=likes_count, comments=comments_count, 
                                        shares=shares_count, link))
 
 DT::datatable(moon_ctr_tbl_df %>% dplyr::select(candid, type, wday, posts, likes_mean)) %>% 
+  DT::formatCurrency("likes_mean", "", interval=3, mark=',', digits=1)
+```
+
+#### 심상정
+
+``` {r facebook-page-table-sim,  warn=FALSE, message=FALSE}
+
+DT::datatable(sim_df %>% dplyr::select(from_name, id, type, likes=likes_count, comments=comments_count, 
+                                       shares=shares_count, link))
+
+DT::datatable(sim_ctr_tbl_df %>% dplyr::select(candid, type, wday, posts, likes_mean)) %>% 
   DT::formatCurrency("likes_mean", "", interval=3, mark=',', digits=1)
 ```
