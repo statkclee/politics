@@ -33,8 +33,8 @@
 
 ## TV 토론 시각화
 
-<img src="fig/credit-viz-1.png" style="display: block; margin: auto;" /><!--html_preserve--><div id="htmlwidget-b8d50f8be4be8bf5e615" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b8d50f8be4be8bf5e615">{"x":{"filter":"none","data":[["1","2","3","4","5"],["문재인","홍준표","안철수","유승민","심상정"],["A","C","C","A+","B"],["C","C","B+","A","B"],["B","C","B+","A","C"],["B+","C","B","A","C"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>후보<\/th>\n      <th>debate0423<\/th>\n      <th>debate0425<\/th>\n      <th>debate0428<\/th>\n      <th>debate0502<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve--><img src="fig/credit-viz-3.png" style="display: block; margin: auto;" />
+<img src="fig/credit-viz-1.png" style="display: block; margin: auto;" /><!--html_preserve--><div id="htmlwidget-98408f5dba5807cac92d" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-98408f5dba5807cac92d">{"x":{"filter":"none","data":[["1","2","3","4","5"],["문재인","홍준표","안철수","유승민","심상정"],["A","C","C","A+","B"],["C","C","B+","A","B"],["B","C","B+","A","C"],["B+","C","B","A","C"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>후보<\/th>\n      <th>debate0423<\/th>\n      <th>debate0425<\/th>\n      <th>debate0428<\/th>\n      <th>debate0502<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve--><img src="fig/credit-viz-3.png" style="display: block; margin: auto;" />
 
 ## R 코드 
 
