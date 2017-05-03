@@ -110,16 +110,22 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
     1. [불안한 안보 - 군사비 지출](korea-military.html) 
     1. [컴퓨팅 사고력 SW 교육](ct-education.html) 
 1. 제19대 대통령 선거
-    1. [페이스북 페이지 팬추세(문,안)](fb-fans-trends.html)
-    1. [페이스북 페이지 활동성(CTR)](fb-page-ctr.html)
-    1. [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)
-    1. [유튜브 채널](youtube-channel.html)
-    1. [대선후보 정책평가](radar-chart.html)
-    1. [소득과 득표율 관계](income-vs-vote.html)
-    1. [보수와 진보를 넘어서](beyond-red-vs-blues.html)
     1. **[5월3일 이후](beyond-may-third.html)**
-        - [네이버 추세(Trends)](naver-google-trends.html) 
-        - [구글 추세(Trends)](google-trends-only.html) 
+        - **알고자 하는 것(검색)**
+            - [네이버 추세(Trends)](naver-google-trends.html) 
+            - [구글 추세(Trends)](google-trends-only.html) 
+        - **좋아하는 것(페북Like)**            
+            - [페이스북 페이지 팬추세(문,안)](fb-fans-trends.html)
+            - [페이스북 페이지 활동성(CTR)](fb-page-ctr.html)
+        - **[여론조사(나무위키 조사기관)](beyond-may-third.html)**            
+        - [제18대 대선 투표결과](http://statkclee.github.io/data-science/geo-18-president.html)
+    1. **다양한 빅데이터**
+        - [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)
+        - [유튜브 채널](youtube-channel.html)
+        - [대선후보 정책평가](radar-chart.html)
+        - [소득과 득표율 관계](income-vs-vote.html)
+        - [보수와 진보를 넘어서](beyond-red-vs-blues.html)        
+
 
 > ### xwMOOC 오픈 교재
 > 
