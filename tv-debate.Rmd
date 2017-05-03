@@ -75,7 +75,7 @@ debate_g <- ggplot(debate_df, aes(x=ddate, y=score, color=후보, group=후보))
         plot.title = element_text(size = 18, face = "bold"),
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
-        axis.text=element_text(size=7.5)) +
+        axis.text=element_text(size=10.5)) +
   labs(x="",y="",title="중앙일보 대선 TV토론 평가",
        caption="\n 데이터출처: 중앙일보 라이브팩트체크팀",
        subtitle="") +
