@@ -13,7 +13,6 @@ mainfont: NanumGothic
 
 ```{r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
-
 # 0. 환경설정 --------------------------------------------------
 # devtools::install_github("PMassicotte/gtrendsR")
 library(lubridate)
@@ -21,38 +20,38 @@ library(plotly)
 library(gtrendsR)
 library(tidyverse)
 library(extrafont)
+library(highcharter)
 loadfonts()
 par(family = "NanumBarunGothic")
 
 # 1. 단일 검색어 추세 --------------------------------------------------
 ## 1.1. 데이터 가져오기
-# moon_trend <- gtrends("문재인", time="2017-04-01 2017-05-01")
-# hong_trend <- gtrends("홍준표", time="2017-04-01 2017-05-01")
-# ahn_trend  <- gtrends("안철수", time="2017-04-01 2017-05-01")
-# yoo_trend  <- gtrends("유승민", time="2017-04-01 2017-05-01")
-# sim_trend  <- gtrends("심상정", time="2017-04-01 2017-05-01")
+#five_trend <- gtrends(c("문재인", "홍준표", "안철수", "유승민", "심상정"), time="2017-04-28 2017-05-05", geo="KR")
 
-#saveRDS(moon_trend, "data/moon_trend.RDS")
-#saveRDS(hong_trend, "data/hong_trend.RDS")
-#saveRDS(ahn_trend, "data/ahn_trend.RDS")
-#saveRDS(yoo_trend, "data/yoo_trend.RDS")
-#saveRDS(sim_trend, "data/sim_trend.RDS")
+#saveRDS(five_trend, "data/five_trend.RDS")
 
 # 2. 데이터 정제 --------------------------------------------------
 
-moon_trend <- readRDS("data/moon_trend.RDS")
-hong_trend <- readRDS("data/hong_trend.RDS")
-ahn_trend  <- readRDS("data/ahn_trend.RDS")
-yoo_trend  <- readRDS("data/yoo_trend.RDS")
-sim_trend  <- readRDS("data/sim_trend.RDS")
+five_trend <- readRDS("data/five_trend.RDS")
 
-trend_df <- moon_trend$interest_over_time %>% 
-  bind_rows(hong_trend$interest_over_time) %>% 
-  bind_rows(ahn_trend$interest_over_time) %>% 
-  bind_rows(yoo_trend$interest_over_time) %>% 
-  bind_rows(sim_trend$interest_over_time)
+trend_df <- five_trend$interest_over_time %>% 
+  mutate(date = ymd(date))
 
-trend_df <- trend_df %>% mutate(date = ymd(date))
+region_df <- five_trend$interest_by_region %>% 
+  dplyr::rename(name = location) %>% 
+  group_by(keyword, name) %>% 
+  summarise(hits = mean(hits)) %>% ungroup
+
+regions_df <- region_df %>% 
+  mutate(name = ifelse(name=="Jeollanam-do", "South Jeolla", name)) %>%
+  mutate(name = ifelse(name=="Jeollabuk-do", "North Jeolla", name)) %>%
+  mutate(name = ifelse(name=="Gyeongsangnam-do", "South Gyeongsang", name)) %>%
+  mutate(name = ifelse(name=="Gyeongsangbuk-do", "North Gyeongsang", name)) %>%
+  mutate(name = ifelse(name=="Gangwon-do", "Gangwon", name)) %>%
+  mutate(name = ifelse(name=="Jeju-do", "Jeju", name)) %>%
+  mutate(name = ifelse(name=="Chungcheongbuk-do", "North Chungcheong", name)) %>% 
+  mutate(name = ifelse(name=="Chungcheongnam-do", "South Chungcheong", name)) %>% 
+  mutate(name = ifelse(name=="Gyeonggi-do", "Gyeonggi", name))
 
 # 3. 데이터 시각화 --------------------------------------------------------
 ## 3.1. 추세 --------------------------------------------------------------
@@ -64,7 +63,7 @@ gtrend_g <- ggplot(trend_df,aes(x=date, y=hits, color=keyword)) +
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=7.5))+
-  labs(x="",y="",title="후보별 구글 뉴스검색 추세",
+  labs(x="",y="",title="후보별 구글 추세",
        caption="\n 데이터출처: 구글, 구글 트렌드 도구(https://github.com/PMassicotte/gtrendsR)",
        subtitle="") +
   scale_colour_manual(name="",
@@ -73,19 +72,14 @@ gtrend_g <- ggplot(trend_df,aes(x=date, y=hits, color=keyword)) +
                                   안철수="#07f91f",
                                   유승민="#00faff",
                                   심상정="#f2ee09")) +
-  geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="darkgrey", size=0.5) +
-  geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="darkgrey", size=0.5) +
-  geom_vline(xintercept=as.numeric(ymd("2017-04-25")), linetype=4, color="darkgrey", size=0.5) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-28")), linetype=4, color="darkgrey", size=0.5) +
-  annotate(geom="text",x=as.Date("2017-04-19"), y=3,label="KBS",fontface="bold", size=3) +
-  annotate(geom="text",x=as.Date("2017-04-23"), y=3,label="1차",fontface="bold", size=3) +
-  annotate(geom="text",x=as.Date("2017-04-25"), y=3,label="JTBC",fontface="bold", size=3) +
   annotate(geom="text",x=as.Date("2017-04-28"), y=3,label="2차",fontface="bold", size=3)
+
 ```
 
 ## 1. 구글 추세를 통해본 주요 대선후보
 
-4월 1일부터 가장 최근 1개월 각 주요 대선후보별 추세를 보는 다음과 같다.
+가장 최근 1주일(4월 28 ~ 5월3일) 각 주요 대선후보별 구글 추세를 보는 다음과 같다.
 
 
 ``` {r google-trend, echo=FALSE, fig.width=12}
@@ -99,8 +93,52 @@ DT::datatable(trend_df %>% dplyr::select(후보=keyword, date, hits) %>%
   DT::formatCurrency(c(2:6), "", interval=3, mark=',', digits=0)
 ```
 
+## 2. 지역별 후보 구글 추세
 
-``` {r google-trend-setup, eval=FALSE}
+``` {r google-trend-geo, echo=FALSE, fig.width=12}
+# 4. 지역별 --------------------------------------------------------------
+
+# kr_mapdata <- get_data_from_map(download_map_data("countries/kr/kr-all"))
+## 4.1. 문재인 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="문재인"),
+      joinBy = "name", value = "hits", name = "문재인 지역별 구글 추세", download_map_data = TRUE,
+      defaultColor = "#07f91f") %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#065ce8") %>% 
+  hc_title(text = "문재인 지역별 구글 추세")
+
+## 4.2. 홍준표 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="홍준표"),
+      joinBy = "name", value = "hits", name = "홍준표 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#ff0000") %>% 
+  hc_title(text = "홍준표 지역별 구글 추세")
+
+## 4.3. 안철수 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="안철수"),
+      joinBy = "name", value = "hits", name = "안철수 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#07f91f") %>% 
+  hc_title(text = "안철수 지역별 구글 추세")
+
+## 4.4. 유승민 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="유승민"),
+      joinBy = "name", value = "hits", name = "유승민 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#00faff") %>% 
+  hc_title(text = "유승민 지역별 구글 추세")
+
+## 4.5. 심상정 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="심상정"),
+      joinBy = "name", value = "hits", name = "심상정 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#f2ee09") %>% 
+  hc_title(text = "심상정 지역별 구글 추세")
+
+```
+
+## 3. R 코드
+
+``` {r google-trend-rcode, eval=FALSE}
 # 0. 환경설정 --------------------------------------------------
 # devtools::install_github("PMassicotte/gtrendsR")
 library(lubridate)
@@ -108,28 +146,38 @@ library(plotly)
 library(gtrendsR)
 library(tidyverse)
 library(extrafont)
+library(highcharter)
 loadfonts()
 par(family = "NanumBarunGothic")
 
 # 1. 단일 검색어 추세 --------------------------------------------------
 ## 1.1. 데이터 가져오기
-moon_trend <- gtrends("문재인", time="2017-04-01 2017-05-01")
-hong_trend <- gtrends("홍준표", time="2017-04-01 2017-05-01")
-ahn_trend  <- gtrends("안철수", time="2017-04-01 2017-05-01")
-yoo_trend  <- gtrends("유승민", time="2017-04-01 2017-05-01")
-sim_trend  <- gtrends("심상정", time="2017-04-01 2017-05-01")
+five_trend <- gtrends(c("문재인", "홍준표", "안철수", "유승민", "심상정"), time="2017-04-28 2017-05-05", geo="KR")
 
+saveRDS(five_trend, "data/five_trend.RDS")
 
 # 2. 데이터 정제 --------------------------------------------------
 
+five_trend <- readRDS("data/five_trend.RDS")
 
-trend_df <- moon_trend$interest_over_time %>% 
-  bind_rows(hong_trend$interest_over_time) %>% 
-  bind_rows(ahn_trend$interest_over_time) %>% 
-  bind_rows(yoo_trend$interest_over_time) %>% 
-  bind_rows(sim_trend$interest_over_time)
+trend_df <- five_trend$interest_over_time %>% 
+  mutate(date = ymd(date))
 
-trend_df <- trend_df %>% mutate(date = ymd(date))
+region_df <- five_trend$interest_by_region %>% 
+  dplyr::rename(name = location) %>% 
+  group_by(keyword, name) %>% 
+  summarise(hits = mean(hits)) %>% ungroup
+
+regions_df <- region_df %>% 
+  mutate(name = ifelse(name=="Jeollanam-do", "South Jeolla", name)) %>%
+  mutate(name = ifelse(name=="Jeollabuk-do", "North Jeolla", name)) %>%
+  mutate(name = ifelse(name=="Gyeongsangnam-do", "South Gyeongsang", name)) %>%
+  mutate(name = ifelse(name=="Gyeongsangbuk-do", "North Gyeongsang", name)) %>%
+  mutate(name = ifelse(name=="Gangwon-do", "Gangwon", name)) %>%
+  mutate(name = ifelse(name=="Jeju-do", "Jeju", name)) %>%
+  mutate(name = ifelse(name=="Chungcheongbuk-do", "North Chungcheong", name)) %>% 
+  mutate(name = ifelse(name=="Chungcheongnam-do", "South Chungcheong", name)) %>% 
+  mutate(name = ifelse(name=="Gyeonggi-do", "Gyeonggi", name))
 
 # 3. 데이터 시각화 --------------------------------------------------------
 ## 3.1. 추세 --------------------------------------------------------------
@@ -141,7 +189,7 @@ gtrend_g <- ggplot(trend_df,aes(x=date, y=hits, color=keyword)) +
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
         axis.text=element_text(size=7.5))+
-  labs(x="",y="",title="후보별 구글 뉴스검색 추세",
+  labs(x="",y="",title="후보별 구글 추세",
        caption="\n 데이터출처: 구글, 구글 트렌드 도구(https://github.com/PMassicotte/gtrendsR)",
        subtitle="") +
   scale_colour_manual(name="",
@@ -150,12 +198,54 @@ gtrend_g <- ggplot(trend_df,aes(x=date, y=hits, color=keyword)) +
                                   안철수="#07f91f",
                                   유승민="#00faff",
                                   심상정="#f2ee09")) +
-  geom_vline(xintercept=as.numeric(ymd("2017-04-19")), linetype=4, color="darkgrey", size=0.5) +
-  geom_vline(xintercept=as.numeric(ymd("2017-04-23")), linetype=4, color="darkgrey", size=0.5) +
-  geom_vline(xintercept=as.numeric(ymd("2017-04-25")), linetype=4, color="darkgrey", size=0.5) +
   geom_vline(xintercept=as.numeric(ymd("2017-04-28")), linetype=4, color="darkgrey", size=0.5) +
-  annotate(geom="text",x=as.Date("2017-04-19"), y=3,label="KBS",fontface="bold", size=3) +
-  annotate(geom="text",x=as.Date("2017-04-23"), y=3,label="1차",fontface="bold", size=3) +
-  annotate(geom="text",x=as.Date("2017-04-25"), y=3,label="JTBC",fontface="bold", size=3) +
   annotate(geom="text",x=as.Date("2017-04-28"), y=3,label="2차",fontface="bold", size=3)
+
+ggplotly(gtrend_g)  %>%
+  layout()
+
+# 4. 지역별 --------------------------------------------------------------
+
+# kr_mapdata <- get_data_from_map(download_map_data("countries/kr/kr-all"))
+## 4.1. 문재인 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="문재인"),
+      joinBy = "name", value = "hits", name = "문재인 지역별 구글 추세", download_map_data = TRUE,
+      defaultColor = "#07f91f") %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#065ce8") %>% 
+  hc_title(text = "문재인 지역별 구글 추세")
+
+## 4.2. 홍준표 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="홍준표"),
+      joinBy = "name", value = "hits", name = "홍준표 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#ff0000") %>% 
+  hc_title(text = "홍준표 지역별 구글 추세")
+
+## 4.3. 안철수 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="안철수"),
+      joinBy = "name", value = "hits", name = "안철수 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#07f91f") %>% 
+  hc_title(text = "안철수 지역별 구글 추세")
+
+## 4.4. 유승민 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="유승민"),
+      joinBy = "name", value = "hits", name = "유승민 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#00faff") %>% 
+  hc_title(text = "유승민 지역별 구글 추세")
+
+## 4.5. 심상정 -----------------------------------------------------------
+hcmap(map = "countries/kr/kr-all", data = regions_df %>% dplyr::filter(keyword=="심상정"),
+      joinBy = "name", value = "hits", name = "심상정 지역별 구글 추세",
+      download_map_data = TRUE) %>% 
+  hc_colorAxis(minColor = "#FFFFFF", maxColor = "#f2ee09") %>% 
+  hc_title(text = "심상정 지역별 구글 추세")
+
+# 5. 표 -------------------------------------------------------
+
+DT::datatable(trend_df %>% dplyr::select(후보=keyword, date, hits) %>% 
+                spread(후보, hits)) %>% 
+  DT::formatCurrency(c(2:6), "", interval=3, mark=',', digits=0)
+
 ```  
