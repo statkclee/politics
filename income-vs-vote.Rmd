@@ -17,6 +17,7 @@ library(tidyverse)
 library(readxl)
 library(ggrepel)
 library(ggthemes)
+library(gridExtra)
 library(extrafont)
 loadfonts()
 theme_set(theme_wsj(base_family = "NanumGothic"))
@@ -75,51 +76,207 @@ votes_df <- vote_df %>%
 
 ## 1.2. 2012년 1인당 소득 ---------------------------------------
 
-income_df <- read_excel("data/행정구역_시도_별_1인당_지역내총생산__지역총소득__개인소득_20170430200327.xlsx")
-names(income_df) <- c("시도명", "총소득", "개인소득", "민간소비")
+income_12_df <- read_excel("data/행정구역_시도_별_1인당_지역내총생산__지역총소득__개인소득_20170430200327.xlsx")
+names(income_12_df) <- c("시도명", "총소득", "개인소득", "민간소비")
 
-incomes_df <- income_df %>% 
+income_15_df <- read_excel("data/행정구역_시도_별_1인당_지역내총생산__지역총소득__개인소득_20170504151830.xlsx", skip=1)
+names(income_15_df) <- c("시도명", "총소득", "개인소득")
+
+incomes_12_df <- income_12_df %>% 
   dplyr::filter(`시도명` !="행정구역(시도)별" & `시도명` !="세종특별자치시") %>% 
   dplyr::select(`시도명`, `개인소득`) %>% 
-  mutate_each(funs(as.numeric), matches("^[개]"))
+  mutate_each(funs(as.numeric), dplyr::matches("^[개]"))
+
+incomes_15_df <- income_15_df %>% 
+  dplyr::filter(`시도명` !="행정구역(시도)별" & `시도명` !="세종특별자치시") %>% 
+  dplyr::select(`시도명`, `개인소득`) %>% 
+  mutate_each(funs(as.numeric), dplyr::matches("^[개]"))
 
 ## 1.3. 데이터 결합 --------------------------------------------
 
-df <- votes_df %>% left_join(incomes_df, by="시도명")
+vote_inc_12_df <- votes_df %>% left_join(incomes_12_df, by="시도명")
+vote_inc_15_df <- votes_df %>% left_join(incomes_15_df, by="시도명")
 
 # 2. 데이터 정제 ---------------------------------------------
 
-ratio_df <- df %>% 
+ratio_12_df <- vote_inc_12_df %>% 
   dplyr::select(시도명, 박득표율, 문득표율, 개인소득) %>% 
   gather(후보, 득표율, -시도명, -개인소득)
+
+ratio_15_df <- vote_inc_15_df %>% 
+  dplyr::select(시도명, 박득표율, 문득표율, 개인소득) %>% 
+  gather(후보, 득표율, -시도명, -개인소득)
+
 ```
 
 ## 데이터 시각화
 
 2012년 개인소득(경제)과 대선 후보별득표율(정치) 간의 관계를 산점도를 그려보고 `lowess` 적합을 통해 추세를 시각화한다.
 
+### 득표율과 2012년 2015년 개인소득 비교 (박근혜, 문재인)
+
 ``` {r political-economy-viz, fig.width=12}
 # 3. 데이터 시각화 ---------------------------------------------
 
-ggplot(ratio_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`, fill=`후보`)) +
+ratio_12_g <- ggplot(ratio_12_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`, fill=`후보`)) +
   geom_point(aes(y=`개인소득`, x=`득표율`/100, color=`후보`), size=2) +
   geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
   geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="green", alpha=0.1) +
-  theme_wsj(base_family='NanumGothic') +
+  theme_minimal(base_family="NanumGothic") +
   scale_x_continuous(labels=scales::percent) +
-  scale_y_continuous(labels=scales::comma) +
+  scale_y_continuous(labels=scales::comma, limits=c(13000, 21000)) +
   theme(legend.position="top", 
         plot.caption=element_text(hjust=0,size=8),
         plot.subtitle=element_text(face="italic"),
-        axis.text=element_text(size=10.5),
-        text=element_text(family="NanumGothic")) +
-  labs(x="1인당 소득 (단위:천원)",y="",title="시도별 득표수와 1인당 소득",
-       subtitle="X축: 후보별 지지율(%), Y축: 1인당 소득(천원)",
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="",y="개인소득(단위:천원)",title="득표율와 개인소득(2012년)")
+
+ratio_15_g <- ggplot(ratio_15_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`, fill=`후보`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100, color=`후보`), size=2) +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="green", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma, limits=c(13000, 21000)) +
+  theme(legend.position="top", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="",y="",title="득표율와 개인소득(2015년)")
+
+grid.arrange(ratio_12_g, ratio_15_g, ncol=2)
+
+```
+
+### 득표율과 2012년 2015년 개인소득 비교 (전체)
+
+``` {r political-economy-all-viz, fig.width=12}
+# 3. 데이터 시각화 ---------------------------------------------
+
+ratio_12_gg <- ggplot(ratio_12_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100), size=2) +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="green", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma, limits=c(13000, 21000)) +
+  theme(legend.position="top", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="",y="개인소득(단위:천원)",title="득표율와 개인소득(2012년)")
+
+ratio_15_gg <- ggplot(ratio_15_df, aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100), size=2) +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="green", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma, limits=c(13000, 21000)) +
+  theme(legend.position="top", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="",y="",title="득표율와 개인소득(2015년)")
+
+grid.arrange(ratio_12_gg, ratio_15_gg, ncol=2)
+
+```
+
+
+### 후보별 득표율과 시도별 개인소득
+
+#### 2012년
+
+2012년 박근혜, 문재인 후보 모두 지지율이 올라가면서 1인당 개인소득이 증가하다가 50%를 넘게되면 다시 감소하는 패턴을 보이고 있다.
+
+``` {r political-economy-by-candidate-12-viz, fig.width=12}
+ggplot(ratio_12_df %>% dplyr::filter(후보=="박득표율"), aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100), size=2, color="red") +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="red", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma) +
+  theme(legend.position="none", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="지지율(%)",y="1인당 소득",title="시도별 득표율와 1인당 소득(2012년)",
        caption="\n 자료출처: 선관위 18대 대선 득표수와 통계청 시도별 소득자료")
+
+
+ggplot(ratio_12_df %>% dplyr::filter(후보=="문득표율"), aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100), size=2, color="blue") +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="blue", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma) +
+  theme(legend.position="none", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="지지율(%)",y="1인당 소득",title="시도별 득표율와 1인당 소득(2012년)",
+       caption="\n 자료출처: 선관위 18대 대선 득표수와 통계청 시도별 소득자료")
+```
+
+#### 2015년
+
+2015년에도 박근혜, 문재인 후보 모두 지지율이 올라가면서 1인당 개인소득이 증가하다가 50%를 넘게되면 다시 감소하는 패턴을 보이고 있다.
+
+``` {r political-economy-by-candidate-viz, fig.width=12}
+ggplot(ratio_15_df %>% dplyr::filter(후보=="박득표율"), aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100), size=2, color="red") +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="red", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma) +
+  theme(legend.position="none", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="지지율(%)",y="1인당 소득",title="시도별 득표율와 1인당 소득(2015년)",
+       caption="\n 자료출처: 선관위 18대 대선 득표수와 통계청 시도별 소득자료")
+
+
+ggplot(ratio_15_df %>% dplyr::filter(후보=="문득표율"), aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_point(aes(y=`개인소득`, x=`득표율`/100), size=2, color="blue") +
+  geom_text_repel(aes(y=`개인소득`, x=`득표율`/100, label=`시도명`)) +
+  geom_smooth(aes(group = 1), se=TRUE, level=0.67, size=1, color="blue", alpha=0.1) +
+  theme_minimal(base_family="NanumGothic") +
+  scale_x_continuous(labels=scales::percent) +
+  scale_y_continuous(labels=scales::comma) +
+  theme(legend.position="none", 
+        plot.caption=element_text(hjust=0,size=8),
+        plot.subtitle=element_text(face="italic"),
+        axis.text=element_text(size=9.5),
+        axis.title=element_text(size=10.5)) +
+  labs(x="지지율(%)",y="1인당 소득",title="시도별 득표율와 1인당 소득(2015년)",
+       caption="\n 자료출처: 선관위 18대 대선 득표수와 통계청 시도별 소득자료")
+```
+
 
 # 4. 데이터 표 ---------------------------------------------
 
+``` {r incomes-tbl, warning=FALSE, messages=FALSE}
 DT::datatable(votes_df %>% mutate(`박득표율` = `박득표율`/100, `문득표율`=`문득표율`/100)) %>% 
   DT::formatCurrency(c(2,3,4), currency="", interval=3, mark=",", digits=0) %>% 
   DT::formatPercentage(c('박득표율','문득표율'), digits=1)
+
+incomes_12_df <- incomes_12_df %>% dplyr::rename(`개인소득_12` = 개인소득)
+incomes_15_df <- incomes_15_df %>% dplyr::rename(`개인소득_15` = 개인소득)
+  
+incomes_df <- incomes_12_df %>% left_join(incomes_15_df)
+
+DT::datatable(incomes_df) %>% 
+  DT::formatCurrency(c(2,3), currency="", interval=3, mark=",", digits=0)
 ```
