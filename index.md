@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 정치 민주화, 경제 민주화, 그리고 정보 민주화
-subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
 ---
 
 > ### 정치란 무엇인가?
@@ -13,8 +13,8 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
 > * 화해하고 말리고 조정하는 역할을 하는게 정치인의 시작  
 > * 정치란 그 시대 가장 지혜로운 자의 역할!  
 > * 사례
->     * 박정희 대통령 - 경부고속도로
->     * 김대중 대통령 - 정보고속도로
+>     * 박정희 대통령 - 경부 고속도로
+>     * 김대중 대통령 - 정보 고속도로
 >     * 차기 대통령 - ?????
 > 
 <table>
@@ -88,6 +88,7 @@ subtitle: 데이터 과학자와 함께 하는 제19대 대통령 선거
         - [대한민국 - 이명박 퇴임사 vs. 박근혜 취임사](text-mb-gh.html)
     1. **데이터 제품**
         - [손학규 대모험 애니메이션](pe-adventure-animation.html)
+        - [계층형 나무 - 제18대 대통령선거](pe-collapsible-tree.html)
 1. [**기계와 더불어 사는 한국인** - 패러다임 전환](https://statkclee.github.io/xwMOOC/paradigm/)
     1. [국민의당 대권주자 사진 속 나이와 감정](ml-people-party-candidate.html)
         - [사진속 나이 추정](http://statkclee.github.io/deep-learning/ms-oxford-age.html)
