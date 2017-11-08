@@ -110,7 +110,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
     1. [부패지수와 인간개발지수](korea-cpi-hdi.html) 
     1. [불안한 안보 - 군사비 지출](korea-military.html) 
     1. [컴퓨팅 사고력 SW 교육](ct-education.html) 
-1. 제19대 대통령 선거
+1. 제19대 대통령 선거(2017)
     1. **[5월3일 이후](beyond-may-third.html)**
         - **알고자 하는 것(검색)**
             - [네이버 추세(Trends)](naver-google-trends.html) 
@@ -127,7 +127,8 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
         - [대선후보 정책평가](radar-chart.html)
         - [소득과 득표율 관계](income-vs-vote.html)
         - [보수와 진보를 넘어서](beyond-red-vs-blues.html)        
-
+1. **제7회 전국동시지방선거(2018)**
+    1. [성남시에 나타난 촛불 효과](sungnam-candle-effect.html)
 
 > ### xwMOOC 오픈 교재
 > 
