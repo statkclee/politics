@@ -39,9 +39,10 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
     1. [선거 데이터: 전장(battle field) ...](03-vote-data.html)
         - [제19대 대통령선거 일정](pe-schedule.html)
         - [대한민국 인구 피라미드](pe-population-pyramid.html)
-        - **지역내총생산(GRDP)** 
-            - [지역내총생산(GRDP) 변화](pe-grdp.html)
+        - **지역내총생산(GRDP)**             
             - [GDP와 일인당 국민소득](le-gdp.html)
+            - [지역내총생산(GRDP) 변화](pe-grdp.html)
+            - [시도별 지역내총생산(GRDP) - 2016년](le-grdp-sido.html)
         - [국민의당 경선 투표소](pe-people-party-station.html)
         - [제19대 국회의원 선거](pe-413-election.html)
     1. [여론조사 개요](04-vote-survey.html)

@@ -1,0 +1,137 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선건
+subtitle: 시도별 지역내총생산(GRDP) - 2016년
+output:
+  html_document: 
+    theme: journal
+    toc: yes
+    highlight: tango
+    code_folding: hide
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+```
+
+## 1. 시도별 지역내총생산 {#sido-grdp}
+
+시도별 지역내총생산 자료는 통계청 [http://kosis.kr/](http://kosis.kr/) "국내통계>주제별통계>국민계정/지역계정/국가자산>지역계정>지역소득"
+에서 시도 지역내총생산(GRDP) 데이터를 가져온다. 이를 통해 2016년 기준 지역내총생산 규모를 시도별로 비교한다.
+
+
+### 1.1. 시도별 GRDP 환경설정 {#sido-grdp-setup}
+
+[http://kosis.kr/](http://kosis.kr/)에서 다운로드 받은 엑셀 파일을 R로 불러와서 
+지역내총생산(GRDP) 단위를 $10^6$으로 나눠 백만원을 조로 변환한다.
+
+``` {r sido-grdp-setup}
+# 0. 환경설정 -----
+
+library(tidyverse)
+library(stringr)
+library(lubridate)
+library(sf)
+library(mapview)
+library(DT)
+library(readxl)
+library(tmap)
+library(ggpubr)
+
+# 1. 데이터 가져오기 -----
+sido_grdp_dat <- read_excel("data/grdp/_시도_별_GRDP_2016.xlsx", skip=1)
+
+# 2. 데이터 정제 -----
+names(sido_grdp_dat) <- c("시도명", "구분", "grdp_2014", "grdp_2016")
+
+sido_grdp_df <- sido_grdp_dat %>% 
+    mutate(GRDP = grdp_2016 / 10^6) %>% 
+    select(시도명, GRDP)
+```
+
+### 1.2. 시도별 GRDP 표 {#sido-grdp-tbl}
+
+2016년 시도별 GRDP를 표로 확인한다.
+
+``` {r sido-grdp-tbl}
+# 3. GRDP 표 -----
+sido_grdp_df %>% 
+    arrange(desc(GRDP)) %>% 
+    mutate(GRDP비율 = GRDP / sum(GRDP),
+           GRDP누적비율 = cumsum(GRDP비율)) %>% 
+    datatable() %>% 
+      formatCurrency("GRDP", currency="", digits=1) %>% 
+      formatPercentage(c("GRDP비율", "GRDP누적비율"), digits=1)
+```
+
+## 2. 시도별 GRDP 지리정보 시각화 {#sido-grdp-viz}
+
+### 2.1. 지리데이터와 시도별 GRDP 데이터 병합 {#sido-grdp-viz-data}
+
+지도 데이터에는 GRDP 데이터가 없기 때문에 이를 지도에 표현하기 위해서는 앞에서 준비한 GRDP 필드가 포함된
+데이터프레임과 병합을 한다. 이를 위해서 중간에 주소코드도 붙여야 된다.
+순차적으로 병합(join) 작업을 하게 되면 지리정보 시각화를 위한 준비가 완료된다.
+
+``` {r sido-grdp-geo-data}
+# 4. GRDP 지리정보 데이터 -----
+## 4.1. 지도 데이터
+sido_sf <- st_read("data/shapefile_sido/TL_SCCO_CTPRVN.shp")
+sido_sf$CTP_KOR_NM <- iconv(sido_sf$CTP_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
+
+## 4.2. 시도 코드 --------
+sido_cd_df <- read_excel("data/jscode/jscode20171218/KIKcd_H.20171218.xlsx", sheet="KIKcd_H")
+sido_cd_df <- sido_cd_df %>% 
+    mutate(CTPRVN_CD = str_sub(행정동코드, 1,2)) %>% 
+    group_by(CTPRVN_CD) %>% 
+    summarise(시도명 = first(시도명))
+
+## 4.3. 시도GRDP와 행정코드 병합
+sido_grdp_df <- left_join(sido_cd_df, sido_grdp_df, by="시도명")
+
+## 4.4. 시도GRDP 지도와 연결
+sido_sf <- left_join(sido_sf, sido_grdp_df, by="CTPRVN_CD")
+```
+
+### 2.2. 시도별 GRDP 동적 시각화 {#sido-grdp-viz-interactive}
+
+`tmap`을 활용하면 지역내총생산 GRDP를 인터랙티브하게 지도위에 표현할 수 있다. 
+
+``` {r sido-grdp-geo-viz-interactive, eval=TRUE}
+## 5.2. 동적 그래프 --------
+tmap_mode("view")
+tm_shape(sido_sf) +
+    tm_borders() +
+    tm_fill("GRDP",
+            style = "fixed",
+            breaks = c(0, 50, 100, 150, 200, 250, 300, Inf),
+            title      = c("시도명", "GRDP"),
+            popup.vars = c("시도명", "GRDP"))
+
+# mapview(sido_sf, zcol = c("GRDP"), legend = TRUE)
+
+```
+
+
+### 2.3. 시도별 GRDP 정적 시각화 {#sido-grdp-viz-static}
+
+`sf` 팩키지를 활용하면 기존 `tidyverse`에서 익힌 대부분의 기능을 지리정보 시각화에 나타낼 수 있다.
+
+``` {r sido-grdp-geo-viz}
+# 5. GRDP 지리정보 시각화 -----
+
+## 5.0. SHP 파일 크기 줄이기 --------
+sido_sf <- st_simplify(sido_sf, dTolerance = 100)
+
+## 5.1. 정적 그래프 --------
+ggplot(data=sido_sf, aes(fill=GRDP)) +
+    geom_sf() +
+    theme_pubr(base_family="NanumGothic") +
+    labs(title="시도별 지역내총생산(GRDP) - 2016") + 
+    theme(legend.position = "right") +
+    scale_fill_gradient(low = "wheat1", high = "red", name = "GRDP", labels = scales::comma)
+```
+
+
