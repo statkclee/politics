@@ -89,7 +89,7 @@ grdp <- grdp %>% mutate(sido = plyr::revalue(sido,
 grdp_df <- grdp %>% group_by(sido) %>% 
     mutate_at(vars(starts_with("1")), funs(as.numeric)) %>% 
     mutate_at(vars(starts_with("2")), funs(as.numeric)) %>% 
-    summarise_each(funs(mean)) %>% 
+    summarise_each(funs(sum)) %>% 
     dplyr::filter(sido!="전국") %>% 
     mutate(sido = factor(sido, levels=c("PK", "TK", "광주전라", "강원", "제주", "대전충청", "수도권")))
 
