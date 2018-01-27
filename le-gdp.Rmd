@@ -38,6 +38,10 @@ library(tidyverse)
 library(stringr)
 library(dygraphs)
 library(lubridate)
+library(sf)
+library(mapview)
+library(DT)
+library(crosstalk)
 
 # 1. GDP 데이터 가져오기 -----
 # listviewer::jsonedit(wb_cachelist)
@@ -50,7 +54,7 @@ gdp_kor_dat <- gdp_dat %>%
     filter(str_detect(country, "Korea, Rep"))
 ```
 
-### 1.2. GDP 데이터 가져오기 {#import-gdp-data}
+### 1.2. 대한민국 GDP 데이터 변화 시각화 {#viz-gdp-data}
 
 시계열 데이터를 시각화하는데 `dygraph`를 흔히 사용한다.
 `timetk` 팩키지를 활용하여 `xts` 시계열 데이터로 변환하고 이를 `dygraph()` 함수에 넣고
@@ -82,8 +86,85 @@ dygraph(data = gdp_kor_xts, main = "대한민국 국내총생산 GDP($) 변화")
     dyCSS("blockchain.css")
 ```
 
-
 명목 국내 총생산순 나라 목록[^wiki-gdp-by-country]을 참조하면 세계은행에서 발표한 자료와 비교할 수 있다.
-
+최근 GDP의 증가없이 정체된 모습이 나타나고 있다.
 
 [^wiki-gdp-by-country]: [위키백과 - 명목 국내 총생산순 나라 목록](https://ko.wikipedia.org/wiki/%EB%AA%85%EB%AA%A9_%EA%B5%AD%EB%82%B4_%EC%B4%9D%EC%83%9D%EC%82%B0%EC%88%9C_%EB%82%98%EB%9D%BC_%EB%AA%A9%EB%A1%9D)
+
+
+## 2. 2016년 기준 GDP 국가 비교 {#international-gdp-data}
+
+2016년 기준 GDP 데이터를 입수하여 대한민국 GDP 순위를 살펴보자.
+단위가 너무 커서 $10^6$ 백만달러 단위로 조정한다.
+그리고 나서 <http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_map_units.zip>
+전세계 지도 데이터를 가져온다. 하지만 남극관련된 지역은 제외한다.
+
+``` {r international-gdp-data}
+## 1.1. 1인당 GDP 
+gdp_dat <- wb(indicator = "NY.GDP.MKTP.CD", startdate = 2016, enddate = 2016) 
+
+gdp_df <- gdp_dat %>% 
+    rename(GDP = value) %>% 
+    mutate(GDP = round(GDP/10^6, 0)) %>% 
+    tbl_df()
+
+## 1.2. 지도 데이터
+# map_url <- "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_map_units.zip"
+# download.file(map_url, destfile="data/ne_110m_admin_0_map_units.zip")
+# unzip("data/ne_110m_admin_0_map_units.zip", exdir = "data/worldmap")
+
+world_map <- st_read("data/worldmap/ne_110m_admin_0_map_units.shp") %>% 
+    st_transform(crs = "+proj=longlat +datum=WGS84") %>% 
+    filter(!SUBUNIT %in% c("French Southern and Antarctic Lands", "Antarctica"))
+```
+
+### 2.1. 2016년 기준 GDP 국가 비교 {#international-gdp-data}
+
+지도(`world_map`)와 국가별 GDP 정보(`gdp_df`)가 담긴 정보를 세자리 국가코드를 키값으로 병합하고 나서 
+`mapview` 함수로 지리정보 시각화를 한다.
+
+``` {r international-gdp-data-viz}
+# 2. 데이터 시각화 -----
+
+world_gdp_sf <- left_join(world_map, gdp_df, by=c("ADM0_A3"="iso3c"))
+
+world_gdp_mapview_sf <- world_gdp_sf %>% 
+    select_("date", "GDP", "indicatorID", "indicator", "iso2c", "country", "ADMIN", "ADM0_A3", "geometry")
+
+mapview(world_gdp_mapview_sf, zcol = c("GDP"), legend = TRUE)
+```
+
+### 2.2. 2016년 기준 GDP 국가 순위 {#international-gdp-data-rank}
+
+세계은행 API를 통해 전달받은 데이터에는 국가외에 연합(예를 들어 EU) 및 메타 통계량이 포함되어 있어
+국가만 추출하여 파레토 분석을 수행한다.
+
+
+``` {r international-gdp-data-rank}
+# 3. GDP 순위 -----
+st_geometry(world_gdp_sf) <- NULL
+
+gdp_tbl_df <- world_gdp_sf %>% 
+    arrange(desc(GDP)) %>% 
+    filter(!is.na(GDP)) %>% 
+    mutate(GDP율 = GDP/sum(GDP),
+           누적GDP율 = round(cumsum(GDP율),2)) %>% 
+    select(CONTINENT, country, ADM0_A3, GDP, GDP율, 누적GDP율, date)
+
+## 3.2. GDP 파레토 분석
+
+gdp_sd <- SharedData$new(gdp_tbl_df)
+
+## 3.3. 제어
+filter_checkbox("CONTINENT", "대륙", gdp_sd, ~CONTINENT, inline = TRUE)
+filter_slider("누적GDP율", "누적 GDP율(%)", gdp_sd, ~누적GDP율, width = "50%")
+
+gdp_tbl <- datatable(gdp_sd) %>% 
+    formatCurrency("GDP", currency="", digits=0) %>% 
+    formatPercentage(c("GDP율", "누적GDP율"), digits=1)
+
+## 3.4. 인터랙티브 시각화
+
+bscols(gdp_tbl)
+```
+

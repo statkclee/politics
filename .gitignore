@@ -16,3 +16,4 @@ code/fb_oauth
 code/twitterOAuth.R
 code/secret_key_from_api.R
 .httr-oauth
+data/worldmap/
