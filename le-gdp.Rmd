@@ -1,0 +1,89 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선건
+subtitle: GDP와 일인당 국민소득
+output:
+  html_document: 
+    theme: journal
+    toc: yes
+    highlight: tango
+    code_folding: hide
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+```
+
+## 1. GNP와 GDP {#gnp-vs-gdp}
+
+GDP(Gross Domestic Product)는 국내총생산(國內總生産)으로 일정 기간 동안 한 국가에서 생산된 재화와 용역의 시장 가치를 합한 것을 의미하며 보통 1년을 기준으로 측정한다.
+과거 국민총생산(GNP)가 많이 쓰였으나, 실질적인 측도로 국내총생산이 많이 쓰이고 있다.
+
+### 1.1. 세계은행 GDP 데이터 및 전처리 {#import-gdp-data}
+
+`wbstats` 팩키지는 세계은행(world bank)에서 제공하는 다양한 경제데이터를 R에서 쉽게 분석할 수 있도록 도움을 주도록 개발되었다.
+이를 통해 국가별 GDP데이터를 가져와서 경제규모를 가늠한다. 세계은행에서 제공하는 데이터가 실업율을 포함하여 방대하기 때문에...
+`wb_cachelist`에 메타데이터가 들려있고, `wbsearch()` 함수에 정규표현식을 넣어 필요한 경제지표를 받아낸다.
+
+`NY.GDP.MKTP.CD` 경제지표에 GDP 국가별 데이터가 포함되어 있다. 대한민국만 뽑아서 이를 시계열로 분석한다.
+
+
+``` {r gdp-setup}
+# 0. 환경설정 -----
+library(wbstats) # devtools::install_github("GIST-ORNL/wbstats")
+library(tidyverse)
+library(stringr)
+library(dygraphs)
+library(lubridate)
+
+# 1. GDP 데이터 가져오기 -----
+# listviewer::jsonedit(wb_cachelist)
+# gdp_vars <- wbsearch(pattern = "GDP")
+
+## 1.1. GDP 
+gdp_dat <- wb(indicator = "NY.GDP.MKTP.CD", startdate = 1950, enddate = 2017) 
+
+gdp_kor_dat <- gdp_dat %>% 
+    filter(str_detect(country, "Korea, Rep"))
+```
+
+### 1.2. GDP 데이터 가져오기 {#import-gdp-data}
+
+시계열 데이터를 시각화하는데 `dygraph`를 흔히 사용한다.
+`timetk` 팩키지를 활용하여 `xts` 시계열 데이터로 변환하고 이를 `dygraph()` 함수에 넣고
+한글처리 및 여타 설정을 통해 대한민국 GDP 변화를 살펴볼 수 있도록 조치한다.
+
+``` {r gdp-setup-viz, fig.width=12}
+# 2. 데이터 시각화 -----
+gdp_kor_df <- gdp_kor_dat %>% 
+    mutate(year = lubridate::make_date(year=date)) %>% 
+    mutate(GDP = round(value,0)) %>% 
+    select(year, `GDP`) %>% 
+    tbl_df()
+
+gdp_kor_xts <- timetk::tk_xts(gdp_kor_df, select =  `GDP`,  date_col = year)
+
+dygraph(data = gdp_kor_xts, main = "대한민국 국내총생산 GDP($) 변화") %>% 
+    dyHighlight(highlightCircleSize = 5, 
+                highlightSeriesBackgroundAlpha = 0.2,
+                hideOnMouseOut = FALSE, highlightSeriesOpts = list(strokeWidth = 3)) %>%
+    dyRangeSelector(height = 50, dateWindow = c("1990-01-01", "2017-01-01")) %>% 
+    dyLegend(width = 500, show = "onmouseover", hideOnMouseOut = FALSE) %>% 
+    dyAxis("y",
+           label = "국내 총생산 (달러:$)",
+           axisLabelFormatter = 'function(d){return d.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");}',
+           axisLabelFontSize = 10,
+           axisLabelWidth = 70,
+           valueFormatter = 'function(d){return d.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");}'
+    ) %>% 
+    dyCSS("blockchain.css")
+```
+
+
+명목 국내 총생산순 나라 목록[^wiki-gdp-by-country]을 참조하면 세계은행에서 발표한 자료와 비교할 수 있다.
+
+
+[^wiki-gdp-by-country]: [위키백과 - 명목 국내 총생산순 나라 목록](https://ko.wikipedia.org/wiki/%EB%AA%85%EB%AA%A9_%EA%B5%AD%EB%82%B4_%EC%B4%9D%EC%83%9D%EC%82%B0%EC%88%9C_%EB%82%98%EB%9D%BC_%EB%AA%A9%EB%A1%9D)
