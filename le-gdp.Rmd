@@ -123,7 +123,7 @@ world_map <- st_read("data/worldmap/ne_110m_admin_0_map_units.shp") %>%
 지도(`world_map`)와 국가별 GDP 정보(`gdp_df`)가 담긴 정보를 세자리 국가코드를 키값으로 병합하고 나서 
 `mapview` 함수로 지리정보 시각화를 한다.
 
-``` {r international-gdp-data-viz}
+``` {r international-gdp-data-viz, fig.width=12}
 # 2. 데이터 시각화 -----
 
 world_gdp_sf <- left_join(world_map, gdp_df, by=c("ADM0_A3"="iso3c"))
@@ -149,7 +149,10 @@ gdp_tbl_df <- world_gdp_sf %>%
     filter(!is.na(GDP)) %>% 
     mutate(GDP율 = GDP/sum(GDP),
            누적GDP율 = round(cumsum(GDP율),2)) %>% 
-    select(CONTINENT, country, ADM0_A3, GDP, GDP율, 누적GDP율, date)
+    select(CONTINENT, country, ADM0_A3, GDP, GDP율, 누적GDP율, date) %>% 
+    group_by(country) %>% 
+    filter(row_number(GDP) == 1) %>% 
+    ungroup()
 
 ## 3.2. GDP 파레토 분석
 
