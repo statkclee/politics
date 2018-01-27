@@ -4,27 +4,19 @@ title: 데이터 과학자와 함께 하는 제19대 대통령 선거
 subtitle: 지역내총생산(GRDP) 변화
 output:
   html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
+    theme: journal
+    toc: yes
+    highlight: tango
+    code_folding: hide
 mainfont: NanumGothic
 ---
 
 ```{r setOptions, message=FALSE, include=FALSE}
 source("tools/chunk-options.R")
-options(warn=-1)
-library(DT)
-library(stringr)
-library(tidyverse)
-library(readxl)
-library(scales)
-library(lubridate)
-library(ggthemes)
-library(extrafont)
-loadfonts()
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
-## 지역내총생산(GRDP) [^wiki-grdp] 변화
+## 1. 지역내총생산(GRDP) [^wiki-grdp] 변화 {#grdp-trend}
 
 [^wiki-grdp]: [위키, 지역내총생산](https://ko.wikipedia.org/wiki/%EC%A7%80%EC%97%AD%EB%82%B4%EC%B4%9D%EC%83%9D%EC%82%B0)
 
@@ -34,27 +26,28 @@ loadfonts()
 국가로 치면 국내총생산(GDP)과 같은 개념이다.
 
 
-## 지역내총생산 변화 시각화
+## 2. 지역내총생산 변화 시각화 {#grdp-trend-viz}
 
 통계청에서 1985년부터 16개 광역 시도 GRDP를 연도별로 시각화하는데 대선 기간에 맞물려서 
 해당기간 GRDP가 지속적으로 줄어들고 있는 TK, PK, 강원과 GRDP가 꾸준히 증가하는 대전충청, 수도권을 중심으로 시각화한다.
 
-### 환경설정
+### 2.1. 환경설정 {#grdp-trend-viz-setup}
 
-``` {r grdp-setup, eval=FALSE}
-# 0. 환경설정 ------------------------------------------------------------------
-library(DT)
-library(stringr)
+``` {r grdp-setup}
+# 0. 환경설정 -----
+
 library(tidyverse)
-library(readxl)
-library(scales)
+library(stringr)
+library(dygraphs)
 library(lubridate)
+library(DT)
+library(readxl)
 library(ggthemes)
 library(extrafont)
 loadfonts()
 ```
 
-### 데이터 가져오기 및 정제
+### 2.2. 데이터 가져오기 및 정제 {#grdp-trend-viz-import}
 
 자료는 통계청 [http://kosis.kr/](http://kosis.kr/) "국내통계>주제별통계>국민계정/지역계정/국가자산>지역계정>지역소득"
 에서 시도 지역내총생산(GRDP) 데이터를 가져온다.
@@ -63,72 +56,120 @@ loadfonts()
 
 ``` {r grdp-import-cleansing}
 # 1. 데이터 가져오기 ------------------------------------------------------------------
-grdp <- read_excel("data/행정구역_시도_별_경제활동별_지역내총생산_20170215215258.xlsx")
+grdp <- read_excel("data/grdp/GRDP_시계열_1985_2016.xlsx")
 
 # 2. 데이터 정제 ------------------------------------------------------------------
-
-grdp <- grdp %>% slice(-1) %>% dplyr::rename(sido=`행정구역(시도)별`, "2015" = `2015 p)`) %>% dplyr::select(-경제활동별)
+## 2.1. 데이터 정제
+grdp <- grdp %>% slice(-1) %>% 
+    dplyr::rename(sido=`행정구역(시도)별`, "2016" = `2016 p)`) %>% 
+    dplyr::select(-경제활동별)
 
 datatable(grdp) %>%
- formatCurrency(c(as.character(rep(1985:2015))), "", interval=3, mark=",", digit=0)
+    formatCurrency(c(as.character(rep(1985:2016))), "", interval=3, mark=",", digit=0)
 
+## 2.2. 선거 중요 지역별
 grdp <- grdp %>% mutate(sido = plyr::revalue(sido, 
-                                            c( "서울특별시"   = "수도권"  ,
-                                               "경기도"       = "수도권"  ,
-                                               "인천광역시"   = "수도권"  ,
-                                               "대전광역시"   = "대전충청",
-                                               "광주광역시"   = "광주전라",
-                                               "전라남도"     = "광주전라",
-                                               "전라북도"     = "광주전라",
-                                               "충청북도"     = "대전충청",
-                                               "충청남도"     = "대전충청",
-                                               "대구광역시"   = "PK"      ,
-                                               "경상북도"     = "PK"      ,
-                                               "울산광역시"   = "TK"      ,
-                                               "부산광역시"   = "TK"      ,
-                                               "경상남도"     = "TK"      ,
-                                               "강원도"       = "강원"    ,
-                                               "제주특별자치도" = "제주"))) 
+                                             c( "서울특별시"   = "수도권"  ,
+                                                "경기도"       = "수도권"  ,
+                                                "인천광역시"   = "수도권"  ,
+                                                "대전광역시"   = "대전충청",
+                                                "광주광역시"   = "광주전라",
+                                                "전라남도"     = "광주전라",
+                                                "전라북도"     = "광주전라",
+                                                "충청북도"     = "대전충청",
+                                                "충청남도"     = "대전충청",
+                                                "대구광역시"   = "PK"      ,
+                                                "경상북도"     = "PK"      ,
+                                                "울산광역시"   = "TK"      ,
+                                                "부산광역시"   = "TK"      ,
+                                                "경상남도"     = "TK"      ,
+                                                "강원도"       = "강원"    ,
+                                                "제주특별자치도" = "제주"))) 
 
 grdp_df <- grdp %>% group_by(sido) %>% 
-  mutate_at(vars(starts_with("1")),funs(as.numeric)) %>% 
-  mutate_at(vars(starts_with("2")),funs(as.numeric)) %>% 
-  summarise_each(funs(mean)) %>% dplyr::filter(sido!="전국") %>% 
-  mutate(sido = factor(sido, levels=c("PK", "TK", "광주전라", "강원", "제주", "대전충청", "수도권")))
+    mutate_at(vars(starts_with("1")), funs(as.numeric)) %>% 
+    mutate_at(vars(starts_with("2")), funs(as.numeric)) %>% 
+    summarise_each(funs(mean)) %>% 
+    dplyr::filter(sido!="전국") %>% 
+    mutate(sido = factor(sido, levels=c("PK", "TK", "광주전라", "강원", "제주", "대전충청", "수도권")))
 
 datatable(grdp_df) %>% 
-  formatCurrency(c(as.character(rep(1985:2015))), "", interval=3, mark=",", digit=0)
-
-grdp_df_lng <- grdp_df %>% gather(year, grdp, -sido)
-
-grdp_df_lng <- grdp_df_lng %>% 
-  group_by(year) %>% 
-  mutate(grdp_sum = sum(grdp)) %>%
-  group_by(sido) %>% 
-  mutate(pcnt = grdp / grdp_sum,
-         year = ymd(paste0(year, "-01-01"))) 
+    formatCurrency(c(as.character(rep(1985:2016))), "", interval=3, mark=",", digit=0)
 ```  
 
-### 데이터 시각화
+## 2. 데이터 시각화 {#grdp-trend-viz-in-production}
+
+### 2.1 정적 그래프 시각화 {#grdp-trend-viz-static}
 
 지역내총생산 변화를 시각적으로 가장 잘 나타낼 수 있는 방법 중 하나로 시간의 흐름에 따른 시계열 그림을 `ggplot`으로 시각화한다.
 
-``` {r grdp-ggplot}
-# 3. 시각화 ------------------------------------------------------------------
+``` {r grdp-ggplot-static}
+# 3. 데이터 시각화 --------
+## 3.1. ggplot 시각화 위한 데이터 정제
+grdp_df_lng <- grdp_df %>% gather(year, grdp, -sido)
+
+grdp_df_lng <- grdp_df_lng %>% 
+    group_by(year) %>% 
+    mutate(grdp_sum = sum(grdp)) %>%
+    group_by(sido) %>% 
+    mutate(pcnt = grdp / grdp_sum,
+           year = ymd(paste0(year, "-01-01"))) 
+
+## 3.2. ggplot 시각화
 dlist <- unique(grdp_df_lng$year)
 
 ggplot(grdp_df_lng , aes(year, pcnt, group=sido, color=sido, label=sido)) +
-  geom_point() +
-  geom_line() +
-  theme_fivethirtyeight(base_family="AppleGothic") +
-  coord_flip() +
-  geom_text(data=grdp_df_lng %>% dplyr::filter(year==tail(dlist,1)), vjust=-1, family="AppleGothic") +
-  scale_x_date(breaks=seq(dlist[1], tail(dlist,1)+years(1), "5 year"),
-               date_labels="%Y",limits=c(dlist[1],tail(dlist,1)+years(1)))+ 
-  scale_y_continuous(labels=percent) +
-  labs(x="",y="",title="지역내총생산(GRDP) 기여비율 변화",
-       caption="\n 자료출처: 통계청(국내통계>주제별통계>국민계정/지역계정/국가자산>지역계정>지역소득), http://kosis.kr/",
-       subtitle="PK, TK, 광주전라, 강원 對 대전충청, 수도권, 제주") +
-  theme(legend.position="none", plot.caption=element_text(hjust=0,size=9),plot.subtitle=element_text(face="italic"),
-        axis.text=element_text(size=11))
+    geom_point() +
+    geom_line() +
+    theme_fivethirtyeight(base_family="AppleGothic") +
+    coord_flip() +
+    geom_text(data=grdp_df_lng %>% dplyr::filter(year==tail(dlist,1)), vjust=-1, family="AppleGothic") +
+    scale_x_date(breaks=seq(dlist[1], tail(dlist,1)+years(1), "5 year"),
+                 date_labels="%Y",limits=c(dlist[1],tail(dlist,1)+years(1)))+ 
+    scale_y_continuous(labels = scales::percent) +
+    labs(x="",y="",title="지역내총생산(GRDP) 기여비율 변화",
+         caption="\n 자료출처: 통계청(국내통계>주제별통계>국민계정/지역계정/국가자산>지역계정>지역소득), http://kosis.kr/",
+         subtitle="PK, TK, 광주전라, 강원 對 대전충청, 수도권, 제주") +
+    theme(legend.position="none", plot.caption=element_text(hjust=0,size=9),plot.subtitle=element_text(face="italic"),
+          axis.text=element_text(size=11))
+```
+
+### 3.2 동적 그래프 시각화 {#grdp-trend-viz-dynamic}
+
+지역내총생산 변화를 시각적으로 `dygraph()` 함수를 통해 살펴본다. 특히, 제13대 노태우 대통령 이후 
+대통령 선거를 시점을 참조선으로 넣어 지역내총생산 변화를 함께 시각화한다.
+
+``` {r grdp-ggplot-dynamic, fig.width=12}
+# 4. 동적 데이터 시각화 --------
+## 4.1. dygraphs 자료형 변환(xts)
+grdp_xts <- grdp_df_lng %>% 
+    mutate(grdp = round(grdp / 10^6, 0)) %>%  # 단위: 백만원 -> 조
+    select(-grdp_sum, -pcnt) %>% 
+    spread(sido, grdp)
+
+grdp_xts <- timetk::tk_xts(grdp_xts, select = PK:수도권, date_var = year)
+
+## 4.2. 인터랙티브 시각화
+
+dygraph(data = grdp_xts, main = "정치 권역별 지역내총생산 추세") %>% 
+    dyHighlight(highlightCircleSize = 5, 
+                highlightSeriesBackgroundAlpha = 0.2,
+                hideOnMouseOut = FALSE, highlightSeriesOpts = list(strokeWidth = 3)) %>%
+    dyRangeSelector(height = 50, dateWindow = c("2000-01-01", "2018-01-01")) %>% 
+    dyLegend(width = 500, show = "onmouseover", hideOnMouseOut = FALSE) %>% 
+    dyAxis("y",
+           label = "GRDP(단위: 조)",
+           axisLabelFormatter = 'function(d){return d.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");}',
+           axisLabelFontSize = 10,
+           axisLabelWidth = 70,
+           valueFormatter = 'function(d){return d.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");}'
+    ) %>% 
+    dyEvent("2017-05-09", "제19대 대통령선거", labelLoc = "bottom") %>%
+    dyEvent("2012-12-19", "제18대 대통령선거", labelLoc = "bottom") %>%
+    dyEvent("2007-12-19", "제17대 대통령선거", labelLoc = "bottom") %>% 
+    dyEvent("2002-12-19", "제16대 대통령선거", labelLoc = "bottom") %>%
+    dyEvent("1997-12-18", "제15대 대통령선거", labelLoc = "bottom") %>%
+    dyEvent("1992-12-18", "제14대 대통령선거", labelLoc = "bottom") %>%
+    dyEvent("1987-12-16", "제13대 대통령선거", labelLoc = "bottom") %>% 
+    dyCSS("blockchain.css")
 ```
