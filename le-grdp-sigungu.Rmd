@@ -1,0 +1,239 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선건
+subtitle: 시군구별 지역내총생산(GRDP)
+output:
+  html_document: 
+    theme: journal
+    toc: yes
+    highlight: tango
+    code_folding: hide
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+```
+
+## 1. 시군구별 지역내총생산 {#sigun-grdp}
+
+시도별 지역내총생산 자료는 통계청 [http://kosis.kr/](http://kosis.kr/) "국내통계>주제별통계>국민계정/지역계정/국가자산>지역계정>지역소득"
+에서 시도 지역내총생산(GRDP) 데이터를 가져올 수 있고, 분석 결과는 [시도별 지역내총생산(GRDP) - 2016년](le-grdp-sido.html)을 참조한다.
+최근 지역계정에 **시군구 GRDP** 정보가 추가되었다. 하지만, 서울시를 비롯한 일부 지자체는 빠져있고, 지역내총생산 통계 시점도 최근 2015년에서 2012년까지 차이가 난다.
+
+- 2015년: 경북, 부산, 울산, 인천, 전남
+- 2014년: 강원, 경남, 광주, 대구, 대전, 전북, 제주, 충북
+- 2012년: 충남
+
+### 1.1. 데이터 전처리 {#sigun-grdp-setup}
+
+시군구 GRDP 데이터는 각 시도 담당자별로 데이터 표준화가 되어 있지 않아 이를 각기 정제하여야 한다.
+
+``` {r setup-grdp-by-sigungu}
+## 2. 통계 데이터 분석 {#sido-grdp}
+
+# 0. 환경설정 -----
+
+library(tidyverse)
+library(stringr)
+library(lubridate)
+library(sf)
+library(mapview)
+library(DT)
+library(readxl)
+library(ggpubr)
+library(tmap)
+library(crosstalk)
+
+# http://strimas.com/r/tidy-sf/
+
+# 1. 데이터 가져오기 -----
+## 1.1. 데이터 가져오기
+강원_dat <- read_excel("data/grdp/강원도_GRDP_2014.xlsx", skip=0)
+경기_dat <- read_excel("data/grdp/경기_GRDP_2014.xlsx", skip=1)
+경남_dat <- read_excel("data/grdp/경남_GRDP_2014.xlsx", skip=1)
+경북_dat <- read_excel("data/grdp/경북_GRDP_2015.xlsx", skip=1)
+광주_dat <- read_excel("data/grdp/광주_GRDP_2014.xlsx", skip=1)
+대구_dat <- read_excel("data/grdp/대구_GRDP_2014.xlsx", skip=1)
+대전_dat <- read_excel("data/grdp/대전_GRDP_2014.xlsx", skip=1)
+부산_dat <- read_excel("data/grdp/부산_GRDP_2015.xlsx", skip=1)
+울산_dat <- read_excel("data/grdp/울산_GRDP_2015.xlsx", skip=1)
+인천_dat <- read_excel("data/grdp/인천_GRDP_2015.xlsx", skip=1)
+전남_dat <- read_excel("data/grdp/전남_GRDP_2015.xlsx", skip=1)
+전북_dat <- read_excel("data/grdp/전북_GRDP_2014.xlsx", skip=2)
+제주_dat <- read_excel("data/grdp/제주_GRDP_2014.xlsx", skip=1)
+충남_dat <- read_excel("data/grdp/충남_GRDP_2012.xlsx", skip=1)
+충북_dat <- read_excel("data/grdp/충북_GRDP_2014.xlsx", skip=1)
+
+강원_df <- 강원_dat %>% 
+    mutate(시도명 = "강원도") %>% 
+    select(시도명, 시군구명 = 시군별, GRDP = `2014`)
+
+경기_df <- 경기_dat %>% 
+    mutate(시도명 = "경기도") %>% 
+    select(시도명, 시군구명 = `시군별(1)`, GRDP = `GRDP(당해년 시장가격) (백만원)`)
+
+경남_df <- 경남_dat %>% 
+    mutate(시도명 = "경상남도") %>% 
+    select(시도명, 시군구명 = `행정구역(시·군)별`, GRDP = `당해년가격`)
+
+경북_df <- 경북_dat %>% 
+    mutate(시도명 = "경상북도") %>% 
+    select(시도명, 시군구명 = `행정구역별(시군)(1)`, GRDP = `당해년 가격 (백만원)`)
+
+광주_df <- 광주_dat %>% 
+    mutate(시도명 = "광주광역시") %>% 
+    select(시도명, 시군구명 = `행정구역(구)별`, GRDP = `당해년가격 (백만원)`)
+
+대구_df <- 대구_dat %>% 
+    mutate(시도명 = "대구광역시") %>% 
+    select(시도명, 시군구명 = `행정구역(구·군)별(1)`, GRDP = `당해년가격 (백만원)`)
+
+대전_df <- 대전_dat %>% 
+    mutate(시도명 = "대전광역시") %>% 
+    select(시도명, 시군구명 = `대전광역시 시군구별`, GRDP = `당해년가격`)
+
+부산_df <- 부산_dat %>% 
+    mutate(시도명 = "부산광역시") %>% 
+    select(시도명, 시군구명 = `구·군별`, GRDP = `당해년 가격 (백만원)`)
+
+울산_df <- 울산_dat %>% 
+    mutate(시도명 = "울산광역시") %>% 
+    select(시도명, 시군구명 = `구군별`, GRDP = `당해년가격 (백만원)`)
+
+인천_df <- 인천_dat %>% 
+    mutate(시도명 = "인천광역시") %>% 
+    select(시도명, 시군구명 = `행정구역(구．군)별`, GRDP = `당해년가격  (백만원)`)
+
+전남_df <- 전남_dat %>% 
+    mutate(시도명 = "전라남도") %>% 
+    select(시도명, 시군구명 = `시군별(1)`, GRDP = `당해년가격 (백만원)`)
+
+전북_df <- 전북_dat %>% 
+    mutate(시도명 = "전라북도") %>% 
+    select(시도명, 시군구명 = `전라북도`, GRDP = `4.424268E7`)
+
+제주_df <- 제주_dat %>% 
+    mutate(시도명 = "제주특별자치도") %>% 
+    select(시도명, 시군구명 = `행정시별`, GRDP = `당해년가격 (백만원)`)
+
+충남_df <- 충남_dat %>% 
+    mutate(시도명 = "충청남도") %>% 
+    select(시도명, 시군구명 = `충남 시군별`, GRDP = `당해년가격`)
+
+충북_df <- 충북_dat %>% 
+    mutate(시도명 = "충청북도") %>% 
+    select(시도명, 시군구명 = `행정구역(시·군)별`, GRDP = `당해년가격 (백만원)`)
+
+grdp_sigun_df <- bind_rows(강원_df, 경기_df) %>% 
+    bind_rows(경남_df) %>% 
+    bind_rows(경북_df) %>% 
+    bind_rows(광주_df) %>% 
+    bind_rows(대구_df) %>% 
+    bind_rows(대전_df) %>% 
+    bind_rows(부산_df) %>% 
+    bind_rows(울산_df) %>% 
+    bind_rows(인천_df) %>% 
+    bind_rows(전남_df) %>% 
+    bind_rows(전북_df) %>% 
+    bind_rows(제주_df) %>% 
+    bind_rows(충남_df) %>% 
+    bind_rows(충북_df)
+
+grdp_sigun_df <- grdp_sigun_df %>% 
+    mutate(GRDP = round(GRDP / 10^6,1)) #단위 백만원 -> 천억원
+```
+
+### 1.2. 시군구별 GRDP 표 {#sigun-grdp-setup}
+
+힘들게 오랜시간 데이터 전처리 작업을 한 후에 `crosstalk` 팩키지를 활용하여 인터랙티브 방식으로 시도별 GRDP 분석을 표로 수행한다.
+
+``` {r setup-grdp-by-sigungu-tbl}
+# 4. GRDP 표 -----
+## 4.1. 공유 데이터
+grdp_sigun_sd_df <- SharedData$new(grdp_sigun_df)
+
+## 4.2. 제어
+filter_checkbox("시도명", "시도명", grdp_sigun_sd_df, ~시도명, inline = TRUE)
+filter_slider("GRDP", "지역내총생산(GRDP), 단위:천억", grdp_sigun_sd_df, ~GRDP, width = "50%")
+
+## 4.3. 표
+grdp_tbl <- datatable(grdp_sigun_sd_df, extensions="Scroller", 
+                     style="bootstrap", 
+                     class="compact", width="100%",
+                     options=list(deferRender=TRUE, scrollY=300, scroller=TRUE))
+
+## 4.4. 인터랙티브 시각화
+bscols(grdp_tbl)
+```
+
+### 1.3. 지리정보 시각화를 위한 데이터 전처리 {#sigun-grdp-spatial-data}
+
+GRDP 데이터를 지리정보 시각화를 위해 데이터를 정제한다.
+행정코드를 시도명과 시군구명에 맞춰 정리하고 나서 지도 데이터를 가져온다.
+이를 시군구별 GRDP 데이터에 행정코드를 붙이고 다시 지도와 연결한다.
+
+``` {r setup-grdp-by-sigungu-spatial}
+## 1.2. 행정 code 정리
+
+sido_cd_df <- read_excel("data/jscode/jscode20171218/KIKcd_H.20171218.xlsx", sheet="KIKcd_H")
+
+sigungu_cd_df <- sido_cd_df %>% 
+    mutate(CTPRVN_CD = str_sub(행정동코드, 1,5)) %>% 
+    group_by(CTPRVN_CD) %>% 
+    summarise(시도명 = first(시도명),
+                 시군구명 = first(시군구명)) %>% 
+    mutate(시군구명 = ifelse(is.na(시군구명), 시도명, 시군구명))
+
+## 1.3. 지도데이터 가져오기
+sigun_shp <- st_read("data/shapefile_sgg/TL_SCCO_SIG.shp")
+sigun_shp$SIG_KOR_NM <- iconv(sigun_shp$SIG_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
+
+sigun_simp_shp <- st_simplify(sigun_shp, dTolerance = 100)
+
+# 2. 데이터 정제 -----
+
+## 2.1. 행정코드와 GRDP 병합
+grdp_df <- inner_join(sigungu_cd_df, grdp_sigun_df, by = c("시도명", "시군구명"))
+
+## 2.2. 행정코드와 연결된 GRDP결과를 지도와 연결
+
+sigungu_shp <- left_join(sigun_simp_shp, grdp_df, by=c("SIG_CD" = "CTPRVN_CD"))
+```
+
+
+## 2. 시군구별 GRDP 시각화 {#sigun-grdp-spatial-viz}
+
+### 2.1. 시군구별 GRDP 정적 시각화 {#sigun-grdp-viz-static}
+
+`sf` 팩키지를 활용하면 기존 `tidyverse`에서 익힌 대부분의 기능을 지리정보 시각화에 나타낼 수 있다.
+
+``` {r sigun-grdp-by-sigungu-spatial}
+# 3. 데이터 시각화 -----
+## 3.1. 정적 그래프 --------
+ggplot(data=sigungu_shp, aes(fill=GRDP)) +
+    geom_sf() +
+    theme_pubr(base_family="NanumGothic") +
+    labs(title="시군구별 지역내총생산(GRDP)") + 
+    theme(legend.position = "right") +
+    scale_fill_gradient(low = "wheat1", high = "red", name = "지역내총생산", labels = scales::comma)
+```
+
+### 2.2. 시군구별 GRDP 동적 시각화 {#sigun-grdp-spatial-viz}
+
+`tmap`을 활용하면 시군구별 지역내총생산 GRDP를 인터랙티브하게 지도위에 표현할 수 있다. 
+
+``` {r sigun-grdp-geo-viz-interactive, eval=TRUE}
+## 3.2. 동적 그래프 --------
+tmap_mode("view")
+tm_shape(sigungu_shp) +
+    # tm_polygons(col = "득표수") +
+    tm_borders() +
+    tm_fill("GRDP", 
+            style = "fixed",
+            breaks = c(0, 0.5, 1, 10, Inf),
+            title      = c("시도명","시군구명", "GRDP"),
+            popup.vars = c("시도명","시군구명", "GRDP"))
+```
