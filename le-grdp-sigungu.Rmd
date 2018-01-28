@@ -227,13 +227,15 @@ ggplot(data=sigungu_shp, aes(fill=GRDP)) +
 
 ``` {r sigun-grdp-geo-viz-interactive, eval=TRUE}
 ## 3.2. 동적 그래프 --------
-tmap_mode("view")
-tm_shape(sigungu_shp) +
-    # tm_polygons(col = "득표수") +
-    tm_borders() +
-    tm_fill("GRDP", 
-            style = "fixed",
-            breaks = c(0, 0.5, 1, 10, Inf),
-            title      = c("시도명","시군구명", "GRDP"),
-            popup.vars = c("시도명","시군구명", "GRDP"))
+# tmap_mode("view")
+# tm_shape(sigungu_shp) +
+#     # tm_polygons(col = "득표수") +
+#     tm_borders() +
+#     tm_fill("GRDP", 
+#             style = "fixed",
+#             breaks = c(0, 0.5, 1, 10, Inf),
+#             title      = c("시도명","시군구명", "GRDP"),
+#             popup.vars = c("시도명","시군구명", "GRDP"))
+mapview(sigungu_shp, 
+        zcol = "GRDP")
 ```
