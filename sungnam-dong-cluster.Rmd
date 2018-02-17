@@ -48,6 +48,9 @@ library(extrafont)
 loadfonts()
 library(ggthemes)
 library(heatmaply)
+library(sf)
+library(mapview)
+
 
 # 1. 데이터 가져오기 ------------------
 
@@ -138,3 +141,32 @@ heatmaply(sn_cl_df, k_col = 2, k_row = 4,
           column_text_angle = 0) %>% 
     layout(font=list(family = "NanumGothic"))
 ```
+
+## 3. 공간정보 군집 시각화 {#sungnam-vote-clustering-spatial}
+
+[대한민국 행정동 경계 파일](https://github.com/vuski/admdongkor)을 바탕으로 `tidyverse` 생태계의 일원으로 준비중인 `sf` 팩키지를 활용하여 단 몇줄의 코드로 간략하게 성남시 민주당 투표 성향을 50개 넘는 동을 40개 군집으로 추상화할 수 있다.
+위례동은 최근에 편입되어 군집분류대상에서 제외함.
+
+```{r sungnam-vote-map}
+# 데이터
+## 지도 데이터 가져오기
+dong_map <- st_read("data/map_admdong/HangJeongDong_ver20171016.geojson")
+
+sn_dong_map <- dong_map %>% 
+    filter(str_detect(adm_nm, "경기도 성남시" )) %>% 
+    separate(adm_nm, into=c("시도", "구시군명", "읍면동명"), sep = " ")
+
+## 군집 + 지도 데이터 병합
+sn_dong_clust_map <- left_join(sn_dong_map, sn_eda_cl_df, by=c("구시군명", "읍면동명"))
+
+# 군집분석 결과 시각화
+
+sn_dong_clust <- sn_dong_clust_map %>% 
+    group_by(cluster) %>% 
+    summarise(geometry = st_union(geometry))
+
+mapview(sn_dong_clust)
+```
+
+
+

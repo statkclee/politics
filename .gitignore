@@ -17,3 +17,4 @@ code/twitterOAuth.R
 code/secret_key_from_api.R
 .httr-oauth
 data/worldmap/
+data/map_admdong
