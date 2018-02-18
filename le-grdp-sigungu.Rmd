@@ -143,7 +143,9 @@ grdp_sigun_df <- bind_rows(강원_df, 경기_df) %>%
     bind_rows(충북_df)
 
 grdp_sigun_df <- grdp_sigun_df %>% 
-    mutate(GRDP = round(GRDP / 10^6,1)) #단위 백만원 -> 천억원
+    mutate(GRDP = GRDP / 10^6) %>%  #단위 백만원 -> 조원 
+    mutate(시군구명 = str_replace_all(시군구명, "\\W", ""))
+
 ```
 
 ### 1.2. 시군구별 GRDP 표 {#sigun-grdp-setup}
@@ -157,7 +159,7 @@ grdp_sigun_sd_df <- SharedData$new(grdp_sigun_df)
 
 ## 4.2. 제어
 filter_checkbox("시도명", "시도명", grdp_sigun_sd_df, ~시도명, inline = TRUE)
-filter_slider("GRDP", "지역내총생산(GRDP), 단위:천억", grdp_sigun_sd_df, ~GRDP, width = "50%")
+filter_slider("GRDP", "지역내총생산(GRDP), 단위:조", grdp_sigun_sd_df, ~GRDP, width = "50%")
 
 ## 4.3. 표
 grdp_tbl <- datatable(grdp_sigun_sd_df, extensions="Scroller", 
@@ -176,31 +178,27 @@ GRDP 데이터를 지리정보 시각화를 위해 데이터를 정제한다.
 이를 시군구별 GRDP 데이터에 행정코드를 붙이고 다시 지도와 연결한다.
 
 ``` {r setup-grdp-by-sigungu-spatial}
-## 1.2. 행정 code 정리
+## 1.2. 지도데이터 가져오기
+adm_map <- st_read("data/map_admdong/HangJeongDong_ver20171016.geojson")
 
-sido_cd_df <- read_excel("data/jscode/jscode20171218/KIKcd_H.20171218.xlsx", sheet="KIKcd_H")
+sigun_map <- adm_map %>% 
+    separate(adm_nm, into=c("시도명", "시군구명", "읍면동명"), sep = " ") %>%
+    mutate(시군구명 = case_when(str_detect(시군구명, "성남") ~ "성남시",
+                                str_detect(시군구명, "안양") ~ "안양시",
+                                str_detect(시군구명, "안산") ~ "안산시",
+                                str_detect(시군구명, "포항") ~ "포항시",
+                                str_detect(시군구명, "창원") ~ "창원시",
+                                str_detect(시군구명, "청주") ~ "청주시",
+                                str_detect(시군구명, "용인") ~ "용인시",
+                                str_detect(시군구명, "전주") ~ "전주시",
+                                str_detect(시군구명, "고양") ~ "고양시",
+                                str_detect(시군구명, "천안") ~ "천안시",
+                                TRUE ~ 시군구명)) %>% 
+    group_by(시도명, 시군구명) %>% 
+    summarise(geometry = st_union(geometry))
 
-sigungu_cd_df <- sido_cd_df %>% 
-    mutate(CTPRVN_CD = str_sub(행정동코드, 1,5)) %>% 
-    group_by(CTPRVN_CD) %>% 
-    summarise(시도명 = first(시도명),
-                 시군구명 = first(시군구명)) %>% 
-    mutate(시군구명 = ifelse(is.na(시군구명), 시도명, 시군구명))
-
-## 1.3. 지도데이터 가져오기
-sigun_shp <- st_read("data/shapefile_sgg/TL_SCCO_SIG.shp")
-sigun_shp$SIG_KOR_NM <- iconv(sigun_shp$SIG_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
-
-sigun_simp_shp <- st_simplify(sigun_shp, dTolerance = 100)
-
-# 2. 데이터 정제 -----
-
-## 2.1. 행정코드와 GRDP 병합
-grdp_df <- inner_join(sigungu_cd_df, grdp_sigun_df, by = c("시도명", "시군구명"))
-
-## 2.2. 행정코드와 연결된 GRDP결과를 지도와 연결
-
-sigungu_shp <- left_join(sigun_simp_shp, grdp_df, by=c("SIG_CD" = "CTPRVN_CD"))
+## 2.2. GRDP를 지도와 연결
+sigun_grdp_map <- left_join(sigun_map, grdp_sigun_df)
 ```
 
 
@@ -213,7 +211,7 @@ sigungu_shp <- left_join(sigun_simp_shp, grdp_df, by=c("SIG_CD" = "CTPRVN_CD"))
 ``` {r sigun-grdp-by-sigungu-spatial}
 # 3. 데이터 시각화 -----
 ## 3.1. 정적 그래프 --------
-ggplot(data=sigungu_shp, aes(fill=GRDP)) +
+ggplot(data=sigun_grdp_map, aes(fill=GRDP)) +
     geom_sf() +
     theme_pubr(base_family="NanumGothic") +
     labs(title="시군구별 지역내총생산(GRDP)") + 
@@ -226,16 +224,6 @@ ggplot(data=sigungu_shp, aes(fill=GRDP)) +
 `tmap`을 활용하면 시군구별 지역내총생산 GRDP를 인터랙티브하게 지도위에 표현할 수 있다. 
 
 ``` {r sigun-grdp-geo-viz-interactive, eval=TRUE}
-## 3.2. 동적 그래프 --------
-# tmap_mode("view")
-# tm_shape(sigungu_shp) +
-#     # tm_polygons(col = "득표수") +
-#     tm_borders() +
-#     tm_fill("GRDP", 
-#             style = "fixed",
-#             breaks = c(0, 0.5, 1, 10, Inf),
-#             title      = c("시도명","시군구명", "GRDP"),
-#             popup.vars = c("시도명","시군구명", "GRDP"))
-mapview(sigungu_shp, 
+mapview(sigun_grdp_map, 
         zcol = "GRDP")
 ```
