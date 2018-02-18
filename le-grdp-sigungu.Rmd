@@ -193,6 +193,7 @@ sigun_map <- adm_map %>%
                                 str_detect(시군구명, "전주") ~ "전주시",
                                 str_detect(시군구명, "고양") ~ "고양시",
                                 str_detect(시군구명, "천안") ~ "천안시",
+                                str_detect(시군구명, "수원") ~ "수원시",
                                 TRUE ~ 시군구명)) %>% 
     group_by(시도명, 시군구명) %>% 
     summarise(geometry = st_union(geometry))
@@ -224,6 +225,8 @@ ggplot(data=sigun_grdp_map, aes(fill=GRDP)) +
 `tmap`을 활용하면 시군구별 지역내총생산 GRDP를 인터랙티브하게 지도위에 표현할 수 있다. 
 
 ``` {r sigun-grdp-geo-viz-interactive, eval=TRUE}
+sigun_grdp_map <- st_centroid(sigun_grdp_map)
 mapview(sigun_grdp_map, 
         zcol = "GRDP")
 ```
+
