@@ -1,0 +1,173 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 대통령, 서울시장, 경기지사 페이지뷰 추세
+output:
+  html_document: 
+    theme: journal
+    toc: yes
+    highlight: tango
+    code_folding: hide
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+```
+
+# 1. 위키백과사전 페이지뷰 [^wiki-pageview] {#wikipedia-trend}
+
+[^wiki-pageview]: [위키백과사전, 페이지뷰 분석 도구 - 여러 문서에 대한 조회수 비교](https://tools.wmflabs.org/pageviews/?project=en.wikipedia.org&platform=all-access&agent=user&range=latest-20&pages=Cat|Dog)
+
+위키백과사전에서 제공하는 [페이지뷰](https://tools.wmflabs.org/pageviews/?project=ko.wikipedia.org&platform=all-access&agent=user&range=latest-20&pages=%EB%AC%B8%EC%9E%AC%EC%9D%B8|%EB%B0%95%EA%B7%BC%ED%98%9C)를 
+활용하면 중요 페이지에 대한 인물관심도를 유추할 수 있다.
+
+R에서 [wikipediatrend: Public Subject Attention via Wikipedia Page View Statistics](https://cran.r-project.org/web/packages/wikipediatrend/index.html) 팩키지를 통하면 최소 코딩량을 가지고 
+지방선거 판세도 분석에 활용할 수도 있다.
+
+# 2. 대통령 대중 관심도(public subject attention) {#wiki-trend-president}
+
+`devtools::install_github("petermeissner/wikipediatrend")` 명령어로 위키백과사전에서 해당 위키 페이지에 대한 관심도를 추출할 수 있게 도와주는 
+팩키지를 설치한다. 그리고 나서 `wp_trend()` 함수에 `page`, `lang`, 기간을 설정해 데이터를 가져온다.
+
+``` {r wikipeida-trend}
+# 0. 환경설정 -----
+library(wikipediatrend) # devtools::install_github("petermeissner/wikipediatrend")
+library(tidyverse)
+library(ggthemes)
+library(DT)
+library(extrafont)
+loadfonts()
+library(plotly)
+
+# 1. 데이터 가져오기 -----
+presid_df <- 
+    wp_trend(
+        page = c("문재인", "박근혜", "이명박"), 
+        lang = c("ko"), 
+        from = "2016-07-01",
+        to   = "2018-03-18"
+    )
+
+# 2. 표 -----
+
+presid_df %>% 
+    select(날짜=date, 대통령=article, 페이지뷰=views) %>% 
+    mutate(날짜 = format(날짜, "%Y-%m-%d")) %>% 
+    datatable() %>% 
+      formatCurrency(c("페이지뷰"), currency="", digits=0)
+```
+
+## 1.1. 대통령 대중 관심도 시각화 {#wiki-president-viz}
+
+대통령 위키 페이지를 `ggplot`과 `plotly`를 통해 시각화한다.
+
+- [이명박](https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%AA%85%EB%B0%95)
+- [박근혜](https://ko.wikipedia.org/wiki/박근혜)
+- [문재인](https://ko.wikipedia.org/wiki/문재인)
+
+``` {r wikipeida-trend-viz, fig.width=12, fig.height=10}
+# 3. 데이터 시각화 -----
+presid_g <- presid_df %>% 
+    rename(대통령 = article) %>% 
+    mutate(대통령 = factor(대통령, levels=c("이명박", "박근혜", "문재인"))) %>% 
+    ggplot(aes(x=date, y=views, color=대통령)) +
+      geom_point() +
+      geom_line() +
+      scale_y_sqrt(labels=scales::comma) +
+      theme_minimal(base_family = "NanumGothic") +
+      labs(x="",y="위키백과사전 페이지뷰")
+    
+ggplotly(presid_g)
+```
+
+# 2. 서울시장 대중 관심도(public subject attention) {#wiki-trend-seoul}
+
+전직 이명박 대통령이 서울시장을 지내기도 해서 서울시장에 대한 대중 관심도는 크다.
+특히, 민주당 박원순, 우상호, 박영선 의원이 민주당의 대표주자로 자웅을 겨루고 있다.
+
+- [박원순](https://ko.wikipedia.org/wiki/%EB%B0%95%EC%9B%90%EC%88%9C)
+- [우상호](https://ko.wikipedia.org/wiki/%EC%9A%B0%EC%83%81%ED%98%B8)
+- [박영선_(1960년)](https://ko.wikipedia.org/wiki/%EB%B0%95%EC%98%81%EC%84%A0_(1960%EB%85%84))
+
+``` {r wikipeida-trend-seoul, fig.width=12, fig.height=10}
+# 1. 데이터 가져오기 -----
+seoul_df <- 
+    wp_trend(
+        page = c("박원순", "우상호", "박영선_(1960년)"), 
+        lang = c("ko"), 
+        from = "2016-07-01",
+        to   = "2018-03-18"
+    )
+
+# 2. 표 -----
+
+seoul_df %>% 
+    select(날짜=date, 후보=article, 페이지뷰=views) %>% 
+    mutate(날짜 = format(날짜, "%Y-%m-%d")) %>% 
+    datatable() %>% 
+      formatCurrency(c("페이지뷰"), currency="", digits=0)
+
+# 3. 데이터 시각화 -----
+seoul_g <- seoul_df %>% 
+    rename(후보 = article) %>% 
+    mutate(후보 = factor(후보, levels=c("박원순", "우상호", "박영선_(1960년)"))) %>% 
+    ggplot(aes(x=date, y=views, color=후보)) +
+      geom_point() +
+      geom_line() +
+      # facet_wrap(~후보, nrow=1) +
+      scale_y_sqrt(labels=scales::comma) +
+      theme_minimal(base_family = "NanumGothic") +
+      labs(x="",y="위키백과사전 페이지뷰") +
+      theme(legend.position = "top")
+    
+ggplotly(seoul_g)
+```
+
+# 3. 경기지사 대중 관심도(public subject attention) {#wiki-trend-gg}
+
+여론조사에서 이재명 성남시장이 앞도적인 지지율을 보이고 있지만, 
+민주당 경선에 출사표를 던지 전해철 의원도 상당부분 추격을 한 것으로 보인다.
+
+- [이재명](https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9E%AC%EB%AA%85_(1964%EB%85%84))
+- [전해철](https://ko.wikipedia.org/wiki/%EC%A0%84%ED%95%B4%EC%B2%A0)
+
+``` {r wikipeida-trend-gg, fig.width=12, fig.height=10}
+# 1. 데이터 가져오기 -----
+gg_df <- 
+    wp_trend(
+        page = c("이재명_(1964년)", "전해철"), 
+        lang = c("ko"), 
+        from = "2017-01-01",
+        to   = "2018-03-18"
+    )
+
+# 2. 표 -----
+
+gg_df %>% 
+    select(날짜=date, 후보=article, 페이지뷰=views) %>% 
+    mutate(날짜 = format(날짜, "%Y-%m-%d")) %>% 
+    datatable() %>% 
+      formatCurrency(c("페이지뷰"), currency="", digits=0)
+
+# 3. 데이터 시각화 -----
+gg_g <- gg_df %>% 
+    rename(후보 = article) %>% 
+    mutate(후보 = factor(후보, levels=c("이재명_(1964년)", "전해철", "남경필"))) %>% 
+    ggplot(aes(x=date, y=views, color=후보)) +
+      geom_point() +
+      geom_line() +
+      geom_smooth(se=FALSE) +
+      # facet_wrap(~후보, nrow=1) +
+      scale_y_sqrt(labels=scales::comma) +
+      scale_x_datetime(date_labels = "%y-%m-%d") +
+      theme_minimal(base_family = "NanumGothic") +
+      labs(x="",y="위키백과사전 페이지뷰") +
+      theme(legend.position = "top")
+    
+ggplotly(gg_g)
+```
+
+
