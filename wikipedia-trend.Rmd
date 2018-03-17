@@ -6,6 +6,7 @@ output:
   html_document: 
     theme: journal
     toc: yes
+    toc_float: true
     highlight: tango
     code_folding: hide
 mainfont: NanumGothic
@@ -83,7 +84,7 @@ presid_g <- presid_df %>%
 ggplotly(presid_g)
 ```
 
-# 2. 서울시장 대중 관심도(public subject attention) {#wiki-trend-seoul}
+# 3. 서울시장 대중 관심 추세 {#wiki-trend-seoul}
 
 전직 이명박 대통령이 서울시장을 지내기도 해서 서울시장에 대한 대중 관심도는 크다.
 특히, 민주당 박원순, 우상호, 박영선 의원이 민주당의 대표주자로 자웅을 겨루고 있다.
@@ -126,7 +127,7 @@ seoul_g <- seoul_df %>%
 ggplotly(seoul_g)
 ```
 
-# 3. 경기지사 대중 관심도(public subject attention) {#wiki-trend-gg}
+# 4. 경기지사 대중 관심 추세 {#wiki-trend-gg}
 
 여론조사에서 이재명 성남시장이 앞도적인 지지율을 보이고 있지만, 
 민주당 경선에 출사표를 던지 전해철 의원도 상당부분 추격을 한 것으로 보인다.
