@@ -115,6 +115,7 @@ gg_19_df <- presid_19_df %>% filter(시도명=="경기도") %>%
                             str_detect(구시군명, "안산") ~ "안산시",
                             str_detect(구시군명, "고양") ~ "고양시",
                             str_detect(구시군명, "용인") ~ "용인시",
+                            str_detect(구시군명, "군포") ~ "군포시",
                             TRUE ~ 구시군명)) %>% 
     select(c(2,7:11)) %>% 
     group_by(구시군명) %>% 
@@ -156,6 +157,7 @@ congress_df <- vstation_df %>%
                           str_detect(구시군명, "안산") ~ "안산시",
                           str_detect(구시군명, "고양") ~ "고양시",
                           str_detect(구시군명, "용인") ~ "용인시",
+                          str_detect(구시군명, "군포") ~ "군포시",
                           TRUE ~ 구시군명)) %>% 
   group_by(구시군명, 정당) %>% 
   summarise(총선득표 = sum(총선득표))  %>% 
@@ -183,7 +185,7 @@ diff_df <- inner_join(presid_df, congress_df) %>%
 
 ## 3.1. 정적 그래프 {#gg-sigun-vote-static}
 
-시군별 득표변화를 `ggplot`으로 시각화를 한다. 
+시군별 득표변화를 `ggplot`으로 시각화를 한다.  
 
 - 자유한국당은 총선과 비교하여 대선에서도 시군별로 유사한 득표를 기록했다.
 - 민주당은 1곳 양주시를 빼고 총선대비 득표가 증가했다.
@@ -210,7 +212,7 @@ gg_diff_g <- ggplot(diff_df, aes(x=총선득표, y=대선득표, color=정당,
                   force = 10)  +
   theme(legend.position = "none",
         strip.text.x = element_text(size = 17)) +
-  labs(x="총선득표", y="대선득표")
+  labs(x="총선득표", y="대선득표") 
 
 gg_diff_g + facet_wrap(~정당)
 ```
@@ -231,7 +233,7 @@ ggplotly(gg_diff_g, tooltip = "text")
 # 4. 총선 대선 득표 증감표 -----
 diff_df %>% 
   datatable() %>% 
-  formatCurrency(c(3:5), currency="", digits=0)
+  formatCurrency(c(3:5), currency="", digits=0) 
 ```  
 
 
