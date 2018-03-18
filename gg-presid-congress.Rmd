@@ -203,13 +203,14 @@ gg_diff_g <- ggplot(diff_df, aes(x=총선득표, y=대선득표, color=정당,
   scale_y_sqrt(labels = scales::comma, limits = c(0, 350000)) +
   scale_x_sqrt(labels = scales::comma, limits = c(0, 350000)) +
   scale_color_manual(values= c("blue", "red", "green", "yellow")) +
-  theme_wsj() +
+    theme_few(base_family = "NanumGothic") +
   geom_text_repel(aes(label = 구시군명, family = "NanumGothic"),
                   color = "gray20",
                   data = diff_df,
                   force = 10)  +
   theme(legend.position = "none",
-        strip.text.x = element_text(size = 17))
+        strip.text.x = element_text(size = 17)) +
+  labs(x="총선득표", y="대선득표")
 
 gg_diff_g + facet_wrap(~정당)
 ```
