@@ -1,0 +1,238 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 경기도 시군별 20대 총선 19대 대통령 선거 득표변화
+output:
+  html_document: 
+    theme: journal
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+library(tidyverse)
+library(readxl)
+library(ggthemes)
+library(ggrepel)
+library(DT)
+library(plotly)
+library(extrafont)
+loadfonts()
+
+diff_df <- readRDS("data/diff_df.rds")
+```
+
+# 1. 경기도 시군별 득표 변화 데이터 {#gg-sigun}
+
+경기도 시군별 득표변화를 살펴보기 위해서 제20대 총선 국회의원 데이터를 데이터프레임으로 변환시켜야 한다.
+제20대 총선 국회의원 데이터는 각 지역선거구별로 나눠져있어서 각 엑셀파일을 열어서 적절한 형태로 변환시키는 작업을 수행해야 한다.
+
+동일한 방식으로 제19대 대통령선거 데이터도 변환작업을 수행하고 이를 하나의 파일로 합친다.
+
+``` {r gg-presid-congress, eval=FALSE}
+# 0. 환경설정 -----
+library(tidyverse)
+library(readxl)
+library(ggthemes)
+library(ggrepel)
+library(DT)
+library(plotly)
+library(extrafont)
+loadfonts()
+
+read_excel_election <- function(filename){
+    temp <- read_excel(path = filename, skip=4)
+    temp <- temp %>% filter(row_number()==2)
+    temp <- temp %>% select(contains("당\r\n")) %>%
+        gather(당명, 총선득표) %>%
+        separate(당명, into=c("정당", "후보"), sep="\r\n")
+    temp <- temp %>% 
+        mutate(지역구 = filename) %>% 
+        mutate(지역구 = str_replace_all(지역구, "C:/총선/제20대/지역구/9경기/", "")) %>% 
+        mutate(지역구 = str_split(지역구, "_|\\.")[1]) %>% 
+        unnest() %>% 
+        filter(!str_detect(지역구, "개표상황|xlsx|politics|Users"))
+}
+
+# 1. 데이터 가져오기 -----
+## 1.1. 2016년 20대 총선
+
+file_name_v <- list.files("C:/총선/제20대/지역구/9경기/")
+
+dir_file_list <- list()
+
+for(i in 1:length(file_name_v)) {
+    dir_file_list[[i]] <- paste0("C:/총선/제20대/지역구/9경기/", file_name_v[i])
+    print(dir_file_list[[i]])
+}
+
+### 1.1.2. 리스트를 언리스트
+dir_file_unlists <- unlist(dir_file_list)
+
+dir_file_unlist <- str_replace_all(dir_file_unlists, "C:/Users/KwangChun/Dropbox/05_politics/_선거데이터/국회의원/제20대/지역구/9경기/개표상황", '')
+
+## 1.3. 엑셀파일을 데이터프레임으로 변환
+for (i in 1:length(dir_file_unlist)) {
+    assign(dir_file_unlist[i], read_excel_election(dir_file_unlists[i]))
+}
+
+### 1.1.3. 20대 총선 데이터를 정리
+
+vstation <- ls(pattern="*.xlsx")
+vstation_lst <- mget(vstation)
+
+vstation_df <- map_df(vstation_lst, bind_rows)
+
+## 1.2. 2017년 19 대선 ----------------
+gg_19_df <- readRDS("data/gg_19_df.rds")
+
+### 1.2.1. 2017년 19대 대통령 선거
+presid_19_dat <- read_excel("C:/대통령/대통령19대/@@20170510-19대선-투표구별개표자료(공개용).xlsx", skip=1)
+
+names(presid_19_dat) <- c("시도명", "구시군명", "읍면동명", "투표구명", "선거인수", "투표수", "문재인", 
+                          "홍준표", "안철수", "유승민", "심상정", "새누리당\r\n조원진", "경제애국당\r\n오영국", 
+                          "국민대통합당\r\n장성민", "늘푸른한국당\r\n이재오", "민중연합당\r\n김선동", 
+                          "한국국민당\r\n이경희", "홍익당\r\n윤홍식", "무소속\r\n김민찬", "계", "무효투표수", "기권수")
+
+presid_19_df <- presid_19_dat %>% 
+    select_("시도명", "구시군명", "읍면동명", "투표구명", "선거인수", "투표수", "문재인", "홍준표", "안철수", "유승민", "심상정") %>% 
+    mutate(구시군명 = ifelse(시도명 == "전국", "합계", 구시군명)) %>% 
+    mutate(읍면동명 = ifelse(구시군명 == "합계", "합계", 읍면동명)) %>% 
+    mutate(투표구명 = ifelse(is.na(투표구명), 읍면동명, 투표구명))
+
+gg_19_df <- presid_19_df %>% filter(시도명=="경기도") %>% 
+    filter(구시군명 != "합계",
+               읍면동명 == "합계") %>% 
+    mutate(구시군명 = case_when(str_detect(구시군명, "수원") ~ "수원시",
+                            str_detect(구시군명, "성남") ~ "성남시",
+                            str_detect(구시군명, "안양") ~ "안양시",
+                            str_detect(구시군명, "안산") ~ "안산시",
+                            str_detect(구시군명, "고양") ~ "고양시",
+                            str_detect(구시군명, "용인") ~ "용인시",
+                            TRUE ~ 구시군명)) %>% 
+    select(c(2,7:11)) %>% 
+    group_by(구시군명) %>% 
+    summarise(문재인 = sum(문재인),
+                 홍준표 = sum(홍준표),
+                 안철수 = sum(안철수),
+                 유승민 = sum(유승민),
+                 심상정 = sum(심상정))
+```
+
+# 2. 데이터 정제작업 {#gg-sigun}
+
+경기도 시군별 득표변화를 살펴보기 위해서 제20대 총선 국회의원 데이터와 제19대 대통령선거 데이터를 
+데이터프레임으로 변환시켰다면 두 데이터프레임을 하나의 데이터프레임으로 만들어야 한다.
+이 과정에서 두 데이터를 하나로 만들 수 있는 키를 잘 준비해야 한다.
+그리고, 총선과 대선에서 정당이 다르기 때문에 다음과 같은 기준을 가지고 정당데이터를 정제한다.
+제19대 대선에 출마한 출마자를 출마정당으로 명칭을 바꾼다.
+
+| 제 20 대 총선 |     제 19 대선  |        비고       |
+|---------------|-----------------|-------------------|
+| 더불어민주당  |   민주당        | 민주당 일원화     |
+| 새누리당      | 자유한국당      | 자유한국당 일원화 |
+| 국민의당      | 국민의당        |  변화없음         | 
+| 정의당        | 정의당          |  변화없음         |
+|               | 바른정당        | 자유한국당에 득표수 병합 |
+| 노동당        |                 | 대선 출마자 없어 제외    |
+| 녹색당        |                 | 대선 출마자 없어 제외    |
+| 민중연합당    |                 | 대선 출마자 없어 제외    |
+
+``` {r gg-presid-congress-wrangling, eval=FALSE}
+# 2. 데이터 정제 -----
+## 2.1. 20대 총선 데이터 정제
+congress_df <- vstation_df %>% 
+  filter(정당 %in% c("새누리당", "더불어민주당", "정의당", "국민의당")) %>% 
+  rename(구시군명 = 지역구) %>% 
+  mutate(구시군명 = case_when(str_detect(구시군명, "수원") ~ "수원시",
+                          str_detect(구시군명, "성남") ~ "성남시",
+                          str_detect(구시군명, "안양") ~ "안양시",
+                          str_detect(구시군명, "안산") ~ "안산시",
+                          str_detect(구시군명, "고양") ~ "고양시",
+                          str_detect(구시군명, "용인") ~ "용인시",
+                          TRUE ~ 구시군명)) %>% 
+  group_by(구시군명, 정당) %>% 
+  summarise(총선득표 = sum(총선득표))  %>% 
+  mutate(정당 = case_when(str_detect(정당, "새누리당") ~ "자유한국당",
+                          str_detect(정당, "더불어민주당") ~ "민주당",
+                          TRUE ~ 정당))
+
+## 2.2. 대선 데이터 정제
+presid_df <- gg_19_df %>% 
+  mutate(자유한국당 = 홍준표 + 유승민) %>% 
+  rename(민주당 = 문재인,
+         정의당 = 심상정,
+         국민의당 = 안철수) %>% 
+  select(-홍준표, -유승민) %>% 
+  gather(정당, 대선득표, -구시군명)
+
+## 2.3. 대선, 총선 데이터 병합
+
+diff_df <- inner_join(presid_df, congress_df) %>% 
+  mutate(득표증감 = 대선득표 - 총선득표) %>% 
+  mutate(정당 = factor(정당, levels = c("민주당", "자유한국당", "국민의당", "정의당")))
+```
+
+# 3. 시군별 총선 대선 득표변화 {#gg-sigun-vote}
+
+## 3.1. 정적 그래프 {#gg-sigun-vote-static}
+
+시군별 득표변화를 `ggplot`으로 시각화를 한다. 
+
+- 자유한국당은 총선과 비교하여 대선에서도 시군별로 유사한 득표를 기록했다.
+- 민주당은 1곳 양주시를 빼고 총선대비 득표가 증가했다.
+- 정의당도 1곳 고양시를 빼고 총선대비 득표가 모두 증가했다.
+- 국민의당은 득표가 크게 증가한 시군과 득표가 크게 증가하지 못한 곳으로 양분된 것으로 보인다.
+
+``` {r gg-presid-congress-viz, fig.width=12, fig.height=9}
+# 3. 데이터 시각화 -----
+gg_diff_g <- ggplot(diff_df, aes(x=총선득표, y=대선득표, color=정당,
+                                 text = paste('시군 :', 구시군명, "\n",
+                                              '정당:', 정당, "\n",
+                                              '득표증감:', scales::comma(대선득표 - 총선득표), "\n",
+                                              '대선득표:', scales::comma(대선득표), "\n",
+                                              '총선득표:', scales::comma(총선득표)))) +
+  geom_point(size=3) +
+  geom_abline(slope = 1, intercept = 0) +
+  scale_y_sqrt(labels = scales::comma, limits = c(0, 350000)) +
+  scale_x_sqrt(labels = scales::comma, limits = c(0, 350000)) +
+  scale_color_manual(values= c("blue", "red", "green", "yellow")) +
+  theme_wsj() +
+  geom_text_repel(aes(label = 구시군명, family = "NanumGothic"),
+                  color = "gray20",
+                  data = diff_df,
+                  force = 10)  +
+  theme(legend.position = "none",
+        strip.text.x = element_text(size = 17))
+
+gg_diff_g + facet_wrap(~정당)
+```
+
+## 3.2. 동적 그래프 {#gg-sigun-vote-dynamic}
+
+정적 그래프를 동적으로 변화하여 각 시군별로 상세히 비교한다.
+
+``` {r gg-presid-congress-dynamic-viz}
+ggplotly(gg_diff_g, tooltip = "text")  
+```
+
+## 3.3. 득표 증감표 {#gg-sigun-vote-table}
+
+시각적인 내용을 동적 표로 표현하여 상세히 살펴본다.
+
+``` {r gg-presid-congress-table}
+# 4. 총선 대선 득표 증감표 -----
+diff_df %>% 
+  datatable() %>% 
+  formatCurrency(c(3:5), currency="", digits=0)
+```  
+
+
+
+
