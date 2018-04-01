@@ -18,3 +18,5 @@ code/secret_key_from_api.R
 .httr-oauth
 data/worldmap/
 data/map_admdong
+twitter_token.rds
+.httr-oauth

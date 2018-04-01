@@ -79,9 +79,9 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
             - [페이스북 성과(CTR)](fb-ctr.html)
             - [위키트리 - 손학규 vs. 유승민](fb-wikitree-sohn-vs-yoo.html)
             - [페이스북 페이지 - 국민의당 경선](fb-people-party.html)
-        - **트위터**
+        - **트위터(twitter)**
             - [여론조사에 반영되지 않은 팩트](twitter-activity.html)
-            - [텍스트 데이터 수집 - 트위터](http://statkclee.github.io/ml/ml-text-twitter.html)
+            - [텍스트 데이터 수집 - 트위터](twitter-data.html)
         - **위키백과사전**
             - [대통령, 서울시장, 경기지사 페이지뷰 추세](wikipedia-trend.html)
         - **구글**
