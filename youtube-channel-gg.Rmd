@@ -1,0 +1,230 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 유튜브 채널 - 경기지사
+output:
+  html_document: 
+    theme: journal
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+
+# 1. 경기지사 후보 유튜브 채널 {#google-youtube-gg}
+
+경기지사는 민주당에서 이재명 성남시장과 전해철 의원이, 자유한국당에서는 남경필 의원이 출사표를 던져 자웅을 겨루고 있다.
+일단, 네이버 인물정보에서 각 후보별 유튜브 공식 채널을 뽑아내면 다음과 같다.
+
+- 이재명: [이재명 official](https://www.youtube.com/channel/UCNJM6dqu70Qr6VaseiW1Org)
+- 전해철: [전해철](https://www.youtube.com/channel/UCPFd6di9x3LnyuTLWHlcR4w)
+- 남경필: [남경필 공식채널](https://www.youtube.com/channel/UCxoVzAhmcsIxDQqxTd8DWBw)
+
+
+# 2. 데이터 가져오기 {#google-youtube-data}
+
+유튜브 채널에 등록된 동영상 정보와 각 동영상에 인기도를 묶어 데이터 프레임으로 준비한다.
+이를 위해 `get_yt_stat()`, `get_yt_video_info()` 함수를 두개 생성한다.
+그리고 나서 데이터 전처리 작업을 통해 동영상 `id` 기준으로 병합하여 후속 작업을 위한 데이터프레임을 제작한다.
+
+``` {r youtube-data}
+# 0.환경설정 -----
+library(tidyverse)
+library(tuber)      # devtools::install_github("soodoku/tuber", build_vignettes = TRUE)
+library(DT)
+library(lubridate)
+library(ggthemes)
+library(extrafont)
+loadfonts()
+
+yt_oauth("1074029284102-rm8onc0bi6qv3p32ramvp9m7dr08u2e0.apps.googleusercontent.com", "phcG7JUQX6b_yvKD6d4dL9S-")
+
+# 1. 데이터 가져오기 -----
+
+## 1.1 유튜브 동영상 통계 -----
+get_yt_stat <- function(yt_id) {
+  # 1. 채널 리스트
+  yt_list <- list_channel_resources(filter = c(channel_id = yt_id))
+  
+  # 2. 채널의 재생목록
+  yt_playlist_id <- yt_list$items[[1]]$contentDetails$relatedPlaylists$uploads
+  
+  # 3. 비디오 ID
+  yt_vids <- get_playlist_items(filter= c(playlist_id=yt_playlist_id)) 
+  yt_vid_ids <- as.vector(yt_vids$contentDetails.videoId)
+  
+  # 동영상 활동성 통계 가져오기
+  yt_stat_df <- map_df(yt_vid_ids, get_stats)
+  
+  return(yt_stat_df)
+}
+
+### 1.1.1. 이재명 -----
+lee_yt_df <- get_yt_stat("UCNJM6dqu70Qr6VaseiW1Org")
+
+lee_yt_df <- lee_yt_df %>% 
+  mutate_at(vars(contains("Count")), as.numeric) %>% 
+  mutate(후보 = "이재명")
+
+### 1.1.2. 전해철 -----
+jeon_yt_df <- get_yt_stat("UCPFd6di9x3LnyuTLWHlcR4w")
+
+jeon_yt_df <- jeon_yt_df %>% 
+  mutate_at(vars(contains("Count")), as.numeric) %>% 
+  mutate(후보 = "전해철")
+
+### 1.1.3. 남경필 -----
+nam_yt_df <- get_yt_stat("UCxoVzAhmcsIxDQqxTd8DWBw")
+
+nam_yt_df <- nam_yt_df %>% 
+  mutate_at(vars(contains("Count")), as.numeric) %>% 
+  mutate(후보 = "남경필")
+
+### 1.1.4. 경기지사 후보 동영상 통계 -----
+
+gg_yt_df <- bind_rows(lee_yt_df, jeon_yt_df) %>% 
+  bind_rows(nam_yt_df)
+
+## 1.2 유튜브 동영상 정보 -----
+
+get_yt_video_info <- function(yt_id) {
+  
+  # 1. 채널 리스트
+  yt_list <- list_channel_resources(filter = c(channel_id = yt_id))
+  
+  # 2. 채널의 재생목록
+  yt_playlist_id <- yt_list$items[[1]]$contentDetails$relatedPlaylists$uploads
+  
+  # 3. 비디오 ID
+  yt_vids <- get_playlist_items(filter= c(playlist_id=yt_playlist_id)) 
+  yt_vid_ids <- as.vector(yt_vids$contentDetails.videoId)
+  
+  # 동영상 데이터 가져오기
+  yt_video_info_df <- map(yt_vid_ids, get_video_details)
+  
+  return(yt_video_info_df)
+}
+
+### 1.2.1. 이재명 동영상 정보 -----
+lee_video_info <- get_yt_video_info("UCNJM6dqu70Qr6VaseiW1Org")
+
+lee_video_df <- lee_video_info %>% {
+  tibble(
+    id    = map_chr(., ~.$items[[1]]$id),
+    v_date  = map_chr(., ~.$items[[1]]$snippet$publishedAt),
+    v_title = map_chr(., ~.$items[[1]]$snippet$title),
+    v_tag   = map(., ~.$items[[1]]$snippet$tags %>% unlist),
+    후보    = "이재명"
+  )
+}
+
+
+### 1.2.2. 전해철 동영상 정보 -----
+jeon_video_info <- get_yt_video_info("UCPFd6di9x3LnyuTLWHlcR4w")
+
+jeon_video_df <- jeon_video_info %>% {
+  tibble(
+    id    = map_chr(., ~.$items[[1]]$id),
+    v_date  = map_chr(., ~.$items[[1]]$snippet$publishedAt),
+    v_title = map_chr(., ~.$items[[1]]$snippet$title),
+    v_tag   = map(., ~.$items[[1]]$snippet$tags %>% unlist),
+    후보    = "전해철"
+  )
+}
+
+### 1.2.3. 남경필 동영상 정보 -----
+nam_video_info <- get_yt_video_info("UCxoVzAhmcsIxDQqxTd8DWBw")
+
+nam_video_df <- nam_video_info %>% {
+  tibble(
+    id    = map_chr(., ~.$items[[1]]$id),
+    v_date  = map_chr(., ~.$items[[1]]$snippet$publishedAt),
+    v_title = map_chr(., ~.$items[[1]]$snippet$title),
+    v_tag   = map(., ~.$items[[1]]$snippet$tags %>% unlist),
+    후보    = "남경필"
+  )
+}
+
+### 1.2.4. 경기지사 후보 동영상 정보 -----
+
+gg_yt_video_df <- bind_rows(lee_video_df, jeon_video_df) %>% 
+  bind_rows(nam_video_df)
+
+## 1.3. 데이터 병합 -----
+
+gg_df <- left_join(gg_yt_df, gg_yt_video_df) %>% 
+  mutate(v_date = ymd_hms(v_date) %>% format("%y-%m-%d"))
+```
+
+# 3. 인기 동영상 {#google-youtube-table}
+
+세 후보에게 가장 인기있는 동영상을 살펴보자. 유튜브에서 제공하는 통계는 다음과 같다.
+
+- 조회수: viewCount
+- 좋아요 수: likeCount
+- 싫어요 수: dislikeCount
+- 댓글 수: commentCount
+
+``` {r youtube-data-table}
+# 2. 유튜브 데이터 분석 -----
+## 2.1. 표 -----
+
+gg_df %>% 
+  select(후보, v_title, v_date, id, contains("Count")) %>% 
+  mutate(id = paste0("<a href=https://www.youtube.com/watch?v=", id,">", id,"</a>")) %>% 
+  datatable(escape=FALSE, options = list(scrollX=TRUE, autoWidth = TRUE,
+                                         columnDefs = list(list(width = '300px', targets = c(2))))) %>% 
+  formatCurrency(c("viewCount", "likeCount", "dislikeCount", "commentCount"), currency = "", digits = 0) 
+```
+
+# 4. 시각화 {#google-youtube-viz}
+
+다음으로 세후보별 동영상 통계지표를 `ggplot`으로 시각화해서 어떤 후보별로 비교한다.
+
+``` {r youtube-data-viz, fig.width=12, fig.height=8}
+## 2.2. 시각화 -----
+## 2.1. 전체적인 흐름
+gg_df %>% 
+  select(후보, v_date, contains("Count")) %>% 
+  gather(metric, value, -후보, -v_date) %>% 
+  mutate(v_date = ymd(v_date)) %>% 
+  filter(metric != "favoriteCount",
+         v_date >= ymd("2017-01-01")) %>% 
+  ggplot(aes(x=v_date, y=value, group=후보, color=후보)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~ metric, scale="free", nrow = 3) +
+  theme_bw(base_family="NanumGothic") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_x_date(date_labels = "%y-%m") +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+이번에는 2018년 이후만 살펴보자.
+
+``` {r youtube-data-viz-2018, fig.width=12, fig.height=8}
+## 2.2. 2018년 이후만...
+gg_df %>% 
+  select(후보, v_date, contains("Count")) %>% 
+  gather(metric, value, -후보, -v_date) %>% 
+  mutate(v_date = ymd(v_date)) %>% 
+  filter(metric != "favoriteCount",
+         v_date >= ymd("2017-01-01")) %>% 
+  ggplot(aes(x=v_date, y=value, group=후보, color=후보)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~ metric, scale="free", nrow = 3) +
+  theme_bw(base_family="NanumGothic") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_x_date(date_labels = "%y-%m") +
+  scale_y_continuous(labels = scales::comma) +
+  coord_cartesian(xlim=c(ymd("2018-01-01"), ymd("2018-04-17")))
+```

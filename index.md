@@ -84,9 +84,11 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
             - [텍스트 데이터 수집 - 트위터](twitter-data.html)
         - **위키백과사전**
             - [대통령, 서울시장, 경기지사 페이지뷰 추세](wikipedia-trend.html)
-        - **구글**
+        - **[구글 - 유튜브, 트렌드](google-sns.html)**
             - [구글 추세(Google Trend)와 추억의 격자그림(Trellis)](google-trend.html)
             - [유튜브 동영상 사용자 관여도 분석](youtube-activity.html)        
+            - [유튜브 채널](youtube-channel.html)
+            - [유튜브 채널 - 경기지사](youtube-channel-gg.html)
     1. **텍스트 데이터**
         - [저녁이 있는 삶 – 손학규](http://statkclee.github.io/ml/ml-book.html)
         - [연설문 판별 - 오바마 vs. 롬니](text-classify-speeches.html)
@@ -128,8 +130,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
         - **[중앙일보 TV토론 평가](tv-debate.html)**
         - [제18대 대선 투표결과](http://statkclee.github.io/data-science/geo-18-president.html)
     1. **다양한 빅데이터**
-        - [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)
-        - [유튜브 채널](youtube-channel.html)
+        - [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)        
         - [대선후보 정책평가](radar-chart.html)
         - [소득과 득표율 관계](income-vs-vote.html)
         - [보수와 진보를 넘어서](beyond-red-vs-blues.html)        
