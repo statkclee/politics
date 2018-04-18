@@ -89,6 +89,9 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
             - [유튜브 동영상 사용자 관여도 분석](youtube-activity.html)        
             - [유튜브 채널](youtube-channel.html)
             - [유튜브 채널 - 경기지사](youtube-channel-gg.html)
+        - **[네이버 연관검색어](naver-related-search.html)**
+            - [네이버 연관검색어 - 경기지사](naver-related-search-gg.html)
+            - [네이버 연관검색어 - 서울시장](naver-related-search-seoul.html)**
     1. **텍스트 데이터**
         - [저녁이 있는 삶 – 손학규](http://statkclee.github.io/ml/ml-book.html)
         - [연설문 판별 - 오바마 vs. 롬니](text-classify-speeches.html)
