@@ -65,11 +65,14 @@ draw_naver_graph <- function(keyword) {
 }
 ```
 
-# 2. 사례 {#사례-경기지사} 
 
-경기지사 민주당 후보로 나온 이재명 성남시장을 검색어로 넣어보자.
+# 2. 사례 - 드루킹(2018-04-19) [^druking] {#사례-드루킹} 
 
+[^druking]: [조선일보 - 닉네임 '드루킹'의 뜻은 무엇일까…게임 마법사 캐릭터에서 따와](http://news.chosun.com/site/data/html_dir/2018/04/16/2018041600817.html)
 
-``` {r naver-related-search-테스트}
-draw_naver_graph("이재명")
+‘드루킹’은 미국의 게임회사 블리자드사 ‘월드 오브 워크래프트’(WoW, 와우)에 나오는 **드루이드**(자연의 힘을 이용하는 마법사)’에서 따온 것이라고 전했다. 유력한 민주당 경상남도 지사 김경수 의원의 낙마를 가져온 드루킹 검색어와 연관된 검색어 `r Sys.time()` 시간 기준 무엇인지 살펴보자
+
+``` {r naver-related-search-드루킹, fig.width=12, fig.height=12}
+draw_naver_graph("두루킹")
 ```
+
