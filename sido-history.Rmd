@@ -250,9 +250,9 @@ bumpchart2<-function (y, top.labels = colnames(y), labels = rep(rownames(y),2),
     minspacing <- strheight("M") * 1.5
     text(1:ydim[2], xylim[4], top.labels)
     text(xylim[1], y[,1], labels[(ydim[1]+1):(2*ydim[1])], adj = 1)
-    cat(y[,1],"\n")
+    # cat(y[,1],"\n")
     text(xylim[2], y[,2], labels[1:ydim[1]], adj = 0)
-    cat(y[,2],"\n")
+    # cat(y[,2],"\n")
     par(mar = oldmar, xpd = FALSE)
 }
 ```
@@ -299,4 +299,141 @@ bumpchart2(local_viz_free_df, mar=c(6, 12, 6, 12),col=RColorBrewer::brewer.pal(1
 title(main="[자한당] 제5,6회 지방선거 비교", line=1.5, col.main="navy blue")
 ```
 
+# 제6,7회 지선 비교 {#local-election-history-data-comp-now}
 
+## 데이터 병합 {#local-election-history-data-comp-merge-now}
+
+제6회 지방선거 결과와 제7회 지방선거 가장 최근 여론조사 전후변화를 시각적으로 표현하도록 적절한 형태로 데이터를 변환한다. 특히, 간결한 시작적 내용 전달을 위해서 시도명과 득표율을 단순화시킨다.
+
+```{r local-election-history-merge-now}
+# 1. 데이터 -----
+## 1.1. 데이터 가져오기:제6회 지방선거 결과 -----
+names(six_df) <- c("기호", "후보명", "정당", "득표수", "득표율", "순위", "당선여부", "시도명")
+
+## 1.2. 데이터 가져오기:제7회 지방선거 여론조사 -----
+seven_df  <- read_rds("data/sido_survey_df.rds")
+names(seven_df)  <- c("조사 의뢰", "조사 기관", "응답 인원", "더불어민주당", "자유한국당", "바른미래당", 
+                      "정의당", "기타·무응답", "참고", "조사일", "시도명", "민주평화당", "무소속")
+
+seven_df <- seven_df %>% 
+    mutate(무소속 = str_replace_all(무소속, "%", "") %>% as.numeric,
+              민주평화당 = str_replace_all(민주평화당, "%", "") %>% as.numeric) %>% 
+    group_by(시도명) %>% 
+    arrange(조사일) %>% 
+    mutate(조사일_id = row_number()) %>% 
+    filter(조사일_id == max(조사일_id)) %>% 
+    select(시도명, contains("당"), contains("무소속")) %>% 
+    ungroup() %>% 
+    gather(정당, 득표율, -시도명) %>% 
+    mutate(득표율 = round(as.numeric(득표율),1))
+
+## 1.3. 데이터 병합 -----
+six_df <- six_df %>% 
+    mutate(선수="제6회") %>% 
+    select(선수, 시도명, 정당, 득표율) %>% 
+    as_tibble() %>% 
+    mutate(득표율 = str_replace_all(득표율, "%", "") %>% as.numeric %>%  round(1)) %>% 
+    filter(str_detect(정당, pattern="새누리당|새정치민주연합"))
+
+seven_df <- seven_df %>% 
+    mutate(선수="제7회") %>% 
+    select(선수, 시도명, 정당, 득표율) %>% 
+    filter(str_detect(정당, pattern="더불어민주당|자유한국당"))
+    
+local_now_df <- bind_rows(six_df, seven_df)
+
+# 2. 데이터 정제 -----
+local_now_df <- local_now_df %>% 
+    mutate(시도명 = case_when(
+        str_detect(시도명, "서울특별시장") ~ "서울",
+        str_detect(시도명, "인천광역시장") ~ "인천",
+        str_detect(시도명, "경기도지사") ~ "경기",
+        str_detect(시도명, "강원도지사") ~ "강원",
+        str_detect(시도명, "대전광역시장") ~ "대전",
+        str_detect(시도명, "세종특별자치시장") ~ "세종",
+        str_detect(시도명, "충청남도지사") ~ "충남",
+        str_detect(시도명, "충청북도지사") ~ "충북",
+        str_detect(시도명, "광주광역시장") ~ "광주",
+        str_detect(시도명, "전라남도지사") ~ "전남",
+        str_detect(시도명, "전라북도지사") ~ "전북",
+        str_detect(시도명, "부산광역시장") ~ "부산",
+        str_detect(시도명, "대구광역시장") ~ "대구",
+        str_detect(시도명, "울산광역시장") ~ "울산",
+        str_detect(시도명, "경상남도지사") ~ "경남",
+        str_detect(시도명, "경상북도지사") ~ "경북",
+        str_detect(시도명, "제주특별자치도지사") ~ "제주"))
+
+DT::datatable(local_now_df)
+```
+
+### 더불어 민주당 {#local-election-history-data-comp-viz-minju-now}
+
+```{r local-election-history-viz-minju-now, fig.width=10, fig.height=7}
+# 3. 데이터 시각화 -----
+bumpchart2<-function (y, top.labels = colnames(y), labels = rep(rownames(y),2), 
+                      rank = TRUE, mar = c(2, 8, 5, 8), pch = 19, col = par("fg"), 
+                      lty = 1, lwd = 1, arrows = FALSE, ...) {
+    
+    if (missing(y)) stop("Usage: bumpchart(y,top.labels,labels,...)")
+    ydim <- dim(y)
+    if (is.null(ydim)) stop("y must be a matrix or data frame")
+    oldmar <- par("mar")
+    par(mar = mar)
+    if (rank) 
+        y <- apply(y, 2, rank)
+    labels <- rev(labels)
+    pch = rev(pch)
+    col = rev(col)
+    lty = rev(lty)
+    lwd = rev(lwd)
+    y <- apply(y, 2, rev)
+    if (arrows) {
+        matplot(t(y), ylab = "", type = "p", pch = pch, col = col, 
+                axes = FALSE)
+        for (row in 1:(ydim[2] - 1)) p2p_arrows(rep(row, ydim[1]), 
+                                                y[, row], rep(row + 1, ydim[1]), y[, row + 1], col = col, 
+                                                lty = lty, lwd = lwd, ...)
+    }
+    else matplot(t(y), ylab = "", type = "b", pch = pch, col = col, 
+                 lty = lty, lwd = lwd, axes = FALSE, ...)
+    par(xpd = TRUE)
+    xylim <- par("usr")
+    minspacing <- strheight("M") * 1.5
+    text(1:ydim[2], xylim[4], top.labels)
+    text(xylim[1], y[,1], labels[(ydim[1]+1):(2*ydim[1])], adj = 1)
+    # cat(y[,1],"\n")
+    text(xylim[2], y[,2], labels[1:ydim[1]], adj = 0)
+    # cat(y[,2],"\n")
+    par(mar = oldmar, xpd = FALSE)
+}
+## 3.1. 민주당 ----
+local_now_minju_df <- local_now_df %>% 
+    filter(str_detect(정당, "새정치민주연합|더불어민주당")) %>% 
+    select(-정당) %>% 
+    spread(선수, 득표율) %>% 
+    as.data.frame() %>% 
+    column_to_rownames(var="시도명") 
+
+bumpchart2(local_now_minju_df, mar=c(6, 12, 6, 12),col=RColorBrewer::brewer.pal(12, "Set3"),
+           labels=c(paste(rownames(local_now_minju_df), local_now_minju_df[,1], sep="   "),
+                    paste(local_now_minju_df[,2], rownames(local_now_minju_df), sep="   ")),rank=FALSE,lwd=3,
+           top.labels = c("제6회", "제7회"))
+title(main="[민주당] 제6,7회 지방선거 비교", line=1.5, col.main="navy blue")
+```
+
+### 자유한국당 {#local-election-history-data-comp-viz-free-now}
+
+```{r local-election-history-viz-free-now, fig.width=10, fig.height=7}
+## 3.2. 자유한국당 ----
+local_now_free_df <- local_now_df %>% 
+    filter(str_detect(정당, "새누리당|자유한국당")) %>% 
+    select(-정당) %>% 
+    spread(선수, 득표율) %>% 
+    as.data.frame() %>% 
+    column_to_rownames(var="시도명") 
+
+bumpchart2(local_now_free_df, mar=c(6, 12, 6, 12),col=RColorBrewer::brewer.pal(12, "Set3"),
+           labels=c(paste(rownames(local_now_free_df), local_now_free_df[,1], sep="   "),
+                    paste(local_now_free_df[,2], rownames(local_now_free_df), sep="   ")),rank=FALSE,lwd=3,
+           top.labels = c("제6회", "제7회"))
+title(main="[자한당] 제6,7회 지방선거 비교", line=1.5, col.main="navy blue")
