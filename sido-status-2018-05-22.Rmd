@@ -326,7 +326,7 @@ sido_seven_g <- sido_seven_shp %>% ggplot(aes(fill=sido_seven_shp$정당)) +
     theme_minimal(base_family="NanumGothic") +
     labs(title="제7회 지방선거 - 광역자치단체장") + 
     theme(legend.position = "right") +
-    scale_fill_manual(values =c("red", "darkgray", "blue")) +
+    scale_fill_manual(values =c("blue", "darkgray", "red")) +
     labs(fill="정당") +
     theme(legend.position = "top")
 
