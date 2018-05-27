@@ -4,10 +4,11 @@ title: 데이터 과학자와 함께 하는 제19대 대통령 선거
 subtitle: 페이스북 페이지(황교안 국무총리 권한대행)
 output:
   html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
 ---
 
 ```{r setOptions, message=FALSE, include=FALSE}
@@ -24,7 +25,7 @@ theme_set(theme_gray(base_family='NanumGothic'))
 load("code/fb_oauth")
 ```
 
-## 1. 황교안 대통령 권한대행 페이스북 페이지
+# 황교안 대통령 권한대행 페이스북 페이지 {#hwang-fb-page}
 
 페이스북 API를 통해 황교안 대통령 권한대행 페이스북 페이지 활동성을 분석한다.
 가장 먼저 네이버 인물검색을 통해 공식 페이스북 페이지를 확인한다.
@@ -32,11 +33,11 @@ load("code/fb_oauth")
 - 황교안 대통령 권한대행 네이버 인물검색 : [https://search.naver.com/search.naver?where=nexearch&query=황교안&sm=top_hty&fbm=0&ie=utf8](https://search.naver.com/search.naver?where=nexearch&query=%ED%99%A9%EA%B5%90%EC%95%88&sm=top_hty&fbm=0&ie=utf8)
 - 황교안 대통령 권한대행 페이스북 페이지 : [https://www.facebook.com/PM0415HwangKyoahn](https://www.facebook.com/PM0415HwangKyoahn)
 
-## 2. 황교안 대통령 권한대행 페북 활동성 분석
+# 황교안 대통령 권한대행 페북 활동성 분석 {#hwang-fb-page-activity}
 
 황교안 대통령 권한대행 공식 페이스북 페이지를 분석한다.
 
-### 2.1. 환경설정
+## 환경설정 {#hwang-setup}
 
 가장 먼저 페북 분석을 위한 환경설정을 한다. 특히 `fbOAuth()` 함수를 통해 인증키 관리에 신경을 많이 쓴다.
 
@@ -46,7 +47,6 @@ load("code/fb_oauth")
 # 1. 환경설정 ---------------------------------------------------
 ## 1.1. 팩키지 불러오기
 # devtools::install_github("pablobarbera/Rfacebook")
-options(warn=-1)
 library(Rfacebook)
 library(tidyverse)
 library(lubridate)
@@ -65,12 +65,11 @@ load("code/fb_oauth")
 # 2. 페북 데이터 끌어오기 --------------------------------------
 # 황교안: https://www.facebook.com/PM0415HwangKyoahn
 
+fb_keys <- "EAACEdEose0cBAMGeGJQuUAnq0cBDcjLHzSD3q8SDtKua9BWFL7Vd7fAptH1mZB1J0AGGOr4U7X4RZBvGBvsQQBdsIY1oJh1Xm7G7wHZCuJSLbXuPn7e6X9ZB3sn8CPhxEo8z8fpEodhMkxxkWyFLR5EZAdllQ9TtUDWXLdoYiOLHMNkEpA3BF7DsU3761ZA0EZD"
 
-hwang_pg  <- getPage("PM0415HwangKyoahn", n=1000, token=fb_oauth, since='2016/01/01')
+hwang_pg  <- getPage("PM0415HwangKyoahn", n=1000, token=fb_keys, since='2016/01/01')
 
 fb_page_dat <- hwang_pg
-
-# write_csv(fb_page_dat, "data/fb_page_20170203.csv")
 
 # 3. 데이터 전처리 및 정제 --------------------------------------
 
@@ -80,7 +79,7 @@ fb_page_df <- fb_page_dat %>%
   gather(type, activity, -fb_date)
 ```
 
-### 2.3. 페북 페이지 활동성 시각화
+## 페북 페이지 활동성 시각화 {#hwang-activity-viz}
 
 `ggplot`을 통해 좋아요, 공유, 댓글에 대한 활동성 지표를 바탕으로 시간순으로 시각화한다.
 
@@ -102,7 +101,7 @@ ggplot(data=fb_page_df) +
   theme(text=element_text(family="NanumGothic"))
 ```
 
-### 2.4. 페북 페이지 통계
+## 페북 페이지 통계 {#hwang-activity-stat}
 
 페북 페이지 활동성 지표를 통해 게시물 유형(status, video, photo, link)별로 활동성 지표의 반응을 살펴본다.
 
@@ -129,7 +128,7 @@ datatable(fb_page_stat, options = list(autoWidth = TRUE,
 
 ```
 
-### 2.5. 페북 페이지 인기 게시물
+## 페북 페이지 인기 게시물 {#hwang-popular-post}
 
 페북 페이지 활동성을 통해 가장 활동성이 좋은 게시물을 파악한다.
 
