@@ -44,6 +44,7 @@ kw_grdp_map <- readRDS("data/kw_grdp_map.rds")
 
 # 속초 지도 데이터
 sc_map  <- readRDS("data/sc_map.rds")
+names(sc_map) <- enc2native(names(sc_map))
 
 # 2. 표 ---------------------
 
@@ -143,7 +144,7 @@ vote_type_tbl %>% spread("후보명", "득표변수") %>%
 
 # 제 19대 대통령 선거 {#대통령선거19}
 
-```{r 대통령선거, eval=FALSE}
+```{r 대통령선거, eval=TRUE}
 # 2. 지리정보 시각화 -----
 sc_g <- ggplot(data=sc_map, aes(fill=선거인수,
                                 text = paste0('읍면동명 : ', `읍면동명`, "\n",
@@ -170,7 +171,7 @@ ggplotly(sc_g, tooltip = "text")
 
 ## 선거구별 지리정보 {#선거구별-지도}  
 
-```{r 선거구별-지리정보, eval=FALSE}
+```{r 선거구별-지리정보, eval=TRUE}
 # 2. 데이터 정제 -----
 
 sc_map_precinct <- sc_map %>% 
@@ -210,7 +211,7 @@ ggplotly(sc_precinct_g, tooltip = "text")
 
 ## 선거구별 표 {#선거구별-표}  
 
-```{r 선거구별-지리정보-표, eval=FALSE}
+```{r 선거구별-지리정보-표, eval=TRUE}
 # 3. 표 -----
 
 sc_map_precinct_df <- sc_map_precinct
@@ -279,7 +280,7 @@ leaflet(data = p19_vstation_df) %>%
 # 4. 표 ----
 
 p19_vstation_df %>% 
-  select(-lat, -lon) %>% 
+  select(-lat, -lon, -`투표소 주소`) %>% 
   datatable()
 
 ```
