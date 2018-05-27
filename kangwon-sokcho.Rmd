@@ -1,0 +1,285 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 강원도 속초시
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+
+# 1. 강원도 현황 {#강원도}
+
+강원도를 인구수 기준으로 총 18개 시도를 기준으로 남녀, 세대수, 면적, GRDP(지역내총생산)을 비교해 본다.
+
+```{r 강원도기본정보}
+# 0. 환경설정 -----
+library(tidyverse)
+library(extrafont)
+loadfonts()
+library(ggthemes)
+library(DT)
+library(readxl)
+library(sf)
+library(mapview)
+library(gridExtra)
+library(plotly)
+library(leaflet)
+
+# 데이터
+presid_19_df <- readRDS("data/sockcho_presid_19.rds")
+
+# 강원 지도 데이터
+kw_grdp_map <- readRDS("data/kw_grdp_map.rds")
+
+# 속초 지도 데이터
+sc_map  <- readRDS("data/sc_map.rds")
+
+# 2. 표 ---------------------
+
+kw_grdp_map_df <- kw_grdp_map
+st_geometry(kw_grdp_map_df) <- NULL
+
+kw_grdp_map_df %>% 
+  arrange(desc(인구)) %>% 
+  datatable() %>% 
+    formatCurrency(c(3:8), currency="", digits=0)
+```
+
+## 강원도 GRDP와 인구 공간 정보 {#강원도-정적지도}
+
+```{r 강원도기본정보-정적지도, fig.width=12}
+
+# 3. 데이터 시각화 -----
+
+## 2.1. 정적 그래프 --------
+grdp_g <- ggplot(data=kw_grdp_map, aes(fill=GRDP_2015)) +
+  geom_sf() +
+  theme_bw(base_family="NanumGothic") +
+  labs(title="시군 지역내총생산 - 2015") + 
+  theme(legend.position = "right") +
+  # scale_fill_gradient(low = "wheat1", high = "red", name = "GRDP(단위:억)", labels = scales::comma) +
+  viridis::scale_fill_viridis(name = "GRDP(단위:억)", labels = scales::comma)
+
+pop_g <- ggplot(data=kw_grdp_map, aes(fill=인구)) +
+  geom_sf() +
+  theme_bw(base_family="NanumGothic") +
+  labs(title="시군 인구 - 2016") + 
+  theme(legend.position = "right") +
+  # scale_fill_gradient(low = "wheat1", high = "red", name = "인구(단위:명)", labels = scales::comma) +
+  viridis::scale_fill_viridis(name = "인구(단위:명)", labels = scales::comma)
+
+grid.arrange(grdp_g, pop_g, nrow=1)
+```
+
+## 강원도 동적 공간 정보 {#강원도-동적지도}
+
+```{r 강원도기본정보-동적지도}
+## 2.2. 동적 그래프 --------
+
+mapview(kw_grdp_map, zcol="GRDP_2015") +
+  mapview(kw_grdp_map, zcol="인구") 
+```
+
+
+## 선거구 [^district] {#속초시-선거구}
+
+[^district]: [속초시 선거관리위원회 - 선거구](http://gw.nec.go.kr/gw/gwsokcho/sub1.jsp)
+
+- 속초시 제1선거구 : 영랑동, 동명동, 금호동, 교동, 청호동
+- 속초시 제2선거구 : 노학동, 조양동, 대포동
+
+# 사전투표 {#사전투표}
+
+문재인 후보와 홍준표 후보를 비교했을 때, 문재인 후보가 사전 투표에서 약 2배 이상 사전투표를 많이 받았기 때문에 사전투표에 역량을 집중하는 것이 유리한 것으로 데이터상 나타나고 있음.
+
+```{r vote-type}
+# 2. 데이터 분석 -----
+
+vote_type_df <- presid_19_df %>% 
+  filter(!str_detect(읍면동명, "동$")) 
+
+vote_type_df %>% 
+  select(득표유형="읍면동명", "문재인", "홍준표", "안철수", "유승민", "심상정") %>% 
+  gather(후보명, 득표수, -득표유형) %>% 
+  mutate(후보명 = factor(후보명, levels = c("문재인", "홍준표", "안철수", "유승민", "심상정"))) %>%
+  mutate(득표유형 = factor(득표유형, levels = c("합계", "관외사전투표", "거소·선상투표", "재외투표"))) %>% 
+  ggplot(aes(x=후보명, y=득표수, fill=득표유형)) +
+    geom_col(position="dodge") +
+    labs(x="", y="득표수") +
+    scale_y_continuous(labels = scales::comma) +
+    theme(legend.position = "top")
+
+vote_type_tbl <- vote_type_df %>% 
+  select(득표유형="읍면동명", "문재인", "홍준표", "안철수", "유승민", "심상정") %>% 
+  gather(후보명, 득표수, -득표유형) %>% 
+  mutate(후보명 = factor(후보명, levels = c("문재인", "홍준표", "안철수", "유승민", "심상정"))) %>%
+  group_by(후보명) %>% 
+  mutate(득표율 = 득표수 / sum(득표수)) %>% 
+  unite(득표변수, 득표수, 득표율, sep="_")
+
+vote_type_tbl %>% spread("후보명", "득표변수") %>% 
+  separate("문재인", into=c("문재인", "문재인비율"), sep="_", convert=TRUE) %>%
+  separate("홍준표", into=c("홍준표", "홍준표비율"), sep="_", convert=TRUE) %>% 
+  separate("안철수", into=c("안철수", "안철수비율"), sep="_", convert=TRUE) %>% 
+  separate("유승민", into=c("유승민", "유승민비율"), sep="_", convert=TRUE) %>% 
+  separate("심상정", into=c("심상정", "심상정비율"), sep="_", convert=TRUE) %>% 
+  arrange(desc(문재인)) %>% 
+  DT::datatable() %>% 
+    formatCurrency(c("문재인", "홍준표", "안철수", "유승민", "심상정"), currency="", digits=0) %>% 
+    formatPercentage(c("문재인비율", "홍준표비율", "안철수비율", "유승민비율", "심상정비율"), digits=1)
+```
+
+
+# 제 19대 대통령 선거 {#대통령선거19}
+
+```{r 대통령선거, eval=FALSE}
+# 2. 지리정보 시각화 -----
+sc_g <- ggplot(data=sc_map, aes(fill=선거인수,
+                                text = paste0('읍면동명 : ', `읍면동명`, "\n",
+                                              '--------------------------',"\n",
+                                              ' - 선거인수 : ', scales::comma(선거인수), "\n",
+                                              ' - 투표수 : ', scales::comma(투표수), "\n",
+                                              ' - 투표율 : ', scales::percent(투표율), "\n",
+                                              '--------------------------',"\n",
+                                              ' - 문재인 : ', scales::comma(문재인), "\n",
+                                              ' - 홍준표 : ', scales::comma(홍준표), "\n",
+                                              ' - 안철수 : ', scales::comma(안철수), "\n",
+                                              ' - 유승민 : ', scales::comma(유승민), "\n",
+                                              ' - 심상정 : ', scales::comma(심상정), "\n"))) +
+  geom_sf() +
+  theme_void(base_family="NanumGothic") +
+  labs(title="제19대 대통령선거", subtitle="2017년 5월, 속초시") + 
+  theme(legend.position = "right") +
+  viridis::scale_fill_viridis(name = "유권자수(명)", labels = scales::comma)
+
+ggplotly(sc_g, tooltip = "text")
+```
+
+# 선거구별 득표율 {#선거구별-득표}
+
+## 선거구별 지리정보 {#선거구별-지도}  
+
+```{r 선거구별-지리정보, eval=FALSE}
+# 2. 데이터 정제 -----
+
+sc_map_precinct <- sc_map %>% 
+  mutate(선거구 = ifelse(읍면동명 %in% c("노학동", "조양동", "대포동"), "2선거구", "1선거구")) %>% 
+  group_by(선거구) %>% 
+  summarise(선거인수 = sum(선거인수),
+                투표수 = sum(투표수),
+                문재인 = sum(문재인),
+                홍준표 = sum(홍준표),
+                안철수 = sum(안철수),
+                유승민 = sum(유승민),
+                심상정 = sum(심상정)) %>% 
+  mutate(투표율 = 투표수 / 선거인수)
+
+
+# 2. 지리정보 시각화 -----
+sc_precinct_g <- ggplot(data=sc_map_precinct, aes(fill=선거인수,
+                                text = paste0('선거구 : ', 선거구, "\n",
+                                              '--------------------------',"\n",
+                                              ' - 선거인수 : ', scales::comma(선거인수), "\n",
+                                              ' - 투표수 : ', scales::comma(투표수), "\n",
+                                              ' - 투표율 : ', scales::percent(투표율), "\n",
+                                              '--------------------------',"\n",
+                                              ' - 문재인 : ', scales::comma(문재인), "\n",
+                                              ' - 홍준표 : ', scales::comma(홍준표), "\n",
+                                              ' - 안철수 : ', scales::comma(안철수), "\n",
+                                              ' - 유승민 : ', scales::comma(유승민), "\n",
+                                              ' - 심상정 : ', scales::comma(심상정), "\n"))) +
+  geom_sf() +
+  theme_void(base_family="NanumGothic") +
+  labs(title="제19대 대통령선거", subtitle="2017년 5월, 속초시") + 
+  theme(legend.position = "right") +
+  viridis::scale_fill_viridis(name = "유권자수(명)", labels = scales::comma)
+
+ggplotly(sc_precinct_g, tooltip = "text")
+```
+
+## 선거구별 표 {#선거구별-표}  
+
+```{r 선거구별-지리정보-표, eval=FALSE}
+# 3. 표 -----
+
+sc_map_precinct_df <- sc_map_precinct
+
+st_geometry(sc_map_precinct_df) <- NULL
+
+sc_map_precinct_df %>% 
+  DT::datatable() %>% 
+  formatCurrency(c(2:8), currency="", digits=0) %>% 
+  formatPercentage(c(9), digits=1)
+```
+
+# 투표구별 상세 {#투표구별}
+
+## 투표구별 지리정보 {#투표구별-지도}  
+
+```{r 투표구별-지도}
+## 1.1. 투표소 위치 데이터
+vstation_df <- read_excel("data/속초-투표소.xlsx", sheet="Sheet2")
+
+## 1.2. 대통령선거 데이터
+p19_df <- readRDS("data/sockcho_presid_19.rds") %>% 
+  rename(투표소명 = "투표구명")
+
+## 1.3. 데이터 병합
+
+p19_vstation_df <- left_join(p19_df, vstation_df) %>% 
+  filter(!is.na(lon)) %>% 
+  mutate(투표율 = scales::percent(ifelse(선거인수 == 0, 0, 투표수/선거인수)),
+            문재인득표율 = scales::percent(문재인/투표수),
+            홍준표득표율 = scales::percent(홍준표/투표수),
+            안철수득표율 = scales::percent(안철수/투표수),
+            유승민득표율 = scales::percent(유승민/투표수),
+            심상정득표율 = scales::percent(심상정/투표수),
+            선거인수 = scales::comma(선거인수),
+            투표수 = scales::comma(투표수),
+            문재인 = scales::comma(문재인),
+            홍준표 = scales::comma(홍준표),
+            안철수 = scales::comma(안철수),
+            유승민 = scales::comma(유승민),
+            심상정 = scales::comma(심상정)) %>% 
+  mutate(lon = as.numeric(lon),
+         lat = as.numeric(lat))
+
+# 3. 시각화 -----
+
+leaflet(data = p19_vstation_df) %>% 
+  addPolygons(data=sc_map, weight=2, col = 'blue') %>% 
+  addProviderTiles(providers$OpenStreetMap) %>% 
+  addCircleMarkers(lng=~lon, lat=~lat, clusterOptions = markerClusterOptions(),
+                   popup = ~ as.character(paste0("<strong>", paste0(`읍면동명`,":",`투표소명`), "</strong><br><br>",
+                                                 "&middot; 선거인수(투표율): ", `선거인수`,"  (",투표율, ")", "<br>",
+                                                 "-----------------------------------------------------------<br>",
+                                                 "&middot; 1번 문재인: ", `문재인`,"  (",문재인득표율, ")", "<br>",
+                                                 "&middot; 2번 홍준표: ", `홍준표`,"  (",홍준표득표율, ")", "<br>",
+                                                 "&middot; 3번 안철수: ", `안철수`,"  (",안철수득표율, ")", "<br>",
+                                                 "&middot; 4번 유승민: ", `유승민`,"  (",유승민득표율, ")", "<br>",
+                                                 "&middot; 5번 심상정: ", `심상정`,"  (",심상정득표율, ")", "<br>"
+                   ))) 
+
+```
+
+## 투표구별 표 {#투표구별-표}  
+
+```{r 투표구별-표}
+# 4. 표 ----
+
+p19_vstation_df %>% 
+  select(-lat, -lon) %>% 
+  datatable()
+
+```
