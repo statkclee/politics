@@ -1,0 +1,425 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 정당별 광역단체장 추세
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+library(tidyverse)
+library(rvest)
+library(slopegraph)
+library(extrafont)
+loadfonts()
+
+```
+
+
+# 역대 지방선거 광역단체장 {#역대-광역단체장}
+
+역대 지방선거 광역단체장에 대한 선거결과를 위키백과사전에서 확인이 가능하다.
+
+- [대한민국 제4회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제4회_지방_선거)
+- [대한민국 제5회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제5회_지방_선거)
+- [대한민국 제6회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거)
+- [대한민국 제7회 지방 선거 여론조사](https://ko.wikipedia.org/wiki/대한민국_제7회_지방_선거_여론_조사)
+
+[대한민국 제7회 지방 선거 여론조사](https://ko.wikipedia.org/wiki/대한민국_제7회_지방_선거_여론_조사) 결과는 
+현재 시점 `r Sys.Date()` 여론조사결과를 바탕으로 제7회 지방선거 광역단체장 정당별 획득수를 추측해 본다.
+
+# 선거 결과 데이터 {#선거결과-데이터}
+
+## [대한민국 제4회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제4회_지방_선거) {#제4회}
+
+[대한민국 제4회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제4회_지방_선거) 웹사이트에서 데이터를 긁어와서 데이터프레임으로 변환시킨다.
+
+```{r 제4회지방선거, eval = FALSE}
+# 0. 환경설정 -----
+library(tidyverse)
+library(rvest)
+library(slopegraph)
+library(extrafont)
+loadfonts()
+
+# 1. 데이터 -----
+## 1.1. 제 5 회 지방선거 결과 -----
+### 데이터 가져오기
+Sys.setlocale("LC_ALL", "C")
+
+four_url <- "https://ko.wikipedia.org/wiki/대한민국_제4회_지방_선거"
+
+sido_four_df <- read_html(four_url) %>% 
+    html_node(xpath='//*[@id="mw-content-text"]/div/table[2]') %>% 
+    html_table(fill=TRUE)
+
+Sys.setlocale("LC_ALL", "Korean")
+
+### 데이터 정제
+sido_four_df <- sido_four_df %>% 
+    filter(!str_detect(지역, "투표율")) %>% 
+    mutate(득표율 = str_replace_all(득표율, "%", "") %>% as.numeric,
+           비고 = str_extract(비고, "^[0-9가-힣].+")) %>% 
+    mutate(선수 = ifelse(is.na(비고), "초선", 비고)) %>% 
+    mutate(선수 = factor(선수, levels = c("초선", "재선", "3선"))) %>% 
+    rename(시도명=지역)
+DT::datatable(sido_four_df)
+```
+
+## [대한민국 제5회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제5회_지방_선거) {#제5회}
+
+[대한민국 제5회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제5회_지방_선거) 웹사이트에서 데이터를 긁어와서 데이터프레임으로 변환시킨다.
+
+```{r 제5회지방선거, eval = FALSE}
+# 1. 데이터 -----
+## 1.1. 제 5 회 지방선거 결과 -----
+### 데이터 가져오기
+Sys.setlocale("LC_ALL", "C")
+
+five_url <- "https://ko.wikipedia.org/wiki/대한민국_제5회_지방_선거"
+
+sido_five_df <- read_html(five_url) %>% 
+    html_node(xpath='//*[@id="mw-content-text"]/div/table[4]') %>% 
+    html_table(fill=TRUE)
+
+Sys.setlocale("LC_ALL", "Korean")
+
+### 데이터 정제
+sido_five_df <- sido_five_df %>% 
+    filter(!str_detect(지역, "투표율")) %>% 
+    mutate(득표수 = str_replace_all(득표수, ",", "") %>% as.integer,
+              득표율 = str_replace_all(득표율, "%", "") %>% as.numeric) %>% 
+    mutate(선수 = ifelse(비고 == "", "초선", 비고)) %>% 
+    mutate(선수 = factor(선수, levels = c("초선", "재선", "3선"))) %>% 
+    rename(시도명=지역)
+
+DT::datatable(sido_five_df)
+```
+
+## [대한민국 제6회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거) {#제6회}
+
+[대한민국 제6회 지방 선거](https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거) 웹사이트에서 데이터를 긁어와서 데이터프레임으로 변환시킨다.
+
+```{r 제6회지방선거, eval = FALSE}
+# 1. 데이터 -----
+## 1.1. 제 6 회 지방선거 결과 -----
+### 데이터 가져오기
+Sys.setlocale("LC_ALL", "C")
+
+six_url <- "https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거"
+
+sido_six_df <- read_html(six_url) %>% 
+    html_node(xpath='//*[@id="mw-content-text"]/div/table[4]') %>% 
+    html_table(fill=TRUE)
+
+Sys.setlocale("LC_ALL", "Korean")
+
+### 데이터 정제
+sido_six_df <- sido_six_df %>% 
+    filter(!str_detect(지역, "투표율")) %>% 
+    mutate(득표수 = str_replace_all(득표수, ",", "") %>% as.integer,
+              득표율 = str_replace_all(득표율, "%", "") %>% as.numeric) %>% 
+    mutate(선수 = ifelse(비고 == "", "초선", 비고)) %>% 
+    mutate(선수 = factor(선수, levels = c("초선", "재선", "3선"))) %>% 
+    rename(시도명=지역)
+
+DT::datatable(sido_six_df)
+```
+
+## [대한민국 제7회 지방 선거 여론조사](https://ko.wikipedia.org/wiki/대한민국_제7회_지방_선거_여론_조사) {#제7회}
+
+제7회 지방선거 여론조사는 [데이터 과학자가 바라본 제7회 지방선거 - 광역단체장 판세(2018-05-22)](http://statkclee.github.io/politics/sido-status-2018-05-22.html#22_%EC%A0%9C7%ED%9A%8C_%EC%A7%80%EB%B0%A9%EC%84%A0%EA%B1%B0_%EC%97%AC%EB%A1%A0%EC%A1%B0%EC%82%AC) 웹페이지를 참조한다.
+
+# 데이터 정제 {#역대선거-데이터}
+
+제4회부터 제6회까지는 역사적 사실로 각 정당별 광역단체장 선출데이터에 근거하고,
+제7회 지방선거 광역단체장은 `r Sys.Date()` 기준 여론조사 기준으로 광역단체장을 추정한다.
+그리고, 정당명칭이 제4회부터 현재까지 지속적으로 변경이 되어 일관성을 위해서 다음과 같이 정당명을 정리한다.
+
+- 제4회 지방선거
+    - 한나라당 &rarr; 자유한국당
+    - 열린우리당, 민주당 &rarr; 더불어민주당
+- 제5회 지방선거
+    - 한나라당 &rarr; 자유한국당
+    - 민주당 &rarr; 더불어민주당
+- 제6회 지방선거
+    - 새누리당 &rarr; 자유한국당
+    - 새정치민주연합 &rarr; 더불어민주당
+
+```{r 데이터-병합}
+## 1.1. 제4회 
+sido_four_df <- read_rds("data/sido_four_df.rds") %>% 
+    count(소속정당) %>% 
+    rename(정당=소속정당)
+
+## 1.1. 제5회 
+sido_five_df <- read_rds("data/sido_five_df.rds") %>% 
+    count(정당)
+
+## 1.2. 제6회 
+sido_six_df <- read_rds("data/sido_six_df.rds") %>% 
+    count(정당)
+
+## 1.3. 제7회 여론조사
+sido_seven_df <- read_rds("data/sido_survey_df.rds")
+
+names(sido_seven_df)  <- c("조사 의뢰", "조사 기관", "응답 인원", "더불어민주당", "자유한국당", 
+                           "바른미래당", "정의당", "기타·무응답", "참고", "조사일", "시도명", 
+                           "민주평화당", "무소속")
+
+sido_seven_now_df <- sido_seven_df %>% 
+    mutate(무소속 = str_replace_all(무소속, "%", "") %>% as.numeric,
+              민주평화당 = str_replace_all(민주평화당, "%", "") %>% as.numeric) %>% 
+    group_by(시도명) %>% 
+    filter(조사일 == max(조사일)) %>% 
+    select(시도명, contains("당"), contains("무소속")) %>% 
+    ungroup()
+
+current_df <- sido_seven_now_df %>% 
+    gather(정당, 지지율, -시도명) %>% 
+    mutate(지지율 = as.numeric(지지율)) %>% 
+    group_by(시도명) %>% 
+    summarise(지지율 = max(지지율, na.rm=TRUE))
+
+sido_current_df <- sido_seven_now_df %>% 
+    gather(정당, 지지율, -시도명) %>% 
+    mutate(지지율 = as.numeric(지지율)) %>% 
+    inner_join(current_df)
+
+sido_seven_viz_df <- sido_current_df %>% 
+    count(정당)
+
+## 1.3. 데이터 병합 -----
+sido_four_viz_df <- sido_four_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "한나라당") ~ "자유한국당",
+                          str_detect(정당, "열린우리당|민주당") ~ "더불어민주당",
+                          TRUE ~ 정당)) %>% 
+    group_by(정당) %>% 
+    summarise(제4회 = sum(n)) 
+
+
+sido_five_viz_df <- sido_five_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "한나라당") ~ "자유한국당",
+                          str_detect(정당, "민주당") ~ "더불어민주당",
+                          TRUE ~ 정당)) %>% 
+    rename(제5회 = n)
+
+sido_six_viz_df <- sido_six_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "새누리당") ~ "자유한국당",
+                            str_detect(정당, "새정치민주연합") ~ "더불어민주당")) %>% 
+    rename(제6회 = n)
+
+sido_seven_viz_df <- sido_seven_viz_df %>% 
+    rename(`제7회(예상)` = n)
+
+sido_viz_df <- full_join(sido_four_viz_df, sido_five_viz_df) %>% 
+    full_join(sido_six_viz_df) %>%
+    full_join(sido_seven_viz_df) %>% 
+    as.data.frame() %>%
+    column_to_rownames(var="정당")
+
+DT::datatable(sido_viz_df)
+```
+
+# 시각화 {#역대선거-시각화}
+
+
+그래프 문법(grammar of graphics)이 지원되는 [slopegraph](https://github.com/leeper/slopegraph)를 활용하여 각 정당을 대표한 색상을 반영하여 경사그래프로 각정당별 역대 선거를 시각화한다.
+
+```{r 역대선거-시각화}
+# 3. 시각화 -----
+
+cols <- `[<-`(rep("black", 4), 1, "blue")
+cols <- `[<-`(cols, 3, "red")
+
+ggslopegraph(sido_viz_df, offset.x = 0.06, yrev = FALSE,
+             col.lines = cols, col.lab = cols,
+             main = '역대지방선거 정당별 광역단체장수') +
+    theme_bw(base_family="NanumGothic")     
+```
+
+
+# 공간정보 시각화 {#공간정보-시각화}
+
+## 공간정보 정적 그래프 {#공간정보-시각화-정적그래프}
+
+각정당별 광역단체장 당선 현황을 공간정보에 표기해보자.
+이를 위해서 지리정보 코드표(`spatial_tbl`)를 작성하고 
+`magick` 팩키지 `.gif` 애니메이션 기능을 동원한다.
+
+``` {r 정적그래프}
+# 0. 환경설정 -----
+library(tidyverse)
+library(rvest)
+library(glue)
+library(sf)
+library(gridExtra)
+library(magick)
+
+# 1. 데이터 -----
+# 1.0. 지도정보 룩업표
+spatial_tbl <- tribble(
+    ~"CTPRVN_CD", ~"CTP_KOR_NM", ~"시도명",
+    11,  "서울특별시",  "서울특별시장",
+    26,  "부산광역시",  "부산광역시장",
+    27,  "대구광역시",  "대구광역시장",
+    28,  "인천광역시",  "인천광역시장",
+    29,  "광주광역시",  "광주광역시장",
+    30,  "대전광역시",  "대전광역시장",
+    31,  "울산광역시",   "울산광역시장",
+    36,  "세종특별자치시", "세종특별자치시장",
+    41,  "경기도",         "경기도지사",
+    42,  "강원도",         "강원도지사",
+    43,  "충청북도",      "충청북도지사",
+    44,  "충청남도",      "충청남도지사",
+    45,  "전라북도",      "전라북도지사",
+    46,  "전라남도",      "전라남도지사",
+    47,  "경상북도",      "경상북도지사",
+    48,  "경상남도",      "경상남도지사",
+    50,  "제주특별자치도", "제주특별자치도지사"
+)
+
+## 1.1. 제4회 지방선거
+sido_four_df <- read_rds("data/sido_four_df.rds") 
+
+sido_four_df <- left_join(sido_four_df, spatial_tbl, by=c("시도명" = "CTP_KOR_NM")) %>% 
+    mutate(CTPRVN_CD = factor(CTPRVN_CD)) %>% 
+    rename(CTP_KOR_NM=시도명,
+           시도명=시도명.y)
+
+## 1.2. 제5회 지방선거
+sido_five_df <- read_rds("data/sido_five_df.rds") 
+sido_five_df <- left_join(sido_five_df, spatial_tbl, by=c("시도명" = "CTP_KOR_NM")) %>% 
+    mutate(CTPRVN_CD = factor(CTPRVN_CD)) %>% 
+    rename(CTP_KOR_NM=시도명,
+           시도명=시도명.y)
+
+## 1.3. 제6회 지방선거
+sido_six_df <- read_rds("data/sido_six_df.rds") 
+sido_six_df <- left_join(sido_six_df, spatial_tbl) %>% 
+    mutate(CTPRVN_CD = factor(CTPRVN_CD))
+
+## 1.4. 제7회 여론조사
+sido_seven_df <- read_rds("data/sido_survey_df.rds")
+
+names(sido_seven_df)  <- c("조사 의뢰", "조사 기관", "응답 인원", "더불어민주당", "자유한국당", 
+                           "바른미래당", "정의당", "기타·무응답", "참고", "조사일", "시도명", 
+                           "민주평화당", "무소속")
+
+sido_seven_now_df <- sido_seven_df %>% 
+    mutate(무소속 = str_replace_all(무소속, "%", "") %>% as.numeric,
+              민주평화당 = str_replace_all(민주평화당, "%", "") %>% as.numeric) %>% 
+    group_by(시도명) %>% 
+    filter(조사일 == max(조사일)) %>% 
+    select(시도명, contains("당"), contains("무소속")) %>% 
+    ungroup()
+
+current_df <- sido_seven_now_df %>% 
+    gather(정당, 지지율, -시도명) %>% 
+    mutate(지지율 = as.numeric(지지율)) %>% 
+    group_by(시도명) %>% 
+    summarise(지지율 = max(지지율, na.rm=TRUE))
+
+sido_current_df <- sido_seven_now_df %>% 
+    gather(정당, 지지율, -시도명) %>% 
+    mutate(지지율 = as.numeric(지지율)) %>% 
+    inner_join(current_df)
+
+## 1.3. 지방선거 지도 -----
+
+## 1.2. shp 파일 불러오기 --------
+sido_shp <- st_read("data/shapefile_sido/TL_SCCO_CTPRVN.shp")
+# sido_shp <- st_read("data/TL_SCCO_CTPRVN.shp")
+sido_shp$CTP_KOR_NM <- iconv(sido_shp$CTP_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
+sido_simp_shp <- st_simplify(sido_shp, dTolerance = 100)
+
+# 2. 시각화 -----
+## 2.1. 제4회 지방선거
+sido_four_shp <- left_join(sido_simp_shp, sido_four_df)
+
+sido_four_g <- sido_four_shp %>% ggplot(aes(fill=sido_four_shp$소속정당)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제4회 지방선거 - 광역자치단체장") + 
+    scale_fill_manual(values =c("gray", "blue", "yellow", "red", "white")) +
+    theme(legend.position = "right") +
+    labs(fill="정당") +
+    theme(legend.position = "top")
+
+ggsave("data/sido_four_g.png")
+
+## 2.2. 제5회 지방선거
+sido_five_shp <- left_join(sido_simp_shp, sido_five_df)
+
+sido_five_g <- sido_five_shp %>% ggplot(aes(fill=sido_five_shp$정당)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제5회 지방선거 - 광역자치단체장") + 
+    scale_fill_manual(values =c("gray", "blue", "skyblue", "red", "white")) +
+    theme(legend.position = "right") +
+    labs(fill="정당") +
+    theme(legend.position = "top")
+
+ggsave("data/sido_five_g.png")
+
+## 2.3. 제6회 지방선거
+sido_six_shp <- left_join(sido_simp_shp, sido_six_df)
+
+sido_six_g <- sido_six_shp %>% ggplot(aes(fill=sido_six_shp$정당)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제6회 지방선거 - 광역자치단체장") + 
+    theme(legend.position = "right") +
+    scale_fill_manual(values =c("red", "blue")) +
+    labs(fill="정당") +
+    theme(legend.position = "top")
+
+ggsave("data/sido_six_g.png")
+
+## 2.4. 제7회 지방선거
+sido_current_df <- left_join(sido_current_df, spatial_tbl) %>% 
+    mutate(CTPRVN_CD = factor(CTPRVN_CD))
+
+sido_seven_shp <- left_join(sido_simp_shp, sido_current_df)
+
+sido_seven_g <- sido_seven_shp %>% ggplot(aes(fill=sido_seven_shp$정당)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제7회 지방선거 - 광역자치단체장") + 
+    theme(legend.position = "right") +
+    scale_fill_manual(values =c("blue", "darkgray", "red")) +
+    labs(fill="정당") +
+    theme(legend.position = "top")
+
+ggsave("data/sido_seven_g.png")
+
+## 2.5. 제4회 ~ 제7회 지방선거 비교
+
+grid.arrange(sido_four_g, sido_five_g, sido_six_g, sido_seven_g, nrow=2)
+```
+
+## 공간정보 동적 애니메이션 {#공간정보-시각화-동적그래프}
+
+
+``` {r 동적애니메이션}
+# 3. 애니메이션 -----
+
+sido_four_img <- image_read("data/sido_four_g.png")
+sido_five_img <- image_read("data/sido_five_g.png")
+sido_six_img <- image_read("data/sido_six_g.png")
+sido_seven_img <- image_read("data/sido_seven_g.png")
+
+sido_gif <- image_animate(c(sido_four_img, sido_five_img, sido_six_img, sido_seven_img), fps = 0.5, dispose = "previous")
+
+print(sido_gif)
+
+image_write(sido_gif, "data/sido.gif")
