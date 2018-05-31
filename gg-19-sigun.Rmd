@@ -1,0 +1,394 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 경기도 기초단체장 - 여론조사
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+library(tidyverse)
+library(rvest)
+library(glue)
+library(DT)
+library(sf)
+library(slopegraph)
+library(mapview)
+library(readxl)
+library(extrafont)
+library(gridExtra)
+loadfonts()
+
+```
+
+
+# 경기도 지방선거 {#경기도-기초단체장}
+
+경기도 지방선거 기초단체장에 대한 선거결과를 위키백과사전에서 확인이 가능하다.
+
+- [대한민국 제6회 지방 선거: 기초자치단체장](https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거_기초자치단체장)
+- [대한민국 제7회 지방 선거 여론조사](https://namu.wiki/w/제7회 전국동시지방선거/여론조사)
+
+[대한민국 제7회 지방 선거 여론조사](https://namu.wiki/w/제7회 전국동시지방선거/여론조사) 결과는 
+현재 시점 `r Sys.Date()` 여론조사결과를 바탕으로 제7회 지방선거 기초단체장 정당별 획득수와 각 지역별 당선자 지지율을 예측해 본다.
+
+# 선거 결과 데이터 {#선거결과-데이터}
+
+## [대한민국 제6회 지방 선거: 기초자치단체장](https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거_기초자치단체장) {#제5회-기초}
+
+[대한민국 제6회 지방 선거: 기초자치단체장](https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거_기초자치단체장) 
+웹사이트에서 데이터를 긁어와서 데이터프레임으로 변환시킨다.
+
+```{r 제6회지방선거-기초, eval = FALSE}
+# 0. 환경설정 -----
+library(tidyverse)
+library(rvest)
+library(glue)
+
+# 1. 제 6 회 지방선거 여론조사 -----
+
+six_gg_url <- "https://ko.wikipedia.org/wiki/대한민국_제6회_지방_선거_기초자치단체장"
+
+# Sys.setlocale("LC_ALL", "C")
+
+six_dat <- read_html(six_gg_url) %>% 
+    html_nodes('table') %>% 
+    .[[8]] %>% 
+    html_table(fill=TRUE) 
+
+# Sys.setlocale("LC_ALL", "Korean")
+
+# 2. 데이터 정제 -----
+
+six_df <- six_dat %>% 
+    mutate(득표수 = str_replace_all(득표수, ",", "") %>% as.integer,
+              득표율 = str_replace_all(득표율, "%", "") %>% as.numeric) %>% 
+    mutate(선수 = ifelse(비고 == "", "초선", 비고)) %>% 
+    mutate(선수 = factor(선수, levels = c("초선", "재선", "3선"))) %>% 
+    rename(시군명=지역)
+
+six_df %>% write_rds("data/gg_six_df.rds")
+```
+
+## [대한민국 제7회 지방 선거 여론조사](https://ko.wikipedia.org/wiki/대한민국_제7회_지방_선거_여론_조사) {#제7회-기초}
+
+현재 시점 `r Sys.Date()` 계속해서 지방선거 여론조사 결과가 갱신되기 때문에 현시점에서 
+
+[대한민국 제7회 지방 선거 여론조사](https://ko.wikipedia.org/wiki/대한민국_제7회_지방_선거_여론_조사) 경기도 기초단체장 페이지에서 
+여론조사 결과를 긁어온다.
+
+``` {r 제7회지방선거-기초, eval=FALSE}
+# 1. 제 7 회 지방선거 여론조사 -----
+
+sigun_list <- vector("list", length=0)
+sigun_v <- read_rds("data/sigun_name.rds")
+
+Sys.setlocale("LC_ALL", "C")
+base_url <- "https://namu.wiki/w/제7회 전국동시지방선거/여론조사"
+
+for(i in 1:length(sigun_v)) {
+
+## 경기도 기초단체장
+    sigun_list[[i]] <- read_html(base_url) %>% 
+        html_nodes('table') %>% 
+        .[[15+i]] %>% 
+        html_table(fill=TRUE) 
+}
+
+Sys.setlocale("LC_ALL", "Korean")
+
+names(sigun_list) <- sigun_v
+
+listviewer::jsonedit(sigun_list)
+
+# 2. 데이터 정제 -----
+gg_sigun_dat <- tibble(
+    sigun = sigun_v,
+    df = sigun_list
+)
+
+## 2.1. 시군별 후보명  -----
+gg_hubo_df <- gg_sigun_dat %>% 
+    unnest(df) %>% 
+    filter(X1 == "조사 기관")
+
+## 2.2. 여론조사  -----
+gg_sigun_df <- gg_sigun_dat %>% 
+    unnest(df) %>% 
+    filter(X1 != "조사 기관")
+
+names(gg_sigun_df) <- c("sigun", "조사기관", "조사일", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10")
+
+gg_sigun_df <- gg_sigun_df %>% 
+    separate(조사일, into=c("시작일", "종료일"), sep="~") %>% 
+    mutate(시작일 = str_replace(시작일, "월", "-")) %>% 
+    mutate(시작일 = str_replace(시작일, "일", "")) %>% 
+    mutate(시작일 = lubridate::ymd(paste0("2018-",시작일))) %>% 
+    group_by(sigun) %>% 
+    arrange(시작일) %>% 
+    filter(row_number()==n()) %>% 
+    select(-종료일) %>% 
+    mutate(조사기관 = str_extract(조사기관, "[가-힣]+")) %>% 
+    mutate(조사기관 = ifelse(sigun == "가평군", "코리아정보리서치", 조사기관))
+
+gg_sigun_long_df <- gg_sigun_df %>% 
+    select(-조사기관) %>% 
+    gather(후보, 지지율, -sigun, -시작일) %>% 
+    mutate(지지율 = str_replace(지지율, "%", "") %>% as.numeric) 
+
+gg_sigun_long_df %>% write_rds("data/gg_sigun_long_df.rds")
+
+## 2.3. 선두후보 선택  -----
+
+gg_sigun_now_df <- gg_sigun_long_df %>% 
+    group_by(sigun) %>% 
+    arrange(-지지율) %>% 
+    filter(row_number() == 1) %>% 
+    ungroup() 
+
+gg_sigun_now_df %>% write_rds("data/gg_sigun_now_df.rds")
+```
+
+# 경기 제6회 기초단체장 {#역대선거-데이터-기초}
+
+제6회 지방선거는 역사적 사실로 각 정당별 기초단체장 선출데이터에 근거하고,
+제7회 지방선거 광역단체장은 `r Sys.Date()` 기준 여론조사 기준으로 경기도 지역 기초단체장을 추정한다.
+그리고, 정당명칭이 제6회부터 현재까지 지속적으로 변경이 되어 일관성을 위해서 다음과 같이 정당명을 정리한다.
+
+- 제6회 지방선거
+    - 새누리당 &rarr; 자유한국당
+    - 새정치민주연합 &rarr; 더불어민주당
+
+## 기초단체장 당선표 {#제6회-기초-표}
+
+경기도 제6회 지방선거 기초단체장에 대한 데이터 검증작업을 겸해서 표로 나타내 보자.
+
+```{r 데이터-기초-표}
+# 1. 제 6 회 지방선거 -----
+six_df <- read_rds("data/gg_six_df.rds") %>% 
+    select(-7) %>% 
+    mutate(득표율 = 득표율 /100)
+
+# 2. 탐색적 데이터 분석 -----
+## 2.1. 표
+six_df %>% 
+    arrange(-득표수) %>% 
+    datatable() %>% 
+    formatPercentage(c("득표율"), digits=1) %>% 
+    formatCurrency(c("득표수"), currency="", digits=0)
+```
+
+
+## 기초단체장 당선지도 {#제6회-기초-지도}
+
+```{r six-gg-geom-sf}
+
+# 1. 제 6 회 지방선거 -----
+## 1.1. 지방선거 데이터 -----
+six_df <- read_rds("data/gg_six_df.rds") %>% 
+    select(-7) %>% 
+    mutate(득표율 = 득표율 /100) %>% 
+    separate(시군명, into=c("시도명", "시군명"))
+
+## 1.2. 경기도 시군코드 --------
+sido_cd_df <- read_excel("data/jscode/jscode20171218/KIKmix.20171218.xlsx", sheet="KIKmix")
+sigungu_cd_df <- sido_cd_df %>% 
+    mutate(CTPRVN_CD = str_sub(행정동코드, 1,5)) %>% 
+    group_by(CTPRVN_CD) %>% 
+    summarise(시도명 = first(시도명),
+                 시군구명 = first(시군구명)) %>% 
+    mutate(시군구명 = ifelse(is.na(시군구명), 시도명, 시군구명))
+
+gg_cd_v <- sigungu_cd_df %>% 
+    filter(str_detect(시도명, "경기")) %>% 
+    pull(CTPRVN_CD)
+
+## 1.3. shp 파일 불러오기 --------
+sgg_shp <- st_read("data/shapefile_sgg/TL_SCCO_SIG.shp")
+sgg_shp$SIG_KOR_NM <- iconv(sgg_shp$SIG_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
+sgg_smpl_shp <- st_simplify(sgg_shp, dTolerance = 100)
+
+gg_shp <- sgg_smpl_shp %>% 
+    filter(SIG_CD %in% gg_cd_v)
+
+## 1.4. 경기 시군 데이터 정리 --------
+gg_shp <- gg_shp %>% 
+    mutate(시군명 = case_when(str_detect(SIG_KOR_NM, "수원") ~ "수원시",
+                        str_detect(SIG_KOR_NM, "성남") ~ "성남시",
+                        str_detect(SIG_KOR_NM, "안양") ~ "안양시",
+                        str_detect(SIG_KOR_NM, "안산") ~ "안산시",
+                        str_detect(SIG_KOR_NM, "고양") ~ "고양시",
+                        str_detect(SIG_KOR_NM, "용인") ~ "용인시",
+                        TRUE ~ SIG_KOR_NM))
+
+gg_six_shp <- left_join(gg_shp, six_df, by="시군명")
+
+gg_six_shp <- gg_six_shp %>% 
+    group_by(시군명) %>% 
+    summarise(득표수 = first(득표수),
+              득표율 = first(득표율),
+              정당 = first(정당),
+              후보 = first(후보))
+
+# 2. 시각화 --------
+## 2.1. 정적 그래프 ----
+six_vote_g <- ggplot(data=gg_six_shp, aes(fill=득표수)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제6회 지방선거 - 경기도 기초단체장") + 
+    scale_fill_gradient(low = "wheat1", high = "red", name = "당선자 득표수", labels = scales::comma) +
+    theme(panel.grid.major = element_line(colour = 'transparent'),
+          panel.grid = element_blank(), 
+          line = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.text.x = element_blank(), 
+          axis.text.y = element_blank(),
+          legend.position = "right")
+    
+## 2.2. 정당 정적 그래프 ----
+six_party_g <- ggplot(data=gg_six_shp, aes(fill=정당)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제6회 지방선거 - 경기도 기초단체장") + 
+    scale_fill_manual(values = c("gray", "red", "blue")) +
+    theme(panel.grid.major = element_line(colour = 'transparent'),
+          panel.grid = element_blank(), 
+          line = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.text.x = element_blank(), 
+          axis.text.y = element_blank(),
+          legend.position = "right")
+
+grid.arrange(six_vote_g, six_party_g, nrow=1)
+
+```
+
+## 인터랙티브 기초단체장 당선지도 {#제6회-기초-지도-인터랙티브}
+
+```{r interactive-six-gg-result}
+## 2.3. 인터랙티브 그래프 ----
+gg_six_shp %>% 
+    mutate(득표율 = scales::percent(득표율),
+              득표수 = scales::comma(득표수)) %>% 
+    mapview(., zcol="정당",  col.regions = c("gray", "red", "blue"))
+```
+
+
+# 제6회 제7회 비교 {#six-seven-compare}
+
+## 정당별 경기 기초단체장 {#six-seven-compare-party}
+
+그래프 문법(grammar of graphics)이 지원되는 `slopegraph`를 활용하여 각 정당을 대표한 색상을 반영하여 경사그래프로 각 정당별 경기도 기초단체장 선거를 시각화한다.
+
+```{r gg-slopegraph-party}
+# 1. 데이터 -----
+## 1.1. 제6회 
+gg_six_df <- read_rds("data/gg_six_df.rds") %>% 
+    as_tibble()  %>% 
+    separate(시군명, into=c("시도", "시군명"), sep=" ") %>% 
+    select(시군명, 정당, 득표율)
+
+## 1.2. 제7회 여론조사
+gg_seven_df <- read_rds("data/gg_sigun_now_df.rds") %>% 
+    rename(시군명=sigun,
+              득표율=지지율,
+              정당=후보) %>% 
+    select(-시작일)
+
+
+## 1.3. 데이터 병합 -----
+gg_six_viz_df <- gg_six_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "새누리당") ~ "자유한국당",
+                          str_detect(정당, "새정치민주연합") ~ "더불어민주당",
+                          TRUE ~ 정당)) %>% 
+    group_by(정당) %>% 
+    summarise(제6회 = n()) 
+
+gg_seven_viz_df <- gg_seven_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "X2") ~ "자유한국당",
+                          str_detect(정당, "X1") ~ "더불어민주당",
+                          TRUE ~ 정당)) %>% 
+    group_by(정당) %>% 
+    summarise(제7회 = n()) 
+
+
+gg_viz_df <- full_join(gg_six_viz_df, gg_seven_viz_df) %>% 
+    as.data.frame() %>%
+    column_to_rownames(var="정당")
+
+# 3. 시각화 -----
+## 3.1. 경사그래프 ----
+cols <- `[<-`(rep("black", 3), 1, "blue")
+cols <- `[<-`(cols, 3, "red")
+
+ggslopegraph(gg_viz_df, offset.x = 0.06, yrev = FALSE,
+             col.lines = cols, col.lab = cols,
+             main = '경기도지사 기초단체장') +
+    theme_bw(base_family="NanumGothic")     
+```
+
+
+## 시군별 경기 기초단체장 {#six-seven-compare-sigun}
+
+그래프 문법(grammar of graphics)이 지원되는 `slopegraph`를 활용하여 각 정당을 대표한 색상을 반영하여 경사그래프로 각 시군별 경기도 기초단체장 지지율을 시각화한다.
+
+나무위키에 여론조사결과가 등록되지 않은 곳을 제외하고, 
+자유한국당 우세지역("동두천시", "가평군", "여주시")을 뺀 곳에서 모든 곳에서 민주당이 우세를 이어가고 있다. 
+
+```{r gg-slopegraph-sigun, fig.height=8}
+# 1. 데이터 -----
+## 1.1. 제6회 
+gg_six_df <- read_rds("data/gg_six_df.rds") %>% 
+    as_tibble()  %>% 
+    separate(시군명, into=c("시도", "시군명"), sep=" ") %>% 
+    select(시군명, 정당, 득표율)
+
+## 1.2. 제7회 여론조사
+gg_seven_df <- read_rds("data/gg_sigun_now_df.rds") %>% 
+    rename(시군명=sigun,
+              득표율=지지율,
+              정당=후보) %>% 
+    select(-시작일)
+
+
+## 1.3. 데이터 병합 -----
+gg_six_viz_df <- gg_six_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "새누리당") ~ "자유한국당",
+                          str_detect(정당, "새정치민주연합") ~ "더불어민주당",
+                          TRUE ~ 정당)) %>% 
+    select(시군명, 제6회 = 득표율)
+
+gg_seven_viz_df <- gg_seven_df %>% 
+    mutate(정당 = case_when(str_detect(정당, "X2") ~ "자유한국당",
+                          str_detect(정당, "X1") ~ "더불어민주당",
+                          TRUE ~ 정당)) %>% 
+    select(시군명, 제7회 = 득표율)
+
+
+gg_viz_df <- full_join(gg_six_viz_df, gg_seven_viz_df, by="시군명") %>% 
+    as.data.frame() %>%
+    column_to_rownames(var="시군명")
+
+# 3. 시각화 -----
+## 3.1. 경사그래프 ----
+cls <- rep("black", nrow(gg_viz_df))
+cls[rownames(gg_viz_df) %in% c("동두천시", "가평군", "여주시")] <- "red"
+cls[!rownames(gg_viz_df) %in% c("동두천시", "가평군", "여주시")] <- "blue"
+
+
+ggslopegraph(gg_viz_df, offset.x = 0.06, yrev = FALSE, 
+             col.lines = cls, col.lab = cls,
+             main = '경기도지사 기초단체장') +
+    theme_bw(base_family="NanumGothic") 
+```
+
