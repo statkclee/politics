@@ -1,0 +1,195 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 제7회 전국동시지방선거(2018)
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+# 0. 환경설정 -----
+
+library(tidyverse)
+library(extrafont)
+library(mapview)
+library(crosstalk)
+library(sf)
+loadfonts()
+
+sido_shp <- st_read("data/shapefile_sido/TL_SCCO_CTPRVN.shp")
+```
+
+
+# 광역단체장 {#local-2018-광역단체장}
+
+<div class = "row">
+  <div class = "col-md-6">
+
+**시도별 여론조사 현황**
+
+``` {r local-2018-광역단체장}
+# 1. 데이터 -----
+## 2018-06-03
+
+sido_df  <- read_rds("data/sido_survey_df.rds")
+
+names(sido_df)  <- c("조사 의뢰", "조사 기관", "응답 인원", "더불어민주당", "자유한국당", 
+                           "바른미래당", "정의당", "기타·무응답", "참고", "조사일", "시도명", 
+                           "민주평화당", "무소속")
+
+sido_now_df <- sido_df %>% 
+    mutate(무소속 = str_replace_all(무소속, "%", "") %>% as.numeric,
+              민주평화당 = str_replace_all(민주평화당, "%", "") %>% as.numeric) %>% 
+    group_by(시도명) %>% 
+    arrange(조사일)  %>% 
+    filter(row_number() == n()) %>% 
+    select(시도명, contains("당"), contains("무소속")) %>% 
+    ungroup()
+
+current_df <- sido_now_df %>% 
+    gather(정당, 지지율, -시도명) %>% 
+    mutate(지지율 = as.numeric(지지율)) %>% 
+    group_by(시도명) %>% 
+    summarise(지지율 = max(지지율, na.rm=TRUE))
+
+sido_current_df <- sido_now_df %>% 
+    gather(정당, 지지율, -시도명) %>% 
+    mutate(지지율 = as.numeric(지지율)) %>% 
+    inner_join(current_df)
+
+sido_viz_df <- sido_current_df %>% 
+    count(정당)
+
+DT::datatable(sido_current_df)
+```
+
+  </div>
+  <div class = "col-md-6">
+
+**시도 현황 지도**
+
+``` {r local-2018-광역단체장-그래프, fig.width=14, fig.height=11}
+
+# 2. 시각화 -----
+## 2.0. 지도정보 룩업표 -----
+spatial_tbl <- tribble(
+    ~"CTPRVN_CD", ~"CTP_KOR_NM", ~"시도명",
+    11,  "서울특별시",  "서울특별시장",
+    26,  "부산광역시",  "부산광역시장",
+    27,  "대구광역시",  "대구광역시장",
+    28,  "인천광역시",  "인천광역시장",
+    29,  "광주광역시",  "광주광역시장",
+    30,  "대전광역시",  "대전광역시장",
+    31,  "울산광역시",   "울산광역시장",
+    36,  "세종특별자치시", "세종특별자치시장",
+    41,  "경기도",         "경기도지사",
+    42,  "강원도",         "강원도지사",
+    43,  "충청북도",      "충청북도지사",
+    44,  "충청남도",      "충청남도지사",
+    45,  "전라북도",      "전라북도지사",
+    46,  "전라남도",      "전라남도지사",
+    47,  "경상북도",      "경상북도지사",
+    48,  "경상남도",      "경상남도지사",
+    50,  "제주특별자치도", "제주특별자치도지사"
+)
+
+## 2.1. 지도 데이터 가져오기 -----
+# sido_shp <- st_read("data/shapefile_sido/TL_SCCO_CTPRVN.shp")
+
+sido_shp$CTP_KOR_NM <- iconv(sido_shp$CTP_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
+sido_simp_shp <- st_simplify(sido_shp, dTolerance = 100)
+
+## 2.2. 지지율 데이터 병합 ----
+sido_current_df <- left_join(sido_current_df, spatial_tbl) %>% 
+    mutate(CTPRVN_CD = factor(CTPRVN_CD))
+
+sido_simp_shp <- left_join(sido_simp_shp, sido_current_df)
+
+
+## 2.3. 지지율 데이터 시각화 ----
+
+sido_simp_shp %>% 
+    ggplot(aes(fill=sido_simp_shp$정당)) +
+        geom_sf() +
+        theme_minimal(base_family="NanumGothic") +
+        labs(title="제7회 지방선거 - 광역단체장") + 
+        theme(legend.position = "right") +
+        scale_fill_manual(values = c("blue", "gray", "red", "white")) +
+        labs(fill="정당") +
+        theme(panel.grid.major = element_line(colour = 'transparent'),
+          panel.grid = element_blank(), 
+          line = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.text.x = element_blank(), 
+          axis.text.y = element_blank(),
+          legend.position = "top")
+```
+
+  </div>
+</div>
+
+## 광역단체장 인터랙티브 지도 {#local-2018-interactive}
+
+```{r local-2018-광역-인터랙티브}
+## 2.4. 인터랙티브 그래프 ----
+sido_simp_shp %>% 
+    mapview(., zcol="정당",  col.regions = c("blue", "gray", "red", "red"))
+```
+
+
+## 광역단체장 지지율 추이 {#local-2018-trend}
+
+```{r local-2018-trend}
+sido_now_df <- sido_df %>% 
+    mutate(무소속 = str_replace_all(무소속, "%", "") %>% as.numeric,
+           민주평화당 = str_replace_all(민주평화당, "%", "") %>% as.numeric) %>% 
+    select(시도명, 조사일, contains("당"), contains("무소속")) %>% 
+    ungroup() %>% 
+    as_tibble()
+
+# 2. 시계열 추세 -----
+## 2.1. 정적 시계열 추세 -----
+sido_ts_df <- sido_now_df %>% 
+    gather(정당, 지지율, -시도명, -조사일) %>% 
+    mutate(정당 = factor(정당, levels=c("더불어민주당","자유한국당", "바른미래당", "민주평화당", "정의당", "무소속"))) %>% 
+    filter(!str_detect(시도명, "광주")) %>% 
+    mutate(지지율 = as.numeric(지지율))
+
+sido_ts_df %>% 
+    ggplot(aes(x=조사일, y=지지율, color=정당, group=정당)) +
+      geom_line() +
+      geom_point() +
+      facet_wrap(~시도명) +
+      scale_color_manual(values=c("blue", "red", "cyan", "green", "yellow", "gray"))
+```
+
+## 광역단체장 인터랙티브 지지율 추이 {#local-2018-trend-interactive}
+
+```{r local-2018-trend-interactive, eval=FALSE}
+## 2.2. 동적 시계열 추세 -----
+### 2.2.1. 공유 데이터
+sido_ts_sd <- SharedData$new(sido_ts_df)
+
+### 2.2.2. 제어
+# sido_ctrl <- filter_checkbox("시도명", "광역시도명", sido_ts_sd, ~정당, inline = TRUE)
+sido_ctrl <- filter_select("시도명", "광역시도명", sido_ts_sd, ~시도명)
+
+### 2.2.3. 시각화
+sido_ts_g <- ggplot(sido_ts_sd, aes(x=조사일, y=지지율, color=정당, group=정당)) +
+    geom_line() +
+    geom_point() +
+    scale_color_manual(values=c("blue", "red", "cyan", "green", "yellow", "gray"))
+
+ggplotly(sido_ts_g)
+```
+
