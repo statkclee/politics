@@ -29,6 +29,9 @@ library(extrafont)
 library(gridExtra)
 loadfonts()
 
+library(readxl)
+library(geofacet)
+library(ggrepel)
 ```
 
 
@@ -392,3 +395,58 @@ ggslopegraph(gg_viz_df, offset.x = 0.06, yrev = FALSE,
     theme_bw(base_family="NanumGothic") 
 ```
 
+# 경기 제7회 기초단체장 {#seven-seven-compare}
+
+경기도 기초단체장 여론조사결과가 공포된 현재시점 주요 5개 정당기준으로 
+지지율 `geofacet`으로 시각화한다.
+
+``` {r seven-gg-geofacet-survey-now, fig.height=8}
+# 1. 데이터 -----
+## 1.1. 제7회 여론조사 - 경기도 -----
+gg_sigun_long_df  <- read_rds("data/gg_sigun_long_df.rds")
+
+gg_sigun_dat <- gg_sigun_long_df %>% 
+    mutate(지지율 = ifelse(is.na(지지율), 0, 지지율)) %>% 
+    filter(!is.na(지지율),
+           후보 %in% c("X1", "X2", "X3", "X4", "X5")) %>% 
+    mutate(후보 = case_when(str_detect(후보, "X1") ~ "민주당", 
+                            str_detect(후보, "X2") ~ "자한당", 
+                            str_detect(후보, "X3") ~ "바미당", 
+                            str_detect(후보, "X4") ~ "민평당", 
+                            str_detect(후보, "X5") ~ "정의당")) %>% 
+    select(-시작일) %>% 
+    spread(후보, 지지율) 
+
+gg_sigun_df <- gg_sigun_dat %>% 
+    gather(정당, 지지율, -sigun) %>% 
+    rename(name = sigun)
+    
+## 1.2. `geofacet` 경기 데이터 -----
+map_df <- read_excel("data/선거지도.xlsx", sheet="경기도")
+
+gg_grid_df <- map_df %>% 
+    gather(sigun, sigunname, -name, convert=TRUE) %>% 
+    mutate(row = str_extract_all(name, "[0-9]+") %>% unlist,
+           col = str_extract_all(sigun, "[0-9]+") %>% unlist)  %>% 
+    filter(!is.na(sigunname)) %>% 
+    mutate(name = sigunname) %>% 
+    select(row, col, code=sigunname, name)
+
+
+# 3. 시각화 -----
+gg_sigun_df %>% 
+    mutate(정당 = factor(정당, levels=c("민주당", "자한당","바미당","민평당", "정의당"))) %>% 
+    ggplot(aes(fct_rev(정당), 지지율, fill=정당)) +
+    geom_bar(stat="identity") +
+    coord_flip() +
+    theme_bw(base_family = "NanumGothic") +
+    facet_geo(~ name, grid = gg_grid_df) +
+    theme(strip.text.x = element_text(size = 8),
+          axis.text=element_text(size=6),
+          legend.position="none") +
+    labs(x="", y="") +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_manual(values= c("blue", "red", "cyan", "green", "yellow"))
+
+DT::datatable(gg_sigun_dat)    
+```
