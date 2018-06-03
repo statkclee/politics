@@ -138,7 +138,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
         - [대선후보 정책평가](radar-chart.html)
         - [소득과 득표율 관계](income-vs-vote.html)
         - [보수와 진보를 넘어서](beyond-red-vs-blues.html)        
-1. **제7회 전국동시지방선거(2018)**
+1. **[제7회 전국동시지방선거(2018)](local-2018-dashboard.html)**
     1. [광역단체장 판세(2018-05-22)](sido-status-2018-05-22.html)
         1. [광역단체장 - 최근 지방선거](sido-history.html)
         1. [정당별 광역단체장 추세](sido-party-history.html)
