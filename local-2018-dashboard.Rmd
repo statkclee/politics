@@ -178,6 +178,7 @@ sido_ts_df %>%
 ```{r local-2018-trend-interactive, eval=TRUE}
 ## 2.2. 동적 시계열 추세 -----
 ### 2.2.1. 공유 데이터
+# sido_ts_df <- fortify(as.data.frame(sido_ts_df))
 sido_ts_sd <- SharedData$new(sido_ts_df)
 
 ### 2.2.2. 제어
