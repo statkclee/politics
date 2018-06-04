@@ -23,11 +23,15 @@ library(tidyverse)
 library(extrafont)
 library(mapview)
 library(crosstalk)
+library(htmltools)
+library(gridExtra)
+library(readxl)
 library(plotly)
 library(sf)
 loadfonts()
 
 sido_shp <- st_read("data/shapefile_sido/TL_SCCO_CTPRVN.shp")
+sgg_shp  <- st_read("data/shapefile_sgg/TL_SCCO_SIG.shp")
 ```
 
 
@@ -196,4 +200,202 @@ sido_ts_gg <- ggplotly(sido_ts_g)
 bscols(widths = c(12),
        sido_ts_gg)
 ```
+
+# 경기도 {#local-2018-경기도}
+
+
+## 경기도 시군별 여론조사 현황 {#local-2018-경기도-시군별}
+
+``` {r local-2018-경기도-여론조사-표}
+## 2018-06-04
+gg_sigun_df <- read_rds("data/gg_sigun_df.rds") %>% 
+    rename(시군명 = sigun)
+
+gg_sigun_now_df <- gg_sigun_df %>% 
+    group_by(시군명) %>% 
+    arrange(시작일) %>% 
+    filter(row_number() == n()) %>% 
+    mutate(X1 = str_replace(X1 , "%", "") %>% as.numeric(),
+           X2 = str_replace(X2 , "%", "") %>% as.numeric(),
+           X3 = str_replace(X3 , "%", "") %>% as.numeric(),
+           X4 = str_replace(X4 , "%", "") %>% as.numeric(),
+           X5 = str_replace(X5 , "%", "") %>% as.numeric(),
+           X6 = str_replace(X6 , "%", "") %>% as.numeric(),
+           X7 = str_replace(X7 , "%", "") %>% as.numeric(),
+           X8 = str_replace(X8 , "%", "") %>% as.numeric(),
+           X9 = str_replace(X9 , "%", "") %>% as.numeric(),
+           X10= str_replace(X10, "%", "") %>% as.numeric()) %>% 
+    rename("더불어민주당" = X1, 
+           "자유한국당"   = X2, 
+           "바른미래당"   = X3, 
+           "민주평화당"   = X4, 
+           "정의당"       = X5, 
+           "민중당"       = X6, 
+           "대한애국당"   = X7, 
+           "원외1"        = X8, 
+           "원외2"        = X9, 
+           "원외3"        = X10) %>% 
+    ungroup()
+
+## 1.1. 경기도 시군 현재1위 -----
+gg_sigun_now_df$당선 <- names(gg_sigun_now_df[,4:13])[apply(gg_sigun_now_df[,4:13], 1, which.max)]
+gg_sigun_now_df$지지율1위 <- apply(gg_sigun_now_df[,4:13], 1, max, na.rm=TRUE)
+
+gg_sigun_now_df %>% 
+    count(당선) %>% 
+    rename(정당=당선) %>% 
+    mutate(비율= scales::percent(n/sum(n))) %>% 
+    rename(현재1위=n)
+
+gg_sigun_now_df %>% 
+    DT::datatable() 
+```
+
+
+## 경기도 시군별 1위 지도 {#local-2018-경기도-시군별-지도}
+
+
+```{r local-2018-경기도-여론조사-정적지도}
+
+# 2. 시각화 -----
+## 2.1. 경기도 시군코드 --------
+sido_cd_df <- read_excel("data/jscode/jscode20171218/KIKmix.20171218.xlsx", sheet="KIKmix")
+
+sigungu_cd_df <- sido_cd_df %>% 
+    mutate(CTPRVN_CD = str_sub(행정동코드, 1,5)) %>% 
+    group_by(CTPRVN_CD) %>% 
+    summarise(시도명 = first(시도명),
+                 시군구명 = first(시군구명)) %>% 
+    mutate(시군구명 = ifelse(is.na(시군구명), 시도명, 시군구명))
+
+gg_cd_v <- sigungu_cd_df %>% 
+    filter(str_detect(시도명, "경기")) %>% 
+    pull(CTPRVN_CD)
+## 2.2. 지도 데이터 가져오기 -----
+# sgg_shp  <- st_read("data/shapefile_sgg/TL_SCCO_SIG.shp")
+
+sgg_shp$SIG_KOR_NM <- iconv(sgg_shp$SIG_KOR_NM, from = "CP949", to = "UTF-8", sub = NA, mark = TRUE, toRaw = FALSE)
+sgg_smpl_shp <- st_simplify(sgg_shp, dTolerance = 100)
+
+gg_shp <- sgg_smpl_shp %>% 
+    filter(SIG_CD %in% gg_cd_v)
+
+## 2.3. 경기 시군 데이터 정리 --------
+gg_shp <- gg_shp %>% 
+    mutate(시군명 = case_when(str_detect(SIG_KOR_NM, "수원") ~ "수원시",
+                           str_detect(SIG_KOR_NM, "성남") ~ "성남시",
+                           str_detect(SIG_KOR_NM, "안양") ~ "안양시",
+                           str_detect(SIG_KOR_NM, "안산") ~ "안산시",
+                           str_detect(SIG_KOR_NM, "고양") ~ "고양시",
+                           str_detect(SIG_KOR_NM, "용인") ~ "용인시",
+                           TRUE ~ SIG_KOR_NM))
+
+
+## 2.4. 지지율 데이터 병합 ----
+gg_sigun_shp <- left_join(gg_shp, gg_sigun_now_df, by="시군명")
+
+
+# 3. 시각화 ----
+## 3.1. 정적 그래프 ----
+leader_party_g <- ggplot(data=gg_sigun_shp, aes(fill=당선)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제7회 지방선거 - 경기도 기초단체장") + 
+    scale_fill_manual(values = c("blue", "red", "gray"), name = "1위 당선자 정당") +
+    theme(panel.grid.major = element_line(colour = 'transparent'),
+          panel.grid = element_blank(), 
+          line = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.text.x = element_blank(), 
+          axis.text.y = element_blank(),
+          legend.position = "right")
+
+leader_rate_g <- ggplot(data=gg_sigun_shp, aes(fill=지지율1위)) +
+    geom_sf() +
+    theme_minimal(base_family="NanumGothic") +
+    labs(title="제7회 지방선거 - 경기도 기초단체장") + 
+    scale_fill_gradient(low = "wheat1", high = "red", name = "1위 당선자 지지율", labels = scales::comma) +
+    theme(panel.grid.major = element_line(colour = 'transparent'),
+          panel.grid = element_blank(), 
+          line = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.text.x = element_blank(), 
+          axis.text.y = element_blank(),
+          legend.position = "right")
+
+grid.arrange(leader_party_g, leader_rate_g, nrow=1)
+```
+
+## 경기도 기초다체장 인터랙티브 지도 {#local-2018-경기도-interactive}
+
+```{r local-2018-경기도-여론조사-인터랙티브}
+## 3.2. 인터랙티브 그래프 ----
+gg_sigun_shp %>% 
+    mapview(., zcol="당선",  col.regions = c("blue", "gray", "red", "red"))
+```
+
+
+## 경기 기초단체장 지지율 추이 {#local-2018-경기도-기초단체장-추이}
+
+```{r 경기기초단체장-지지율-추이}
+# 1. 데이터 -----
+gg_sigun_df  <- read_rds("data/gg_sigun_df.rds")
+
+# 2. 시계열 추세 -----
+## 2.1. 정적 시계열 추세 -----
+gg_sigun_ts_df <- gg_sigun_df %>% 
+    select(-조사기관) %>% 
+    rename("더불어민주당" = X1, 
+           "자유한국당"   = X2, 
+           "바른미래당"   = X3, 
+           "민주평화당"   = X4, 
+           "정의당"       = X5, 
+           "민중당"       = X6, 
+           "대한애국당"   = X7, 
+           "원외1"        = X8, 
+           "원외2"        = X9, 
+           "원외3"        = X10) %>% 
+    gather(정당, 지지율, -sigun, -시작일) %>% 
+    filter(정당 %in% c("더불어민주당","자유한국당", "바른미래당", "민주평화당", "정의당")) %>% 
+    mutate(지지율 = str_replace(지지율, "%", "") %>% as.numeric) %>% 
+    mutate(정당 = factor(정당, levels=c("더불어민주당","자유한국당", "바른미래당", "민주평화당", "정의당")))
+
+gg_sigun_ts_df %>% 
+    ggplot(aes(x=시작일, y=지지율, color=정당, group=정당)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~sigun) +
+    scale_color_manual(values=c("blue", "red", "cyan", "green", "yellow", "gray")) +
+    labs(x="")
+```
+
+## 경기 기초단체장 인터랙티브 지지율 추이 {#local-2018-경기도-기초단체장-추이-인터랙티브}
+
+```{r 경기기초단체장-지지율-추이-인터랙티브, fig.width=10}
+## 2.2. 동적 시계열 추세 -----
+### 2.2.1. 공유 데이터
+sigun_ts_sd <- SharedData$new(gg_sigun_ts_df)
+
+### 2.2.2. 제어
+filter_checkbox("sigun", "경기 시군명", sigun_ts_sd, ~sigun, inline = TRUE)
+
+### 2.2.3. 시각화
+sigun_ts_g <- sigun_ts_sd %>% 
+    ggplot(aes(x=시작일, y=지지율, color=정당, group=정당)) +
+        geom_line() +
+        geom_point() +
+        scale_color_manual(values=c("blue", "red", "cyan", "green", "yellow", "gray")) +
+        labs(x="")
+
+
+sigun_ts_gg <- ggplotly(sigun_ts_g)
+
+### 4.2.5. 인터랙티브 시각화
+
+bscols(widths = c(12),
+       sigun_ts_gg)
+```
+
+
+
 
