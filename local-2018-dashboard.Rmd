@@ -23,6 +23,7 @@ library(tidyverse)
 library(extrafont)
 library(mapview)
 library(crosstalk)
+library(plotly)
 library(sf)
 loadfonts()
 
@@ -178,12 +179,11 @@ sido_ts_df %>%
 ```{r local-2018-trend-interactive, eval=TRUE}
 ## 2.2. 동적 시계열 추세 -----
 ### 2.2.1. 공유 데이터
-# sido_ts_df <- fortify(as.data.frame(sido_ts_df))
 sido_ts_sd <- SharedData$new(sido_ts_df)
 
 ### 2.2.2. 제어
-# sido_ctrl <- filter_checkbox("시도명", "광역시도명", sido_ts_sd, ~정당, inline = TRUE)
-sido_ctrl <- filter_select("시도명", "광역시도명", sido_ts_sd, ~시도명)
+filter_checkbox("시도명", "광역시도명", sido_ts_sd, ~시도명, inline = TRUE)
+# sido_ctrl <- filter_select("시도명", "광역시도명", sido_ts_sd, ~시도명)
 
 ### 2.2.3. 시각화
 sido_ts_g <- ggplot(sido_ts_sd, aes(x=조사일, y=지지율, color=정당, group=정당)) +
@@ -191,6 +191,9 @@ sido_ts_g <- ggplot(sido_ts_sd, aes(x=조사일, y=지지율, color=정당, grou
     geom_point() +
     scale_color_manual(values=c("blue", "red", "cyan", "green", "yellow", "gray"))
 
-ggplotly(sido_ts_g)
+sido_ts_gg <- ggplotly(sido_ts_g)
+### 2.2.4. 인터랙티브 시각화
+bscols(widths = c(12),
+       sido_ts_gg)
 ```
 
