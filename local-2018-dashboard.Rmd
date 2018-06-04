@@ -176,7 +176,7 @@ sido_ts_df %>%
 
 ## 광역단체장 인터랙티브 지지율 추이 {#local-2018-trend-interactive}
 
-```{r local-2018-trend-interactive, eval=TRUE}
+```{r local-2018-trend-interactive, eval=TRUE, fig.width=10}
 ## 2.2. 동적 시계열 추세 -----
 ### 2.2.1. 공유 데이터
 sido_ts_sd <- SharedData$new(sido_ts_df)
