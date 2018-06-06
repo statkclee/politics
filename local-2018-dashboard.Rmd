@@ -209,7 +209,8 @@ bscols(widths = c(12),
 ``` {r local-2018-경기도-여론조사-표}
 ## 2018-06-04
 gg_sigun_df <- read_rds("data/gg_sigun_df.rds") %>% 
-    rename(시군명 = sigun)
+    rename(시군명 = sigun) %>% 
+    filter(X1 != "?%")
 
 gg_sigun_now_df <- gg_sigun_df %>% 
     group_by(시군명) %>% 
@@ -294,6 +295,9 @@ gg_shp <- gg_shp %>%
 ## 2.4. 지지율 데이터 병합 ----
 gg_sigun_shp <- left_join(gg_shp, gg_sigun_now_df, by="시군명")
 
+gg_sigun_shp <- gg_sigun_shp %>% 
+    mutate(당선 = factor(당선, levels = c("더불어민주당", "자유한국당", "원외2")))
+
 
 # 3. 시각화 ----
 ## 3.1. 정적 그래프 ----
@@ -309,6 +313,7 @@ leader_party_g <- ggplot(data=gg_sigun_shp, aes(fill=당선)) +
           axis.text.x = element_blank(), 
           axis.text.y = element_blank(),
           legend.position = "right")
+
 
 leader_rate_g <- ggplot(data=gg_sigun_shp, aes(fill=지지율1위)) +
     geom_sf() +
@@ -331,7 +336,7 @@ grid.arrange(leader_party_g, leader_rate_g, nrow=1)
 ```{r local-2018-경기도-여론조사-인터랙티브}
 ## 3.2. 인터랙티브 그래프 ----
 gg_sigun_shp %>% 
-    mapview(., zcol="당선",  col.regions = c("blue", "gray", "red", "red"))
+    mapview(., zcol="당선",  col.regions = c("blue", "red", "gray", "gray"))
 ```
 
 
