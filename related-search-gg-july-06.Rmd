@@ -1,0 +1,233 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 검색엔진 연관검색어 - 경기지사(6/6)
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+# 0. 환경설정 -----
+library(glue)
+library(tidyverse)
+library(networkD3)
+library(extrafont)
+library(igraph)
+loadfonts()
+library(DT)
+library(suggestK)
+```
+
+# 지방선거 {#지방선거-연관검색어}
+
+네이버에서는 6.13 지방선거·국회의원선거 투표종료시까지 후보자명에 대한 연관검색어 노출이 중단되어 
+다음과 구글 연관검색어만 선거운동기간 중에만 가능합니다.
+
+<img src="fig/naver-related-search-notice.png" alt="지방선거 연관검색어" width="100%" />
+
+# 경기지사 {#경기}
+
+## 이재명 {#이재명-related-search}
+
+### 네이버 연관검색 {#이재명-naver-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 이재명-network, eval=FALSE}
+visualize_suggest("이재명", "naver")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 이재명-dataframe, eval=FALSE}
+naver_keyword("이재명") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+### 구글 연관검색 {#이재명-google-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 이재명-google-network}
+visualize_suggest("이재명", "google")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 이재명-google-dataframe}
+google_keyword("이재명") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+### 다음 연관검색 {#이재명-daum-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 이재명-daum-network, eval=TRUE}
+visualize_suggest("이재명", "daum")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 이재명-daum-dataframe, eval=TRUE}
+daum_keyword("이재명") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+## 남경필 {#남경필-related-search}
+
+### 네이버 연관검색 {#남경필-naver-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 남경필-network, eval=FALSE}
+visualize_suggest("남경필", "naver")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 남경필-dataframe, eval=FALSE}
+naver_keyword("남경필") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+### 구글 연관검색 {#남경필-google-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 남경필-google-network}
+visualize_suggest("남경필", "google")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 남경필-google-dataframe}
+google_keyword("남경필") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+### 다음 연관검색 {#남경필-daum-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 남경필-daum-network, eval=TRUE}
+visualize_suggest("남경필", "daum")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 남경필-daum-dataframe, eval=TRUE}
+daum_keyword("남경필") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+## 김영환 {#김영환-related-search}
+
+### 네이버 연관검색 {#김영환-naver-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 김영환-network, eval=FALSE}
+visualize_suggest("김영환", "naver")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 김영환-dataframe, eval=FALSE}
+naver_keyword("김영환") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+### 구글 연관검색 {#김영환-google-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 김영환-google-network}
+visualize_suggest("김영환", "google")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 김영환-google-dataframe}
+google_keyword("김영환") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
+
+### 다음 연관검색 {#김영환-daum-related-search}
+
+<div class = "row">
+  <div class = "col-md-6">
+**연관검색어 그래프**
+
+```{r 김영환-daum-network, eval=TRUE}
+visualize_suggest("김영환", "daum")
+```
+
+  </div>
+  <div class = "col-md-6">
+**연관검색어 데이터**
+
+```{r 김영환-daum-dataframe, eval=TRUE}
+daum_keyword("김영환") %>% listviewer::jsonedit()
+```
+
+  </div>
+</div>
