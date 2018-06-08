@@ -88,7 +88,7 @@ google_keyword("이재명") %>% listviewer::jsonedit()
 **연관검색어 그래프**
 
 ```{r 이재명-daum-network, eval=TRUE}
-visualize_suggest("이재명", "daum")
+# visualize_suggest("이재명", "daum")
 ```
 
   </div>
@@ -153,7 +153,7 @@ google_keyword("남경필") %>% listviewer::jsonedit()
 **연관검색어 그래프**
 
 ```{r 남경필-daum-network, eval=TRUE}
-visualize_suggest("남경필", "daum")
+# visualize_suggest("남경필", "daum")
 ```
 
   </div>
