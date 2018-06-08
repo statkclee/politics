@@ -91,27 +91,33 @@ candid_trend_df <- candid_dev_df %>%
             트윗_갯수 = n())
 
 candid_trend_df %>% 
+  ungroup() %>% 
   select(screen_name, tdate, 좋아요_평균, 리트윗_평균, 트윗_갯수) %>% 
   gather(type, value, -screen_name, -tdate) %>% 
-  mutate(tdate = ymd(tdate)) %>% 
+  mutate(tdate = ymd(tdate),
+         screen_name = factor(screen_name, levels=c("Jaemyung_Lee", "yesKP", "kyh21"))) %>% 
   ggplot(aes(x = tdate, y = value, colour = screen_name, group=screen_name))  + 
   geom_point() +
   geom_line() +
   labs(
     x = NULL,
     y = NULL,
-    title = "Mean number of favourites/month for world leaders"
+    title = "트위터 활동성 지표",
+    subtitle = "리트윗(retweet), 좋아요(favorite), 트윗(tweet)",
+    color="후보"
   ) +
   theme_minimal() +
   facet_wrap(~type, scales="free") +
   theme(
-    legend.position = "none",
+    legend.position = "top",
     plot.title = element_text(size=20, face="bold"),
     strip.background = element_blank(),
     strip.text = element_text(size = 15, face="bold", colour = "black")
   ) +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_date(date_labels = "%m-%d")
+  scale_x_date(date_labels = "%m-%d") +
+  scale_color_manual(values=c("blue", "red", "cyan"))
+
 
 ```
 
