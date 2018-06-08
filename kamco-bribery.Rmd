@@ -1,0 +1,116 @@
+---
+layout: page
+title: 데이터 과학자가 바라본 제7회 지방선거
+subtitle: 한국자산관리공사 비리 연대기
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+mainfont: NanumGothic
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+# 0. 환경설정 -----
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(readxl)
+library(timevis) # devtools::install_github("daattali/timevis")
+library(DT)
+
+# 1. 데이터 -----
+
+kamco_dat <- read_excel("data/kamco.xlsx", sheet="연대기")
+
+# 2. 데이터 전처리 -----
+
+kamco_df <- kamco_dat %>% 
+    arrange(desc(날짜)) %>% 
+    mutate(날짜 = as.Date(날짜)) %>% 
+    mutate(링크 = paste0("<a href='", 링크,"'>", 링크,"</a>")) %>% 
+    mutate(content =  str_c("<strong>", 언론사, "</strong> ", 언론기사, ": <br>", 링크))
+
+```
+
+# 하인리히 법칙 [^Heinrich-law] {#하인리히-법칙}
+
+[^Heinrich-law]: [](https://namu.wiki/w/하인리히의 법칙)
+
+하인리히 법칙은 1:29:300법칙이라고도 하고, 
+대형사고가 발생하기 전에 그와 관련된 수많은 경미한 사고와 징후들이 반드시 존재한다는 것을 밝힌 법칙으로 
+세월호 사고가 계기가 되어 언론을 통해 많이 알려졌습니다. 
+큰 사고는 우연히 또는 어느 순간 갑작스럽게 발생하는 것이 아니라 그 이전에 반드시 경미한 사고들이 반복되는 과정 속에서 발생한다는 것을 실증적으로 밝힌 것으로, 
+큰 사고가 일어나기 전 일정 기간 동안 여러 번의 경고성 징후와 전조들이 있다는 사실을 입증하였다. 
+다시 말하면 큰 재해는 항상 사소한 것들을 방치할 때 발생한다고 합니다.
+
+
+# 한국자산관리공사(Kamco) 비리 {#Kamco} 
+
+자산관리공사 직원과 수년째 민원이 있어 연락을 취하면서 개인적으로 관심을 갖게 되면서 
+개인의 삶도 그렇지만 조직에 대해서도 배울 점이 특히 많다고 생각하고 있습니다.
+
+가장 인상에 남은 직원은 작년 첫 대면에서 자산관리공사에서는 공정하게 업무를 처리한다는 말을 입에 달고 다니는 것을 보고 참 신기하게 생각했습니다. 
+하지만, 왜 그렇게 “공정하게 업무를 처리한다”는 말을 입에 달고 다니는지 파악하는데는 시간이 오래 걸리지 않았습니다. 
+그냥 공정하게 처리하면 될 것을 왜 공정을 강조하는지,  
+지금에 와서 판단하건데 그 당시 “공정하게 업무를 처리한다”는 말에는 숨은 뜻이 있을 수 있음을 나중에야 알게 되었습니다.
+
+데이터과학자 관점에서 한국자산관리공사(Kamco)를 바라보면서 배울 수 있는 점을 요약하면 다음과 같습니다.
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 10px;}
+</style>
+<div class = "blue">
+
+자산관리공사 비리가 수도 없이 나오지만 특정 기간에는 비리가 전혀 없습니다.
+따라서, 공공기간 비리에 대해서 자산관리공사의 비리가 언론에 보도되지 않은 2010년부터 2014년 사이 배울 점이 많습니다.
+자산관리공사가 남긴 언론에 비리가 전혀 보도되지 않는 **사회적 유산인 귀중한 데이터**를 타산지석으로 삼으면 
+이 자체가 조선왕조신록에 버금가는 유산으로 자리잡아 후손에게 큰 버팀목이 될 듯 싶습니다.
+
+</div>
+
+
+## 캠코 비리 연대기 {#Kamco-timeline}
+
+연대기 데이터는 생각보다 많은 정보를 담고 있고, 시계열 분석과는 다른 함의를 갖고 있다.
+데이터를 연대기로 표현하고자 많은 노력이 있었고 Dean Attali가 저작한 [timevis](https://daattali.com/shiny/timevis-demo/)도 
+잘 개발된 R 팩키지 중 하나로 알려져 있다.
+
+
+``` {r timeline-kamco}
+# 4. 타임라인 -----
+
+kamco_df %>% 
+    rename(id = "언론기사",
+           start = "날짜",
+           content = content) %>% 
+    timevis(height=500, width=800, zoomFactor = 0.01)
+
+```
+
+## 캠코 비리관련 기사 {#Kamco-timeline-dt-table}
+
+캠코 관련하여 납득이 되지 않는 사실은 매년 꾸준히 캠코관련 비리가 터져나오는데 
+국민권익위원회 주관 [신아일보 백승룡 기자 (2018.02.15 17:10) 캠코, 공공기관 부패방지 '2년 연속 1등급'](http://www.shinailbo.co.kr/news/articleView.html?idxno=1043114)에 
+나오는 것처럼 공공기관 부패방지 2년 연속 1등급을 받았다는 기사가 나옵니다.
+
+왜 이와 같이 비리가 많은 공공기간이 "공공기관 부패방지 1등급" 기관으로 선정되었나 물어봤더니,
+여러가지 해석이 가능하지만, 그나마 다른 공공기관에 비해서 낫기 때문에 1등급을 매년 특정 기관에 줘야 하는데 그래서 줬다는 
+설명을 들은 기억이 나네요. 
+
+
+``` {r timeline-kamco-table}
+# 3. 데이터 표 -----
+kamco_df %>% 
+    select(-content) %>% 
+    datatable(escape = FALSE, options = list(
+        scrollX = TRUE,
+        autoWidth = TRUE,
+        columnDefs = list(list(width = '400px', targets = c(3)))))
+```

@@ -114,6 +114,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
     1. [Regression Analysis - Is the talent of MLB pitchers inherited?](pe-baseball-era-english.html)
     1. [협동조합과 인공지능이 함께 만든 맥주(AI Beer)](ai-beer.html)
     1. [**컴퓨팅 선동(Computational Propaganda)**](computational-propaganda.html)
+    1. [한국자산관리공사 비리 연대기](kamco-bribery.html)
 1. 저녁이 없던 삶
     1. [OECD 데이터 읽어오기](read-oecd-dataset.html)
     1. [주택가격 변동 국가 비교: 한국, 독일, 스페인, 프랑스, 일본, 미국](dallas-house-price.html) 
