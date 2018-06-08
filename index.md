@@ -138,6 +138,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
         - [제18대 대선 투표결과](http://statkclee.github.io/data-science/geo-18-president.html)
     1. **다양한 빅데이터**
         - [트위터 팔로워 & 해쉬태그](tw-follower-hashtag.html)        
+        - [경기지사 트위터 - 여론조사 공표금지](tw-gg-no-survey.html)        
         - [대선후보 정책평가](radar-chart.html)
         - [소득과 득표율 관계](income-vs-vote.html)
         - [보수와 진보를 넘어서](beyond-red-vs-blues.html)        

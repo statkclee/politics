@@ -4,10 +4,11 @@ title: 데이터 과학자와 함께 하는 제19대 대통령 선거
 subtitle: 트위터 팔로워 & 해쉬태그
 output:
   html_document: 
-    keep_md: yes
-  pdf_document:
-    latex_engine: xelatex
-mainfont: NanumGothic
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
 ---
 
 ```{r setOptions, message=FALSE, include=FALSE}
@@ -34,10 +35,6 @@ loadfonts()
 ``` {r twitter-follower-stat, echo=FALSE, message=FALSE, warn=FALSE}
 # 01. 환경설정 ----------------------------------------------------------
 
-consumer_key    <- "UGXurF0rmyoeE2Y1x6RaxTKsb"
-consumer_secret <- "0ijb17M1hrfpaOBR02BOpQyJy2gLeu1SgUwgHDYOFN5c9a0psv"
-access_token    <- "51896377-Ll9AbaDPQQWmXuKLIZ09Bs74t6LGDsLWlPLv40Bpc"
-access_secret   <- "GXOW2XOmYKSMSsuh0RmTyEsOIh5rYgM8dUZe0OtF4Fh1L"
 
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 

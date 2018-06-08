@@ -1,0 +1,136 @@
+---
+layout: page
+title: 데이터 과학자와 함께 하는 제19대 대통령 선거
+subtitle: 경기지사 트위터 - 여론조사 공표금지
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+---
+
+```{r setOptions, message=FALSE, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+```
+
+# 트위터 현황 팔로워와 친구 {#트위터-현황}
+
+- 더블어 민주당: [이재명](https://twitter.com/Jaemyung_Lee)
+- 자유한국당: [남경필](https://twitter.com/yesKP)
+- 바른미래당: [김영환](https://twitter.com/kyh21)
+
+``` {r gg-twitter-follower-stat}
+# 0. 환경설정 -----
+library(rtweet)  # devtools::install_github("mkearney/rtweet")
+library(tidyverse)
+library(lubridate)
+library(extrafont)
+loadfonts()
+
+# 1. 데이터 가져오기 -----
+
+candid_user_df <- read_rds("data/candid_user_df.rds")
+candid_dev_df <- read_rds("data/candid_dev_df.rds")
+
+
+candid_name_df <- tribble(
+  ~이름, ~screen_name,
+  "이재명", "Jaemyung_Lee",
+  "남경필", "yesKP",
+  "김영환", "kyh21"
+)
+
+candid_v <- c("Jaemyung_Lee", "yesKP", "kyh21")
+
+# 2. 탐색적 데이터 분석 -----
+## 2.1. 경기도 지사 후보자 현황 -----
+candid_user_df <- lookup_users(candid_v)
+
+candid_info_df <- candid_user_df %>%  
+  select(name, 팔로워수=followers_count, 
+         친구수=friends_count, 
+         트윗수=statuses_count, 
+         좋아요수=favourites_count, screen_name) %>% 
+  gather(type, value, -name, -screen_name) %>% 
+  mutate(name = factor(name, levels=c("이재명", "남경필", "김영환")))
+
+### 시각화
+ggplot(data = candid_info_df, 
+       aes(x = reorder(name, value), y = value,fill = name)) +
+  geom_col() +
+  facet_wrap(~type, scales = "free") + 
+  theme_minimal(base_family = "NanumGothic") + 
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 15, face="bold", colour = "black"),
+    title = element_blank(),
+    axis.text.x = element_blank()
+  ) + 
+  coord_flip() +
+  geom_text(aes(y = value, label = scales::comma(value)), colour = "black", hjust = "inward") +
+  scale_fill_manual(values = c("skyblue", "red", "cyan"))
+
+```
+
+
+# 트위터 활동성 지표 {#트위터-활동성-지표}
+
+``` {r gg-twitter-hits}
+## 2.4. 트위터 좋아요 추세 -----
+candid_trend_df <- candid_dev_df %>% 
+  mutate(tdate = format(created_at, "%Y-%m-%d")) %>%
+  filter(tdate >= "2018-05-31") %>% 
+  group_by(screen_name, tdate) %>% 
+  summarise(좋아요_평균 = mean(favorite_count), 
+            리트윗_평균  = mean(retweet_count),
+            트윗_갯수 = n())
+
+candid_trend_df %>% 
+  select(screen_name, tdate, 좋아요_평균, 리트윗_평균, 트윗_갯수) %>% 
+  gather(type, value, -screen_name, -tdate) %>% 
+  mutate(tdate = ymd(tdate)) %>% 
+  ggplot(aes(x = tdate, y = value, colour = screen_name, group=screen_name))  + 
+  geom_point() +
+  geom_line() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = "Mean number of favourites/month for world leaders"
+  ) +
+  theme_minimal() +
+  facet_wrap(~type, scales="free") +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size=20, face="bold"),
+    strip.background = element_blank(),
+    strip.text = element_text(size = 15, face="bold", colour = "black")
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_labels = "%m-%d")
+
+```
+
+# 트위터 표 {#트위터-활동성-표}
+
+``` {r gg-twitter-hits-table}
+## 2.3. 베스트 트위터표 -----
+
+candid_dev_df %>% 
+  left_join(candid_name_df) %>% 
+  filter(created_at >= "2018-05-31") %>% 
+  mutate(created_at = format(created_at, "%Y-%m-%d")) %>%
+  mutate(status_id = paste0("<a href=https://twitter.com/", screen_name, '/status/',status_id, "/>", status_id,"</a>")) %>% 
+  select(후보명=이름, status_id, created_at, favorite_count, retweet_count, text) %>% 
+  arrange(-retweet_count) %>% 
+  DT::datatable(rownames = FALSE, escape = FALSE, options = list(
+    scrollX = TRUE,
+    autoWidth = TRUE,
+    columnDefs = list(list(width = '400px', targets = c(5))))) %>% 
+  DT::formatRound(c("favorite_count", "retweet_count"), digits = 0)
+
+```
