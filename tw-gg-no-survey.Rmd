@@ -2,6 +2,7 @@
 layout: page
 title: 데이터 과학자와 함께 하는 제19대 대통령 선거
 subtitle: 경기지사 트위터 - 여론조사 공표금지
+date: "`r Sys.time()`"
 output:
   html_document: 
     toc: yes
@@ -15,6 +16,7 @@ output:
 source("tools/chunk-options.R")
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
+
 ```
 
 # 트위터 현황 팔로워와 친구 {#트위터-현황}
@@ -25,17 +27,18 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 ``` {r gg-twitter-follower-stat}
 # 0. 환경설정 -----
-library(rtweet)  # devtools::install_github("mkearney/rtweet")
+library(rtweet)
 library(tidyverse)
 library(lubridate)
+library(plotly)
+library(htmltools)
 library(extrafont)
 loadfonts()
 
 # 1. 데이터 가져오기 -----
 
 candid_user_df <- read_rds("data/candid_user_df.rds")
-candid_dev_df <- read_rds("data/candid_dev_df.rds")
-
+gg_tmls <- read_rds("data/gg_tmls.rds")
 
 candid_name_df <- tribble(
   ~이름, ~screen_name,
@@ -48,7 +51,7 @@ candid_v <- c("Jaemyung_Lee", "yesKP", "kyh21")
 
 # 2. 탐색적 데이터 분석 -----
 ## 2.1. 경기도 지사 후보자 현황 -----
-candid_user_df <- lookup_users(candid_v)
+# candid_user_df <- lookup_users(candid_v)
 
 candid_info_df <- candid_user_df %>%  
   select(name, 팔로워수=followers_count, 
@@ -80,63 +83,205 @@ ggplot(data = candid_info_df,
 
 # 트위터 활동성 지표 {#트위터-활동성-지표}
 
-``` {r gg-twitter-hits}
-## 2.4. 트위터 좋아요 추세 -----
-candid_trend_df <- candid_dev_df %>% 
-  mutate(tdate = format(created_at, "%Y-%m-%d")) %>%
-  filter(tdate >= "2018-05-31") %>% 
-  group_by(screen_name, tdate) %>% 
-  summarise(좋아요_평균 = mean(favorite_count), 
-            리트윗_평균  = mean(retweet_count),
-            트윗_갯수 = n())
+## 트윗갯수 {#트위터-활동성-지표-status}
 
-candid_trend_df %>% 
+일별 틔윗 상태갯수(`status`)를 계산하기 위해서 트위터 API에서 제공되는 시점과 
+트위터에 한국시간으로 트윗되는 시점이 다르기 때문에 이를 맞추기 위해서 시간대(timezone, tz)를 
+"Asia/Seoul"로 지정한다.
+그리고, 경기지사 후보별 일별 트윗갯수를 시계열로 시각화한다.
+
+``` {r gg-twitter-hits-status}
+gg_tmls_df <- gg_tmls %>% 
+  mutate(dtime = format(created_at, tz="Asia/Seoul")) %>% 
+  mutate(tdate = ymd(format(created_at, "%y-%m-%d"),  tz="Asia/Seoul")) %>% 
+  mutate(screen_dt = screen_name) %>% 
+  mutate(screen_name = factor(screen_name, levels=c("Jaemyung_Lee", "yesKP", "kyh21"), labels=c("이재명", "남경필", "김영환")))
+
+# 2. 시각화 -----
+## 2.1. 트윗갯수
+gg_status_cnt_g <- gg_tmls_df %>%
+  dplyr::filter(created_at > "2018-05-01") %>%
+  group_by(screen_name, tdate) %>%
+  summarise(트윗상태수 = n()) %>% 
   ungroup() %>% 
-  select(screen_name, tdate, 좋아요_평균, 리트윗_평균, 트윗_갯수) %>% 
-  gather(type, value, -screen_name, -tdate) %>% 
-  mutate(tdate = ymd(tdate),
-         screen_name = factor(screen_name, levels=c("Jaemyung_Lee", "yesKP", "kyh21"))) %>% 
-  ggplot(aes(x = tdate, y = value, colour = screen_name, group=screen_name))  + 
-  geom_point() +
+  ggplot(aes(x=tdate, y=트윗상태수, group=screen_name, color=screen_name,
+             text = paste0("후보명: ", screen_name, "\n",
+                           "날짜: ",   tdate, "\n",
+                           "트윗상태수: ", 트윗상태수))) +
+  ggplot2::geom_point() +
   geom_line() +
-  labs(
-    x = NULL,
-    y = NULL,
-    title = "트위터 활동성 지표",
-    subtitle = "리트윗(retweet), 좋아요(favorite), 트윗(tweet)",
-    color="후보"
+  ggplot2::theme_minimal(base_family = "NanumGothic") +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "경기지사 후보 트위터 상태 빈도(Frequency of Twitter statuses)",
+    subtitle = "2018년 5월 1일 이후 일자별 집계된 트윗 상태수",
+    caption = "\n출처: rtweet 팩키지 트위터 REST API"
   ) +
-  theme_minimal() +
-  facet_wrap(~type, scales="free") +
-  theme(
-    legend.position = "top",
-    plot.title = element_text(size=20, face="bold"),
-    strip.background = element_blank(),
-    strip.text = element_text(size = 15, face="bold", colour = "black")
-  ) +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_date(date_labels = "%m-%d") +
   scale_color_manual(values=c("blue", "red", "cyan"))
 
+ggplotly(gg_status_cnt_g, tooltip="text")
+```
 
+## 리트윗 총합 {#트위터-활동성-지표-retweet}
+
+경기지사 후보별 리트윗(retweet) 일별 총합을 구하여 이를 시각화한다.
+
+
+``` {r gg-twitter-hits-retweet}
+## 2.2. 리트윗 총합
+gg_retweet_cnt_g <- gg_tmls_df %>%
+  dplyr::filter(created_at > "2018-05-01") %>%
+  dplyr::group_by(screen_name, tdate) %>%
+  summarise(리트윗_총합 = sum(retweet_count),
+            좋아요_총합 = sum(favorite_count)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=tdate, y=리트윗_총합, group=screen_name, color=screen_name,
+             text = paste0("후보명: ", screen_name, "\n",
+                           "날짜: ",   tdate, "\n",
+                           "리트윗총합: ", scales::comma(리트윗_총합)))) +
+  ggplot2::geom_point() +
+  geom_line() +
+  ggplot2::theme_minimal(base_family = "NanumGothic") +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "경기지사 후보 트위터 리트윗 총합",
+    subtitle = "2018년 5월 1일 이후 일자별 집계된 총리트윗 횟수",
+    caption = "\n출처: rtweet 팩키지 트위터 REST API"
+  ) +
+  scale_color_manual(values=c("blue", "red", "cyan"))
+
+ggplotly(gg_retweet_cnt_g, tooltip="text")
+```
+
+## 좋아요(favorite) 총합 {#트위터-활동성-지표-favorite}
+
+경기지사 후보별 **좋아요(favorite)** 일별 총합을 구하여 이를 시각화한다.
+
+``` {r gg-twitter-hits-favorite}
+## 2.3. 좋아요(favorite) 총합
+gg_favorite_cnt_g <- gg_tmls_df %>%
+  dplyr::filter(created_at > "2018-05-01") %>%
+  dplyr::group_by(screen_name, tdate) %>%
+  summarise(리트윗_총합 = sum(retweet_count),
+                  좋아요_총합 = sum(favorite_count)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=tdate, y=좋아요_총합, group=screen_name, color=screen_name,
+             text = paste0("후보명: ", screen_name, "\n",
+                           "날짜: ",   tdate, "\n",
+                           "좋아요총합: ", scales::comma(좋아요_총합)))) +
+  ggplot2::geom_point() +
+  geom_line() +
+  ggplot2::theme_minimal(base_family = "NanumGothic") +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "경기지사 후보 트위터 좋아요 총합",
+    subtitle = "2018년 5월 1일 이후 일자별 집계된 좋아요(favorite) 횟수",
+    caption = "\n출처: rtweet 팩키지 트위터 REST API"
+  ) +
+  scale_color_manual(values=c("blue", "red", "cyan"))
+
+ggplotly(gg_favorite_cnt_g, tooltip="text")
+```
+
+## 리트윗(retweet) 평균 {#트위터-활동성-지표-retweet-mean}
+
+경기지사 후보별 트윗별 **리트윗(retweet) 평균**을 구하여 이를 시각화한다.
+
+``` {r gg-twitter-hits-retweet-mean}
+## 2.4. 리트윗(retweet) 평균
+gg_retweet_mean_g <- gg_tmls_df %>%
+  dplyr::filter(created_at > "2018-05-01") %>%
+  dplyr::group_by(screen_name, tdate) %>%
+  summarise(리트윗_총합 = sum(retweet_count),
+                  좋아요_총합 = sum(favorite_count),
+                  리트윗_평균 = mean(retweet_count),
+                  좋아요_평균 = mean(favorite_count)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=tdate, y=리트윗_평균, group=screen_name, color=screen_name,
+             text = paste0("후보명: ", screen_name, "\n",
+                           "날짜: ",   tdate, "\n",
+                           "리트윗_평균: ", scales::comma(round(리트윗_평균,0))))) +
+  ggplot2::geom_point() +
+  geom_line() +
+  ggplot2::theme_minimal(base_family = "NanumGothic") +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "경기지사 후보 트위터 리트윗 평균",
+    subtitle = "2018년 5월 1일 이후 일자별 집계된 리트윗(retweet) 평균",
+    caption = "\n출처: rtweet 팩키지 트위터 REST API"
+  ) +
+  scale_color_manual(values=c("blue", "red", "cyan")) 
+
+ggplotly(gg_retweet_mean_g, tooltip="text")
+```
+
+## 좋아요(favorite) 평균 {#트위터-활동성-지표-favorite-mean}
+
+경기지사 후보별 트윗별 **좋아요(favorite) 평균**을 구하여 이를 시각화한다.
+
+``` {r gg-twitter-hits-favorite-mean}
+## 2.5. 좋아요(favorite) 평균
+gg_favorite_mean_g <- gg_tmls_df %>%
+  dplyr::filter(created_at > "2018-05-01") %>%
+  dplyr::group_by(screen_name, tdate) %>%
+  summarise(리트윗_총합 = sum(retweet_count),
+            좋아요_총합 = sum(favorite_count),
+            리트윗_평균 = mean(retweet_count),
+            좋아요_평균 = mean(favorite_count),
+            트윗상태수 = n()) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=tdate, y=좋아요_평균, group=screen_name, color=screen_name,
+             text = paste0("후보명: ", screen_name, "\n",
+                           "날짜: ",   tdate, "\n",
+                           "리트윗_평균: ", scales::comma(round(리트윗_평균,0)), "\n",
+                           "트윗상태수: ",트윗상태수))) +
+  ggplot2::geom_point() +
+  geom_line() +
+  ggplot2::theme_minimal(base_family = "NanumGothic") +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "경기지사 후보 트위터 좋아요 평균",
+    subtitle = "2018년 5월 1일 이후 일자별 집계된 좋아요(favorite) 평균",
+    caption = "\n출처: rtweet 팩키지 트위터 REST API"
+  ) +
+  scale_color_manual(values=c("blue", "red", "cyan")) 
+
+ggplotly(gg_favorite_mean_g, tooltip="text")
 ```
 
 # 트위터 표 {#트위터-활동성-표}
 
-``` {r gg-twitter-hits-table}
-## 2.3. 베스트 트위터표 -----
+후부별로 추출한 최대 트윗을 가장 최근 트윗을 기준으로 정렬하여 클릭하면 해당 트윗을 확인할 수 있도록 인터랙티브 표로 시각화한다.
 
-candid_dev_df %>% 
-  left_join(candid_name_df) %>% 
-  filter(created_at >= "2018-05-31") %>% 
-  mutate(created_at = format(created_at, "%Y-%m-%d")) %>%
-  mutate(status_id = paste0("<a href=https://twitter.com/", screen_name, '/status/',status_id, "/>", status_id,"</a>")) %>% 
-  select(후보명=이름, status_id, created_at, favorite_count, retweet_count, text) %>% 
-  arrange(-retweet_count) %>% 
+``` {r gg-twitter-hits-table}
+# 3. 표 -----
+gg_tmls_df %>% 
+  mutate(status_id = paste0("<a href=https://twitter.com/", screen_dt, '/status/',status_id, "/>", status_id,"</a>")) %>%
+  select(후보명=screen_name, status_id, dtime, favorite_count, retweet_count, text) %>% 
+  arrange(desc(dtime)) %>% 
   DT::datatable(rownames = FALSE, escape = FALSE, options = list(
     scrollX = TRUE,
     autoWidth = TRUE,
     columnDefs = list(list(width = '400px', targets = c(5))))) %>% 
   DT::formatRound(c("favorite_count", "retweet_count"), digits = 0)
-
 ```
