@@ -154,6 +154,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
         1. [전라남도 나주시](jn-naju.html)
         1. [성남시에 나타난 촛불 효과](sungnam-candle-effect.html)
         1. [성남시 민주당 득표 - 군집분석](sungnam-dong-cluster.html)
+    1. [**사전선거율 - 엑셀 파이터의 종말**](excel-the-end.html)
     
 
 > ### xwMOOC 오픈 교재
