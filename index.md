@@ -63,7 +63,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
 1. **진화하는 선거**        
     1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
         - [투표 지리정보 매핑](30-vote-geoinfo.html)
-        - [제18대 대통령 선거](http://statkclee.github.io/data-science/geo-18-president.html)
+        - [제18대 대통령 선거](http://statkclee.github.io/spatial/geo-18-president.html)
         - [제20대 총선 선거구](06-vote-precinct.html)
         - [생활안전](31-vote-probation-office.html)
     1. [SNS 디지털 미디어](20-vote-digial-media.html)
