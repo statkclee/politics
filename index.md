@@ -61,7 +61,7 @@ subtitle: 데이터 과학자와 함께 하는 제7회 전국동시지방선거
         - [광역지방자치 단체장 창출 일자리](pe-politician-jobs.html)     
         - [저평가 우량주 - 손학규](pe-hq-mb.html)     
 1. **진화하는 선거**        
-    1. [지리정보 시각화](http://statkclee.github.io/data-science/geo-info.html)
+    1. [지리정보 시각화](http://statkclee.github.io/spatial/geo-info.html)
         - [투표 지리정보 매핑](30-vote-geoinfo.html)
         - [제18대 대통령 선거](http://statkclee.github.io/spatial/geo-18-president.html)
         - [제20대 총선 선거구](06-vote-precinct.html)
